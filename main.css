@@ -107,6 +107,7 @@ nav h1 {
 
 #games a {
   flex: 0 0 15.6vw;
+  min-width: 200px; 
   margin: 0.5vw;
 }
 
