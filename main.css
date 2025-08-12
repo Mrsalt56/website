@@ -95,22 +95,23 @@ nav h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: .6vw;
+    margin-top: 0.6vw;
     padding-bottom: 5vw;
-
 }
- 
-#games img {    height: 15.6vw;
-    width: 15.6vw;
+
+#games a {
+    display: block;
+    flex: 0 0 15.6vw;  
+    margin: 0.5vw;
+}
+
+#games img {
+    width: 100%;      
+    height: auto;      
     border-radius: 1vw;
-    margin: .5vw;
     cursor: pointer;
     user-select: none;
-    transition: transform .2s;
-}
- 
-#games img:hover {
-    transform: scale(1.01);
+    transition: transform 0.2s;
 }
 
 .featured {
