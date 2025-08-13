@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
 
 body {
-    background-color: #8B0000;
+    background-color: #049c2;
     font-family: 'Montserrat', sans-serif;
 }
 
@@ -60,7 +60,7 @@ nav h1 {
 }
 
  .search input:focus, .search button:focus {
-  outline: 2px solid #2c7ffc;
+  outline: 2px solid #049c2;
   outline-offset: 2px;
 }
 
