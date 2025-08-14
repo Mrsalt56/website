@@ -100,15 +100,10 @@ nav h1 {
 #games {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  border: 1px solid lime;
-  width: 100%;
+  gap: 10px;
 }
-
 #games a {
-  flex: 0 0 15.6vw;
-  min-width: 200px; 
-  margin: 0.5vw;
+  display: block; 
 }
 
 #games img {
