@@ -248,6 +248,20 @@ nav h1 {
     background-color: #005ecb;
 }
 
+#reportButton {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#reportButton:hover {
+    background-color: #cc0000;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -256,11 +270,11 @@ nav h1 {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: #57aede;
+    background-color: #e03843;
 }
 
 .modal-content {
-    background-color: #57aede;
+    background-color: #e03843;
     margin: 10% auto;
     padding: 20px;
     width: 300px;
