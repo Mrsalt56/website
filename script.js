@@ -89,3 +89,14 @@ function applyFilters() {
 
 genreFilter.addEventListener("change", applyFilters);
 popularityFilter.addEventListener("change", applyFilters);
+
+const searchInput = document.querySelector('.search input');
+
+searchInput.addEventListener('input', () => {
+  const searchTerm = searchInput.value.toLowerCase();
+
+  games.forEach(game => {
+    const name = game.querySelector('img').alt.toLowerCase();
+    game.style.display = name.includes(searchTerm) ? 'block' : 'none';
+  });
+});
