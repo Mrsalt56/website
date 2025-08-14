@@ -124,6 +124,15 @@ nav h1 {
     filter: brightness(80%);
 }
 
+#search-divider {
+    height: 4px;           
+    background-color: #4582bf; 
+    margin: 1vw 0;         
+    border: none;              
+    width: 100%;               
+}
+
+
 #games {
   display: flex;           
   flex-wrap: wrap;          
