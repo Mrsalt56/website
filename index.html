@@ -1,142 +1,155 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salty</title>
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salty Game Portal</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
 </head>
 <body>
-    <nav>
-        <img src="magnolia.jpg" alt="logo">
-        <h1>Salty</h1>
-        <button id="suggestButton">Suggest a Game</button>
 
-<div id="suggestionForm" class="modal">
+  <nav>
+    <img src="images/magnolia.png" alt="logo">
+    <h1>Salty</h1>
+    <button id="suggestButton">Suggest a Game</button>
+      
+    <div class="filters">
+      <select id="genreFilter">
+        <option value="all">All Genres</option>
+        <option value="racing">Racing</option>
+        <option value="puzzle">Puzzle</option>
+        <option value="action">Action</option>
+        <option value="multiplayer">Multiplayer</option>
+        <option value="arcade">Arcade</option>
+        <option value="sports">Sports</option>
+        <option value="platformer">Platformer</option>
+        <option value="shooter">Shooter</option>
+        <option value="idle">Idle</option>
+        <option value="card">Card</option>
+        <option value="rhythm">Rhythm</option>
+        <option value="simulation">Simulation</option>
+      </select>
+
+      <select id="popularityFilter">
+        <option value="all">All Popularity</option>
+        <option value="trending">Trending</option>
+        <option value="hot">Hot</option>
+        <option value="new">New</option>
+      </select>
+    </div>
+  </nav>
+
+  <div id="suggestionForm" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Suggest a Game</h2>
-        <input type="text" id="gameName" placeholder="Game Name">
-        <textarea id="gameDetails" placeholder="Why should we add it?"></textarea>
-        <button id="sendSuggestion">Send</button>
+      <span class="close">&times;</span>
+      <h2>Suggest a Game</h2>
+      <input type="text" id="gameName" placeholder="Game Name">
+      <textarea id="gameDetails" placeholder="Why should we add it?"></textarea>
+      <button id="sendSuggestion">Send</button>
     </div>
-</div>
-    </nav>
+  </div>
 
-    <div class="featured">
-        <h1>Popular:</h1>
-        <div class="column">
-          <a href="games/bob-the-robber-2/">
-            <img src="images/bob-the-robber-2.png">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-          <a href="games/vex7/">
-            <img src="images/vex7.jpeg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-        </div>
-        <div class="row">
-          <a href="games/vex6">
-            <img src="images/vex6.jpeg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-        </div>
-        <div class="row">
-          <a href="games/drive-mad/">
-            <img src="images/drive-mad.jpg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-            </a>
-        </div>
-        <div class="column">
-          <a href="games/moto-x3m/">
-            <img src="images/moto-x3m.jpg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-          <a href="games/retro-bowl/">
-            <img src="images/retro-bowl.jpg">
-            <div class="play-button">
-                <i class="fa-solid fa-play"></i>
-            </div>
-          </a>
-        </div>
-        </div>
+  <div class="featured">
+    <h1>Popular Games</h1>
+    <div class="column">
+      <a href="games/bob-the-robber-2/">
+        <img src="images/bob-the-robber-2.png" alt="Bob the Robber 2">
+        <div class="play-button"><i class="fa-solid fa-play"></i></div>
+      </a>
+      <a href="games/vex7/">
+        <img src="images/vex7.jpeg" alt="Vex 7">
+        <div class="play-button"><i class="fa-solid fa-play"></i></div>
+      </a>
     </div>
+    <div class="row">
+      <a href="games/vex6/">
+        <img src="images/vex6.jpeg" alt="Vex 6">
+        <div class="play-button"><i class="fa-solid fa-play"></i></div>
+      </a>
+    </div>
+    <div class="row">
+      <a href="games/drive-mad/">
+        <img src="images/drive-mad.jpg" alt="Drive Mad">
+        <div class="play-button"><i class="fa-solid fa-play"></i></div>
+      </a>
+    </div>
+    <div class="column">
+      <a href="games/moto-x3m/">
+        <img src="images/moto-x3m.jpg" alt="Moto X3M">
+        <div class="play-button"><i class="fa-solid fa-play"></i></div>
+      </a>
+      <a href="games/retro-bowl/">
+        <img src="images/retro-bowl.jpg" alt="Retro Bowl">
+        <div class="play-button"><i class="fa-solid fa-play"></i></div>
+      </a>
+    </div>
+  </div>
 
-    <div class="content">
-
+  <div class="content">
     <hr>
 
     <div class="search">
-        <input type="text" placeholder="Search..." oninput="">
-        <button><i class="fas fa-search"></i></button>
+      <input type="text" placeholder="Search games...">
+      <button><i class="fas fa-search"></i></button>
     </div>
 
+    <div id="search-results" class="search-results-bar"></div>
+
+    <div id="search-divider"></div>
+    
     <div id="games">
-        <a href="games/1v1lol/"><img src="images/1v1-lol_1x1.jpg" alt="1v1lol"></a>
-        <a href="games/2048/"><img src="images/2048_logo.svg.png" alt="2048"></a>
-        <a href="games/a-dance-of-fire-and-ice/"><img src="images/icefire.jpg" alt="a-dance-of-fire-and-ice"></a>
-        <a href="games/agario-minigame/"><img src="images/agar.io.jpg" alt="agario-minigame"></a>
-        <a href="games/basketball-stars/"><img src="images/basketball.jpg" alt="basketball-stars"></a>
-        <a href="games/bike-mania/"><img src="images/bike-mania_1x1.png" alt="bike-mania"></a>
-        <a href="games/bob-the-robber-2/"><img src="images/bob-the-robber-2.png" alt="bob the robber 2"></a>
-        <a href="games/breaklock/"><img src="images/breaklock.jpg" alt="breaklock"></a>
-        <a href="games/chroma/"><img src="images/180911_164021_Proof.PNG.9ecf7a2889c32de0b1abaf96d374900a.png" alt="chroma"></a>
-        <a href="games/cookie/"><img src="images/Cookie_Clicker.png" alt="cookie"></a>
-        <a href="games/cubefield/"><img src="images/cubefield.webp" alt="cubefield"></a>
-        <a href="games/dinosaur/"><img src="images/offline dino.webp" alt="dinosaur"></a>
-        <a href="games/ducklife/"><img src="images/DuckLife.jpg" alt="ducklife"></a>
-        <a href="games/ducklife2/"><img src="images/ducklife2_logo.svg.png" alt="ducklife2"></a>
-        <a href="games/ducklife3/"><img src="images/duck-life-3.webp" alt="ducklife3"></a>
-        <a href="games/ducklife4/"><img src="images/ducklife4.png" alt="ducklife4"></a>
-        <a href="games/fireboy-and-watergirl-forest-temple/"><img src="images/fireboy.jpg" alt="fireboy-and-watergirl-forest-temple"></a>
-        <a href="games/flappy-2048/"><img src="images/flappy2048.png" alt="flappy-2048"></a>
-        <a href="games/flappybird/"><img src="images/flappy.png" alt="flappybird"></a>
-        <a href="games/friendlyfire/"><img src="images/friendly.jpg" alt="friendlyfire"></a>
-        <a href="games/game-inside-a-game/"><img src="images/gameingame.png" alt="game-inside-a-game"></a>
-        <a href="games/geometry/"><img src="images/geometry.png" alt="geometry"></a>
-        <a href="games/google-solitaire/"><img src="images/google.jpg" alt="google-solitaire"></a>
-        <a href="games/gopher-kart/"><img src="images/gopher-kart.webp" alt="gopher-kart"></a>
-        <a href="games/hexgl/"><img src="images/hexgl.jpg" alt="hexgl"></a>
-        <a href="games/hextris/"><img src="images/hextris.jpg" alt="hextris"></a>
-        <a href="games/hill-racing/"><img src="images/hill-racing_logo.svg.png" alt="hill-racing"></a>
-        <a href="games/madalin-cars-multiplayer/"><img src="images/madalin.avif" alt="madalin-cars-multiplayer"></a>
-        <a href="games/madalin-stunt-cars-2/"><img src="images/madalin2.avif" alt="madalin-stunt-cars-2"></a>
-        <a href="games/microsoft-flight-simulator/"><img src="images/Microsoft flight.png" alt="microsoft-flight-simulator"></a>
-        <a href="games/moto-x3m/"><img src="images/moto-x3m.jpg" alt="moto x3m"></a>
-        <a href="games/moto-x3m-pool-party/"><img src="images/moto-x3m-pool-party.png" alt="moto-x3m-pool-party"></a>
-        <a href="games/moto-x3m-spooky-land/"><img src="images/MotoX3M-Spookyland.jpg" alt="moto-x3m-spooky-land"></a>
-        <a href="games/moto-x3m-winter/"><img src="images/moto-x3m-winter.jpg" alt="moto-x3m-winter"></a>
-        <a href="games/motox3m2/"><img src="images/moto-x3m-2.png" alt="moto x3m2"></a>
-        <a href="games/pacman/"><img src="images/pacman.webp" alt="pacman"></a>
-        <a href="games/radius-raid/"><img src="images/radius raid.jpg" alt="radius-raid"></a>
-        <a href="games/retro-bowl/"><img src="images/retro-bowl.jpg" alt="retrobowl"></a>
-        <a href="games/slope/"><img src="images/slope.jpg" alt="slope"></a>
-        <a href="games/slope-2/"><img src="images/slope2.jpg" alt="slope-2"></a>
-        <a href="games/sm64/"><img src="images/Mario64.webp" alt="sm64"></a>
-        <a href="games/spaceinvaders/"><img src="images/space invaders.avif" alt="spaceinvaders"></a>
-        <a href="games/vex3/"><img src="images/vex3.jpg" alt="vex3"></a>
-        <a href="games/vex4/"><img src="images/vex4.jpg" alt="vex4"></a>
-        <a href="games/vex5/"><img src="images/vex5.jpg" alt="vex5"></a>
-        <a href="games/vex6/"><img src="images/vex6.jpeg" alt="vex 6"></a>
-        <a href="games/vex7/"><img src="images/vex7.jpeg" alt="vex 7"></a>
-        <a href="games/wordle/"><img src="games/wordle/images/wordle_logo_32x32.png" alt="wordle"></a>
-        <a href="games/zombotron/"><img src="images/zombotron.webp" alt="zombotron"></a>
-        <a href="games/zombotron-2/"><img src="images/zombotron 2.jpg" alt="zombotron-2"></a>
-        <a href="games/zombsroyale/"><img src="images/ZombsRoyale.jpg" alt="zombsroyale"></a>
-    </div>
+  <a href="games/1v1lol/"><img src="images/1v1-lol_1x1.jpg" alt="1v1lol" data-genre="multiplayer" data-popularity="hot"></a>
+  <a href="games/2048/"><img src="images/2048_logo.svg.png" alt="2048" data-genre="puzzle" data-popularity="new"></a>
+  <a href="games/a-dance-of-fire-and-ice/"><img src="images/icefire.jpg" alt="A Dance of Fire and Ice" data-genre="rhythm" data-popularity="trending"></a>
+  <a href="games/agario-minigame/"><img src="images/agar.io.jpg" alt="Agario Minigame" data-genre="multiplayer" data-popularity="hot"></a>
+  <a href="games/basketball-stars/"><img src="images/basketball.jpg" alt="Basketball Stars" data-genre="sports" data-popularity="hot"></a>
+  <a href="games/bike-mania/"><img src="images/bike-mania_1x1.png" alt="Bike Mania" data-genre="racing" data-popularity="new"></a>
+  <a href="games/bob-the-robber-2/"><img src="images/bob-the-robber-2.png" alt="Bob the Robber 2" data-genre="action" data-popularity="trending"></a>
+  <a href="games/breaklock/"><img src="images/breaklock.jpg" alt="Breaklock" data-genre="puzzle" data-popularity="trending"></a>
+  <a href="games/chroma/"><img src="images/180911_164021_Proof.PNG.9ecf7a2889c32de0b1abaf96d374900a.png" alt="Chroma" data-genre="action" data-popularity="hot"></a>
+  <a href="games/cookie/"><img src="images/Cookie_Clicker.png" alt="Cookie Clicker" data-genre="idle" data-popularity="new"></a>
+  <a href="games/cubefield/"><img src="images/cubefield.webp" alt="Cubefield" data-genre="arcade" data-popularity="trending"></a>
+  <a href="games/dinosaur/"><img src="images/offline dino.webp" alt="Dinosaur" data-genre="arcade" data-popularity="hot"></a>
+  <a href="games/ducklife/"><img src="images/DuckLife.jpg" alt="DuckLife" data-genre="rpg" data-popularity="hot"></a>
+  <a href="games/ducklife3/"><img src="images/duck-life-3.webp" alt="DuckLife 3" data-genre="rpg" data-popularity="hot"></a>
+  <a href="games/ducklife4/"><img src="images/ducklife4.png" alt="DuckLife 4" data-genre="rpg" data-popularity="hot"></a>
+  <a href="games/fireboy-and-watergirl-forest-temple/"><img src="images/fireboy.jpg" alt="Fireboy and Watergirl" data-genre="puzzle" data-popularity="trending"></a>
+  <a href="games/flappy-2048/"><img src="images/flappy2048.png" alt="Flappy 2048" data-genre="arcade" data-popularity="new"></a>
+  <a href="games/friendlyfire/"><img src="images/friendly.jpg" alt="Friendly Fire" data-genre="action" data-popularity="trending"></a>
+  <a href="games/game-inside-a-game/"><img src="images/gameingame.png" alt="Game Inside a Game" data-genre="puzzle" data-popularity="trending"></a>
+  <a href="games/geometry/"><img src="images/geometry.png" alt="Geometry" data-genre="puzzle" data-popularity="new"></a>
+  <a href="games/google-solitaire/"><img src="images/google.jpg" alt="Google Solitaire" data-genre="card" data-popularity="hot"></a>
+  <a href="games/gopher-kart/"><img src="images/gopher-kart.webp" alt="Gopher Kart" data-genre="racing" data-popularity="hot"></a>
+  <a href="games/hexgl/"><img src="images/hexgl.jpg" alt="HexGL" data-genre="racing" data-popularity="trending"></a>
+  <a href="games/hextris/"><img src="images/hextris.jpg" alt="Hextris" data-genre="puzzle" data-popularity="hot"></a>
+  <a href="games/hill-racing/"><img src="images/hill-racing_logo.svg.png" alt="Hill Racing" data-genre="racing" data-popularity="hot"></a>
+  <a href="games/madalin-cars-multiplayer/"><img src="images/madalin.avif" alt="Madalin Cars Multiplayer" data-genre="multiplayer" data-popularity="hot"></a>
+  <a href="games/madalin-stunt-cars-2/"><img src="images/madalin2.avif" alt="Madalin Stunt Cars 2" data-genre="racing" data-popularity="trending"></a>
+  <a href="games/microsoft-flight-simulator/"><img src="images/Microsoft flight.png" alt="Microsoft Flight Simulator" data-genre="simulation" data-popularity="new"></a>
+  <a href="games/moto-x3m/"><img src="images/moto-x3m.jpg" alt="Moto X3M" data-genre="racing" data-popularity="hot"></a>
+  <a href="games/moto-x3m-pool-party/"><img src="images/moto-x3m-pool-party.png" alt="Moto X3M Pool Party" data-genre="racing" data-popularity="trending"></a>
+  <a href="games/moto-x3m-spooky-land/"><img src="images/MotoX3M-Spookyland.jpg" alt="Moto X3M Spooky Land" data-genre="racing" data-popularity="new"></a>
+  <a href="games/moto-x3m-winter/"><img src="images/moto-x3m-winter.jpg" alt="Moto X3M Winter" data-genre="racing" data-popularity="hot"></a>
+  <a href="games/motox3m2/"><img src="images/moto-x3m-2.png" alt="Moto X3M 2" data-genre="racing" data-popularity="trending"></a>
+  <a href="games/pacman/"><img src="images/pacman.webp" alt="Pacman" data-genre="arcade" data-popularity="hot"></a>
+  <a href="games/radius-raid/"><img src="images/radius raid.jpg" alt="Radius Raid" data-genre="shooter" data-popularity="trending"></a>
+  <a href="games/retro-bowl/"><img src="images/retro-bowl.jpg" alt="Retro Bowl" data-genre="sports" data-popularity="hot"></a>
+  <a href="games/slope/"><img src="images/slope.jpg" alt="Slope" data-genre="arcade" data-popularity="hot"></a>
+  <a href="games/slope-2/"><img src="images/slope2.jpg" alt="Slope 2" data-genre="arcade" data-popularity="trending"></a>
+  <a href="games/sm64/"><img src="images/Mario64.webp" alt="Super Mario 64" data-genre="platformer" data-popularity="hot"></a>
+  <a href="games/spaceinvaders/"><img src="images/space invaders.avif" alt="Space Invaders" data-genre="shooter" data-popularity="hot"></a>
+  <a href="games/vex3/"><img src="images/vex3.jpg" alt="Vex 3" data-genre="platformer" data-popularity="trending"></a>
+  <a href="games/vex4/"><img src="images/vex4.jpg" alt="Vex 4" data-genre="platformer" data-popularity="trending"></a>
+  <a href="games/vex5/"><img src="images/vex5.jpg" alt="Vex 5" data-genre="platformer" data-popularity="hot"></a>
+  <a href="games/vex6/"><img src="images/vex6.jpeg" alt="Vex 6" data-genre="platformer" data-popularity="trending"></a>
+  <a href="games/vex7/"><img src="images/vex7.jpeg" alt="Vex 7" data-genre="platformer" data-popularity="hot"></a>
+  <a href="games/wordle/"><img src="games/wordle/images/wordle_logo_32x32.png" alt="Wordle" data-genre="puzzle" data-popularity="hot"></a>
+  <a href="games/zombotron/"><img src="images/zombotron.webp" alt="Zombotron" data-genre="shooter" data-popularity="hot"></a>
+  <a href="games/zombotron-2/"><img src="images/zombotron 2.jpg" alt="Zombotron 2" data-genre="shooter" data-popularity="trending"></a>
+  <a href="games/zombsroyale/"><img src="images/ZombsRoyale.jpg" alt="ZombsRoyale" data-genre="multiplayer" data-popularity="hot"></a>
+</div>
+  <script src="script.js"></script>
 </body>
 </html>
-
-<script src="script.js"></script>
