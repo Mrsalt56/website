@@ -9,6 +9,7 @@ const modal = document.getElementById('suggestionForm');
 const closeBtn = document.querySelector('.close');
 const sendBtn = document.getElementById('sendSuggestion');
 const webhookURL = "https://discord.com/api/webhooks/1405341631078727753/23FCdrJHMuOfcBBeUgpNugGopa_njHiJz_U0I7FIWD9TW2wxaHyv102cuJ_eIMcldpWE";
+const reportWebhookURL = "https://discord.com/api/webhooks/1405419496331808789/WxRxJIiqmG9xVXrIdXx2VqzIJkikX6lE3uzk6A2QzrHfxdUuQJgGnD1wZqxO5Qalq_Ts";
 
 function updateGames() {
   const searchTerm = searchInput.value.toLowerCase();
@@ -74,4 +75,45 @@ sendBtn.onclick = () => {
   document.getElementById("gameName").value = "";
   document.getElementById("gameDetails").value = "";
   modal.style.display = "none";
+};
+
+const sendReportBtn = document.getElementById("sendReport");
+
+sendReportBtn.onclick = () => {
+  const title = document.getElementById("problemTitle").value.trim();
+  const details = document.getElementById("problemDetails").value.trim();
+
+  if (!title) { 
+    alert("Please enter a title for the problem."); 
+    return; 
+  }
+
+  const payload = {
+    content: `🚨 **Problem Reported**\n**Title:** ${title}\n**Details:** ${details || "No details provided"}`
+  };
+
+  fetch(reportWebhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(response => {
+    if (response.ok) alert("Problem report sent successfully!");
+    else alert("Failed to send problem report. Please try again.");
+  })
+  .catch(error => {
+    console.error("Error sending to Discord:", error);
+    alert("There was an error sending your report.");
+  });
+
+  document.getElementById("problemTitle").value = "";
+  document.getElementById("problemDetails").value = "";
+  document.getElementById("reportForm").style.display = "none";
+};
+
+const reportButton = document.getElementById("reportButton");
+const reportModal = document.getElementById("reportForm");
+
+reportButton.onclick = () => { 
+  reportModal.style.display = 'block'; 
 };
