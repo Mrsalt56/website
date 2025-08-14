@@ -125,18 +125,22 @@ nav h1 {
 }
 
 #games {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;           
+  flex-wrap: wrap;          
+  gap: 10px;                
+  justify-content: flex-start; 
 }
 
 #games a {
-    display: block;
+  display: block;
+  width: 150px;            
+  text-align: center;
 }
 
-#games img {
-    width: 100%;
-    border-radius: 1vw;
+#games a img {
+  width: 100%;             
+  height: auto;
+  border-radius: 8px;       
 }
 
 .featured {
