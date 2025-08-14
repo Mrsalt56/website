@@ -137,10 +137,22 @@ nav h1 {
   text-align: center;
 }
 
-#games a img {
-  width: 100%;             
-  height: auto;
-  border-radius: 8px;       
+#games a img,
+#search-results img,
+.featured img {
+    width: 12vw;  
+    height: 12vw;        
+    border-radius: 1vw;
+    object-fit: cover;    
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+#games a img:hover,
+#search-results img:hover,
+.featured img:hover {
+    transform: scale(1.05);
+    filter: brightness(80%);
 }
 
 .featured {
