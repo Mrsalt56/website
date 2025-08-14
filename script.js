@@ -3,7 +3,7 @@ const gameLinks = document.querySelectorAll('#games a');
 const searchResults = document.getElementById('search-results');
 const genreFilter = document.getElementById("genreFilter");
 const popularityFilter = document.getElementById("popularityFilter");
- 
+   
 const suggestButton = document.getElementById('suggestButton');
 const modal = document.getElementById('suggestionForm');
 const closeBtn = document.querySelector('.close');
