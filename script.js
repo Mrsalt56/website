@@ -67,3 +67,25 @@ sendBtn.onclick = () => {
   document.getElementById("gameDetails").value = "";
   modal.style.display = "none";
 };
+const genreFilter = document.getElementById("genreFilter");
+const popularityFilter = document.getElementById("popularityFilter");
+
+function applyFilters() {
+  const genre = genreFilter.value;
+  const popularity = popularityFilter.value;
+
+  games.forEach(game => {
+    const gameGenre = game.dataset.genre || "all";
+    const gamePopularity = game.dataset.popularity || "all";
+
+    if ((genre === "all" || gameGenre === genre) &&
+        (popularity === "all" || gamePopularity === popularity)) {
+      game.style.display = "block";
+    } else {
+      game.style.display = "none";
+    }
+  });
+}
+
+genreFilter.addEventListener("change", applyFilters);
+popularityFilter.addEventListener("change", applyFilters);
