@@ -31,11 +31,7 @@ function updateGames() {
     link.style.display = matchesFilters ? 'block' : 'none';
 
     if (matchesSearch) {
-      const cloneLink = document.createElement("a");
-      cloneLink.href = link.href;
-      const cloneImg = img.cloneNode(true);
-      cloneImg.style.transition = 'transform 0.2s, filter 0.2s';
-      cloneLink.appendChild(cloneImg);
+      const cloneLink = link.cloneNode(true); 
       searchResults.appendChild(cloneLink);
     }
   });
