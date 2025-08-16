@@ -1,0 +1,398 @@
+<html lang="en" xmlns:og="http://opengraphprotocol.org/schema/">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+	<meta name="viewport" content="width=device-width,  initial-scale=1.0">
+	
+	<link rel="icon" type="image/png" href="../math-games/favicon.ico.gif">		
+	<link rel="canonical" href="papassushiria.html" />
+	<link rel="image_src" href="https://jpg.hoodamath.com/large/papassushiria_300x225.jpg" />
+	
+	<meta property="og:image"  content="https://jpg.hoodamath.com/large/papassushiria_300x225.jpg" />	
+
+	<title>Papa's Sushiria</title>
+	<link href="papassushiria.html" />
+    <script src="https://apis.google.com/js/platform.js" async defer>
+    </script>
+	
+	<meta name="description" content="Play Papa's Sushiria Now! @ Hooda Math. Practice math the fun way, on your mobile phone or tablet like iPad, iPhone, or Android.">	
+
+<style>div.twenty{
+	background-color:#FFF;
+	border: 0px;
+	margin: 10px 0px;
+	padding: 5px 0px;
+	color:#000;	
+	
+}
+div.twentygame{
+	background-color:#FFF;
+	border: 0px;
+	margin: 10px 0px;
+	padding: 5px 0px;
+	color:#000;
+width:768px;	
+}
+@media (max-width:767px){
+	#skyscraperAd{
+		display:none;
+	}
+	#boxAd{
+		display:none;
+	}	
+	#multiAd2{
+		display:none;
+	}
+	div.twenty{
+		width:380px;
+	}
+	div.twentytext{
+		width:380px;
+	}
+	div.twentyfoot{
+		width:380px;
+	}
+	div.textBox{
+		width:370px;
+	}
+div.twentygame{width:700px;}			
+}
+@media (min-width:768px) and (max-width:1279px){
+	#skyscraperAd{
+		display:none;
+	}
+	#boxAd{
+		display:none;
+	}		
+	div.twenty{
+		width:768px;
+	}
+	div.twentytext{
+		width:768px;
+	}
+	div.twentyfoot{
+		width:768px;
+	}	
+	div.textBox{
+		width:758px;
+	}					
+}
+@media (min-width:1280px){
+	div.twenty{
+		width:1280px;
+	}
+	div.twentytext{
+		width:1280px;
+	}
+	div.twentyfoot{
+		width:1280px;
+	}	
+	div.textBox{
+		width:1280px;
+	}	
+	div.twentygame{
+		width:1280px;
+	}
+#Games{
+			float:left;
+			margin:0px 50px;	
+		}					
+}
+div.twentytext{
+	background-color:#44753c;
+	color:#fff;
+}
+div.twentybox{
+	width:300px;
+	display:inline-block;
+	margin:15px;
+	padding:10px;
+}
+div.twentyfoot{
+	background-color:#44753c;
+	height:50px;
+	font-size:1.5em;
+	border: 0px;
+	margin: 10px 0px;
+	padding: 5px 0px;	
+}		
+div.left {
+	background-color:#FFF;
+	margin:10px 10px 20px;
+	padding:10px;
+	color:#000;
+}
+div.button {
+	cursor:pointer;
+	font-size: 2em;
+	display:inline-block;
+	margin:5px;
+	padding:5px;
+	text-align:center;
+	color:#FFF;
+}
+div.footer {
+	clear:both;
+	display:inline-block;
+	background-color:#44753C;
+	padding:10px 0px;
+	margin-top:0px;
+	color:#FFF;
+	text-align:center;
+	border-color:#FFF;
+	border-style:solid;
+	border-width:2px;
+}
+</style>
+
+<script>
+	function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(";");
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == " ") {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+	}
+</script>
+
+<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+<script>
+	var x = getCookie("loginhoodamath");
+	if (x != "adfree"){		
+	  window.googletag = window.googletag || {cmd: []};
+	  googletag.cmd.push(function() {
+	    googletag.defineSlot('/1019406/Hooda_Math_ROS_728x90', [728, 90], 'div-gpt-ad-1586789767874-0').addService(googletag.pubads());
+	    googletag.pubads().enableSingleRequest();
+	    googletag.enableServices();
+	  });
+	};
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-8947940-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-8947940-1');
+</script>
+
+</head>
+
+<body style="min-width:700;margin:0px;border:0;padding:0px;background-color:#44753c;color:#FFF;">
+	<center>	
+		
+	<div class="twenty">
+		<a href="../index.html"><img src="../math-games/hooda-math-logo.jpg" style="width:300px;height:225px;"></a>
+	</div>		
+				
+		<div class="twentytext">
+		  	 <h1>Papa's Sushiria</h1>
+		</div> 
+		
+	<div id="multiAd2" class="twenty" style="background-color:#FFC0CB;">
+			<center>
+			<div style="color:#000;">Advertisement | <a href="http://login.hoodamath.com">Go Ad-FREE</a></div><br>
+			<!-- /1019406/Hooda_Math_ROS_728x90 -->
+			<div id='div-gpt-ad-1586789767874-0' style='width: 728px; height: 90px;'>
+			  <script>
+			    googletag.cmd.push(function() { googletag.display('div-gpt-ad-1586789767874-0'); });
+			  </script>
+			</div>
+		</center></div>				
+		<script>
+			var x = getCookie("loginhoodamath");
+			if (x == "adfree")
+			{
+				document.getElementById("multiAd2").style.display = "none";	
+			}
+		</script>			
+	
+<!-- content -->
+		<div class="twentygame" style="overflow:auto;height:900px;">
+			
+<div id="skyscraperAd" style="margin:0px 5px;float:left;position:relative;width:160px;height:600px;padding-left:70px;">
+	<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papasscooperia.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papasscooperia_300x225.jpg' alt='Papa&#39;s Scooperia' id='gameimg' width='100px' height='75px'></a></div>
+	<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papasfreezeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papasfreezeria_300x225.jpg' alt='Papa&#39;s Freezeria' id='gameimg' width='100px' height='75px'></a></div>
+	<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papassushiria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papassushiria_300x225.jpg' alt='Papa&#39;s Sushiria' id='gameimg' width='100px' height='75px'></a></div>
+	<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papascupcakeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papascupcakeria_300x225.jpg' alt='Papa&#39;s CupCakeria' id='gameimg' width='100px' height='75px'></a></div>
+	<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papascheeseria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papascheeseria_300x225.jpg' alt='Papa&#39;s Cheeseria' id='gameimg' width='100px' height='75px'></a></div>
+	<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papasbakeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papasbakeria_300x225.jpg' alt='Papa&#39;s Bakeria' id='gameimg' width='100px' height='75px'></a></div>
+	<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papaswingeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papaswingeria_300x225.jpg' alt='Papa&#39;s Wingeria' id='gameimg' width='100px' height='75px'></a></div>
+</div>			
+									
+			<div id="Games" style="position:relative;width:700;">
+					
+					
+					<div id="gameParent" style="">
+						<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="700" height="525" id="https://flash.hoodamath.com/flash/papassushiria.swf" align="middle">
+						<param name="movie" value="https://flash.hoodamath.com/flash/papassushiria.swf" />
+						<param name="quality" value="high" />
+		
+						<param name="play" value="true" />
+						<param name="loop" value="true" />
+						<param name="wmode" value="window" />
+						<param name="scale" value="showall" />
+						<param name="menu" value="true" />
+						<param name="devicefont" value="false" />
+						<param name="salign" value="" />
+						<param name="allowScriptAccess" value="sameDomain" />
+						<!--[if !IE]>-->
+						<object type="application/x-shockwave-flash" data="https://flash.hoodamath.com/flash/papassushiria.swf" width="700" height="525">
+							<param name="movie" value="https://flash.hoodamath.com/flash/papassushiria.swf" />
+							<param name="quality" value="high" />
+		
+							<param name="play" value="true" />
+							<param name="loop" value="true" />
+							<param name="wmode" value="window" />
+							<param name="scale" value="showall" />
+							<param name="menu" value="true" />
+							<param name="devicefont" value="false" />
+							<param name="salign" value="" />
+							<param name="allowScriptAccess" value="sameDomain" />
+						<!--<![endif]-->
+							<div style="margin:auto;background-color:gray;width:700px;height:525px;">
+							<br><br>
+								Click to Enable or Download Adobe Flash<br>
+							<br><br>	
+								<a href="http://www.adobe.com/go/getflash">
+									<img src="https://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+								</a><br>
+							<br><br>						
+								or Choose One of these Popular HTML5 Games to Play<br>
+							<br><br><div style='background-color:#FFF;width:100px;display:inline-block;margin:5px;padding:3px;'><a href='lemonadestand.html'><img src='https://jpg.hoodamath.com/large/lemonadestand_300x225.jpg' style='width:100px;height:75px;' alt='Lemonade Stand'><br><br>Lemonade Stand</a></div><div style='background-color:#FFF;width:100px;display:inline-block;margin:5px;padding:3px;'><a href='donutstand.html'><img src='https://jpg.hoodamath.com/large/donutstand_300x225.jpg' style='width:100px;height:75px;' alt='Lemonade Stand'><br><br>Donut Stand</a></div><div style='background-color:#FFF;width:100px;display:inline-block;margin:5px;padding:3px;'><a href='petstand.html'><img src='https://jpg.hoodamath.com/large/petstand_300x225.jpg' style='width:100px;height:75px;' alt='Lemonade Stand'><br><br>Pet Stand</a></div><div style='background-color:#FFF;width:100px;display:inline-block;margin:5px;padding:3px;'><a href='icecreamtruck.html'><img src='https://jpg.hoodamath.com/large/icecreamtruck_300x225.jpg' style='width:100px;height:75px;' alt='Lemonade Stand'><br><br>Ice Cream Truck</a></div><div style='background-color:#FFF;width:100px;display:inline-block;margin:5px;padding:3px;'><a href='hoodasdrivethru.html'><img src='https://jpg.hoodamath.com/large/hoodasdrivethru_300x225.jpg' style='width:100px;height:75px;' alt='Lemonade Stand'><br><br>Hoodas Drive Thru</a></div><div style='background-color:#FFF;width:100px;display:inline-block;margin:5px;padding:3px;'><a href='pizzaparty.html'><img src='https://jpg.hoodamath.com/large/pizzaparty_300x225.jpg' style='width:100px;height:75px;' alt='Lemonade Stand'><br><br>Pizza Party</a></div><div style='background-color:#FFF;width:100px;display:inline-block;margin:5px;padding:3px;'><a href='burgertime.html'><img src='https://jpg.hoodamath.com/large/burgertime_300x225.jpg' style='width:100px;height:75px;' alt='Lemonade Stand'><br><br>Burger Time</a></div></div>
+						<!--[if !IE]>-->
+						</object>
+						<!--<![endif]-->
+					</object>	
+		    </div>
+					
+	<div id="instructions" style="position:relative;width:300px;">
+					  	 <strong>Papa's Sushiria Instructions</strong><br>
+					      Your day takes a turn for the worse when you break Papa Louie's lucky cat statue. Is this to blame for the restaurant's underwhelming opening day? All we know is that Papa Louie left on a wild-eyed mission and you're now stuck running the restaurant. Can you turn your luck around and master the fine art of sushi making?					      <br><strong>Do Not Click Submit Score</strong> or it Will Freeze Your Game and You Will Have to Refresh Your Browser
+			      </div>					
+					
+				<div id="walkthroughLink" style="background-color:#FFF;padding:10px;">		
+										</div>
+			
+			<g:sharetoclassroom size=32 url="https://www.hoodamath.com/games/papassushiria.html"></g:sharetoclassroom> <- Share to Google Classroom
+			
+			</div>	
+			
+<div id="boxAd" style="margin:0px 5px;float:left;position:relative;width:160px;height:600px;padding-right:70px;">
+			<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papaspancakeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papaspancakeria_300x225.jpg' alt='Papa&#39;s PanCakeria' id='gameimg' width='100px' height='75px'></a></div>
+			<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papaspizzeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papaspizzeria_300x225.jpg' alt='Papa&#39;s Pizzeria' id='gameimg' width='100px' height='75px'></a></div>
+			<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papasdonuteria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papasdonuteria_300x225.jpg' alt='Papa&#39;s Donuteria' id='gameimg' width='100px' height='75px'></a></div>
+			<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papashotdoggeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papashotdoggeria_300x225.jpg' alt='Papa&#39;s Hot Doggeria' id='gameimg' width='100px' height='75px'></a></div>
+			<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papasburgeria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papasburgeria_300x225.jpg' alt='Papa&#39;s Burgeria' id='gameimg' width='100px' height='75px'></a></div>
+			<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papaspastaria.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papaspastaria_300x225.jpg' alt='Papa&#39;s Pastaria' id='gameimg' width='100px' height='75px'></a></div>
+			<div style='width:148px;display:inline-block;margin:0px;padding:5px;'><a href='papastacomia.html' style='text-decoration:none;' rel='bookmark'><img src='https://jpg.hoodamath.com/large/papastacomia_300x225.jpg' alt='Papa&#39;s Taco Mia' id='gameimg' width='100px' height='75px'></a></div>	
+</div>							
+
+</div>
+<!-- end of content -->	
+		
+
+		<div class="twenty" id="gradeLevels">
+			Math Games by Grade<br>
+			<a href="kindergarten.html"><div class="button" style="background-color:#E82929;">Kindergarten</div></a>
+			<a href="first-grade.html"><div class="button" style="background-color:#2059E9;">1st Grade</div></a>
+			<a href="second-grade.html"><div class="button" style="background-color:#E19504;">2nd Grade</div></a>
+			<a href="third-grade.html"><div class="button" style="background-color:#E11E9A;">3rd Grade</div></a>
+			<a href="fourth-grade.html"><div class="button" style="background-color:#7E19C5;">4th Grade</div></a>
+			<a href="fifth-grade.html"><div class="button" style="background-color:#00A89B;">5th Grade</div></a>
+			<a href="sixth-grade.html"><div class="button" style="background-color:#B07A06;">6th Grade</div></a>
+			<a href="seventh-grade.html"><div class="button" style="background-color:#A419BD;">7th Grade</div></a>
+			<a href="eighth-grade.html"><div class="button" style="background-color:#0084C2;">8th Grade</div></a>
+			<a href="highschool.html"><div class="button" style="background-color:#D24B4B;">High School</div></a>
+		</div>
+
+		<div class="twenty" id="mathSubjects">	
+				Math Games by Subject<br>
+				<a href="addition.html"><div class="button" style="background-color:#6ED1F6;">Addition <strong>+</strong></div></a>
+				<a href="subtraction.html"><div class="button" style="background-color:#F68612;">Subtraction <strong>&#8722;</strong></div></a>
+				<a href="multiplication.html"><div class="button" style="background-color:#D0403B;">Multiplication <strong>&#215;</strong></div></a>
+				<a href="division.html"><div class="button" style="background-color:#675A48;">Division <strong>&#247;</strong></div></a>
+				<a href="fraction.html"><div class="button" style="background-color:#A955FF;">Fractions <strong>&#190;</strong></div></a>
+				<a href="integer.html"><div class="button" style="background-color:#CF78B9;">Integers <strong>&#8211;1</strong></div></a>
+				<a href="algebra.html"><div class="button" style="background-color:#6FEFEB;">Algebra <strong>X&#178;</strong></div></a>
+		</div>	
+		
+				<div class="twenty" id="mathCategories">	
+				Math Games by Category<br>			
+				<div class="twentybox">
+					<a href="escape.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/escape_300x225.jpg" style="width:300px;height:225px;" alt="Escape Games"><br>Escape Games</a>
+				</div>
+				<div class="twentybox">
+					<a href="shop.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/shop_300x225.jpg" style="width:300px;height:225px;" alt="Shop Games"><br>Shop Games</a>
+				</div>
+				<div class="twentybox">
+					<a href="grow.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/grow_300x225.jpg" style="width:300px;height:225px;" alt="Grow Games"><br>Grow Games</a>
+				</div>
+				<div class="twentybox">
+					<a href="logic.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/logic_300x225.jpg" style="width:300px;height:225px;" alt="Logic Games"><br>Logic Games</a>
+				</div>
+				<div class="twentybox">
+					<a href="geometry.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/geometry_300x225.jpg" style="width:300px;height:225px;" alt="Geometry Games"><br>Geometry Games</a>
+				</div>
+				<div class="twentybox">
+					<a href="physics.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/physics_300x225.jpg" style="width:300px;height:225px;" alt="Physics Games"><br>Physics Games</a>
+				</div>
+				<div class="twentybox">
+					<a href="word.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/word_300x225.jpg" style="width:300px;height:225px;" alt="Word Games"><br>Word Games</a>
+				</div>
+				<div class="twentybox">
+					<a href="allgames.html" style="text-decoration:none;"><img src="https://jpg.hoodamath.com/large/all_300x225.jpg" style="width:300px;height:225px;" alt="All Games"><br>All Games</a>
+				</div>
+		</div>
+		
+	<div class="twenty" id="moreMath">	
+				More Math<br>
+				<div class="twentybox"><a href="../movies/index.html" style="text-decoration:none;"><img src="../math-games/movies.jpg" alt="Movies" id="gameimg" width="300px" height="225px"><br>Movies</a></div>
+				<div class="twentybox"><a href="../timedtests.html" style="text-decoration:none;"><img src="../math-games/timedtests.jpg" alt="Timed Tests" id="gameimg" width="300px" height="225px"><br>Timed Tests</a></div>
+				<div class="twentybox"><a href="../manipulatives.html" style="text-decoration:none;"><img src="../math-games/manipulatives.jpg" alt="Manipulatives" id="gameimg" width="300px" height="225px"><br>Manipulatives</a></div>
+				<div class="twentybox"><a href="../tutorials/index.html" style="text-decoration:none;"><img src="../math-games/tutorials.jpg" alt="Tutorials" id="gameimg" width="300px" height="225px"><br>Tutorials</a></div>
+		</div>				
+					
+				<!-- footer -->
+	<div class="twentyfoot">	
+				<a href="../faq.html" rel="nofollow"  style="color:#FFF;">FAQ</a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;						
+				<a href="../contact/index.html" rel="nofollow"  style="color:#FFF;">Contact</a>	
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		
+				<a href="../privacypolicy.html" rel="nofollow"  style="color:#FFF;">Privacy</a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;						
+				<a href="../advertise.html" rel="nofollow"  style="color:#FFF;">Advertise</a>	
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;						
+				<a href="../math-games.html" style="color:#FFF;">Math Games</a>							
+	</div>
+	
+	<div class="twentyfoot">
+				<div style="float:left;color:#FFF;">
+				<form id="form1" name="form1" method="post" action="https://class.hoodamath.com/classroom.php">
+					Class Page:
+			        <input id="tcode" name="tcode" type="text" />
+			        <input name="Submit" type="submit" width="200px" value="Enter" onclick="return CheckCode();" style="cursor:pointer;" />
+				</form></div>
+				<div style="float:right;text-decoration:underline;color:#fff;">
+					<a href="https://class.hoodamath.com/login_form.php" style="color:#FFF;">Teacher Login</a></div>
+	</div>		
+						
+	</center>
+	
+	<!-- Go to www.addthis.com/dashboard to customize your tools -->
+	<script type="text/javascript" src="https://s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5e7673d40a210e6c"></script>	
+
+</body>
+
+</html>
