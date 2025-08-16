@@ -3,7 +3,7 @@ const gameLinks = document.querySelectorAll('#games a');
 const searchResults = document.getElementById('search-results');
 const genreFilter = document.getElementById("genreFilter");
 const popularityFilter = document.getElementById("popularityFilter");
-   
+
 const suggestButton = document.getElementById('suggestButton');
 const modal = document.getElementById('suggestionForm');
 const closeBtn = document.querySelector('.close');
@@ -16,7 +16,7 @@ function updateGames() {
   const genre = genreFilter.value;
   const popularity = popularityFilter.value;
 
-searchResults.innerHTML = '';
+  searchResults.innerHTML = '';
 
   gameLinks.forEach(link => {
     const img = link.querySelector('img');
@@ -30,14 +30,34 @@ searchResults.innerHTML = '';
 
     link.style.display = matchesFilters ? 'block' : 'none';
 
-    if (matchesSearch) {
-      const clone = img.cloneNode(true);
-      clone.style.transition = 'transform 0.2s, filter 0.2s';
-      searchResults.appendChild(clone);
+    if (matchesSearch && searchTerm.length > 0) {
+      const cloneLink = link.cloneNode(true); 
+      cloneLink.style.display = 'inline-block';
+      cloneLink.style.marginRight = '10px';
+
+      const cloneImg = cloneLink.querySelector('img');
+      cloneImg.style.width = '12vw';
+      cloneImg.style.height = '12vw';
+      cloneImg.style.objectFit = 'cover';
+      cloneImg.style.borderRadius = '1vw';
+      cloneImg.style.transition = 'transform 0.2s, filter 0.2s';
+      cloneImg.onmouseover = () => {
+        cloneImg.style.transform = 'scale(1.05)';
+        cloneImg.style.filter = 'brightness(80%)';
+      };
+      cloneImg.onmouseout = () => {
+        cloneImg.style.transform = 'scale(1)';
+        cloneImg.style.filter = 'brightness(100%)';
+      };
+
+      searchResults.appendChild(cloneLink);
     }
   });
 
   searchResults.style.display = searchResults.children.length > 0 ? 'flex' : 'none';
+  searchResults.style.overflowX = 'auto';
+  searchResults.style.gap = '1vw';
+  searchResults.style.flexWrap = 'nowrap';
 }
 
 searchInput.addEventListener('input', updateGames);
