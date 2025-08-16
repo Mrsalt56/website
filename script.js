@@ -33,7 +33,6 @@ function updateGames() {
     if (matchesSearch) {
       const cloneLink = document.createElement("a");
       cloneLink.href = link.href;
-      cloneLink.target = "_blank"; 
       const cloneImg = img.cloneNode(true);
       cloneImg.style.transition = 'transform 0.2s, filter 0.2s';
       cloneLink.appendChild(cloneImg);
