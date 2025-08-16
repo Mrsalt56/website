@@ -30,13 +30,19 @@ function updateGames() {
 
     link.style.display = matchesFilters ? 'block' : 'none';
 
-    if (matchesSearch) {
+    if (matchesSearch && searchTerm.length > 0) {
       const cloneLink = link.cloneNode(true); 
+      cloneLink.style.display = 'inline-block'; 
+      cloneLink.style.marginRight = '10px';    
+      cloneLink.querySelector('img').style.width = '10vw'; 
+      cloneLink.querySelector('img').style.height = '10vw';
       searchResults.appendChild(cloneLink);
     }
   });
 
   searchResults.style.display = searchResults.children.length > 0 ? 'flex' : 'none';
+  searchResults.style.overflowX = 'auto';
+  searchResults.style.gap = '1vw';
 }
 
 sendBtn.onclick = () => {
