@@ -16,7 +16,7 @@ function updateGames() {
   const genre = genreFilter.value;
   const popularity = popularityFilter.value;
 
-searchResults.innerHTML = '';
+  searchResults.innerHTML = '';
 
   gameLinks.forEach(link => {
     const img = link.querySelector('img');
@@ -31,22 +31,18 @@ searchResults.innerHTML = '';
     link.style.display = matchesFilters ? 'block' : 'none';
 
     if (matchesSearch) {
-      const clone = img.cloneNode(true);
-      clone.style.transition = 'transform 0.2s, filter 0.2s';
-      searchResults.appendChild(clone);
+      const cloneLink = document.createElement("a");
+      cloneLink.href = link.href;
+      cloneLink.target = "_blank"; 
+      const cloneImg = img.cloneNode(true);
+      cloneImg.style.transition = 'transform 0.2s, filter 0.2s';
+      cloneLink.appendChild(cloneImg);
+      searchResults.appendChild(cloneLink);
     }
   });
 
   searchResults.style.display = searchResults.children.length > 0 ? 'flex' : 'none';
 }
-
-searchInput.addEventListener('input', updateGames);
-genreFilter.addEventListener('change', updateGames);
-popularityFilter.addEventListener('change', updateGames);
-
-suggestButton.onclick = () => { modal.style.display = 'block'; };
-closeBtn.onclick = () => { modal.style.display = 'none'; };
-window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 
 sendBtn.onclick = () => {
   const name = document.getElementById("gameName").value.trim();
