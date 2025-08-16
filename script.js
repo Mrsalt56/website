@@ -3,7 +3,7 @@ const gameLinks = document.querySelectorAll('#games a');
 const searchResults = document.getElementById('search-results');
 const genreFilter = document.getElementById("genreFilter");
 const popularityFilter = document.getElementById("popularityFilter");
-   
+
 const suggestButton = document.getElementById('suggestButton');
 const modal = document.getElementById('suggestionForm');
 const closeBtn = document.querySelector('.close');
@@ -32,10 +32,24 @@ function updateGames() {
 
     if (matchesSearch && searchTerm.length > 0) {
       const cloneLink = link.cloneNode(true); 
-      cloneLink.style.display = 'inline-block'; 
-      cloneLink.style.marginRight = '10px';    
-      cloneLink.querySelector('img').style.width = '10vw'; 
-      cloneLink.querySelector('img').style.height = '10vw';
+      cloneLink.style.display = 'inline-block';
+      cloneLink.style.marginRight = '10px';
+
+      const cloneImg = cloneLink.querySelector('img');
+      cloneImg.style.width = '12vw';
+      cloneImg.style.height = '12vw';
+      cloneImg.style.objectFit = 'cover';
+      cloneImg.style.borderRadius = '1vw';
+      cloneImg.style.transition = 'transform 0.2s, filter 0.2s';
+      cloneImg.onmouseover = () => {
+        cloneImg.style.transform = 'scale(1.05)';
+        cloneImg.style.filter = 'brightness(80%)';
+      };
+      cloneImg.onmouseout = () => {
+        cloneImg.style.transform = 'scale(1)';
+        cloneImg.style.filter = 'brightness(100%)';
+      };
+
       searchResults.appendChild(cloneLink);
     }
   });
@@ -43,7 +57,16 @@ function updateGames() {
   searchResults.style.display = searchResults.children.length > 0 ? 'flex' : 'none';
   searchResults.style.overflowX = 'auto';
   searchResults.style.gap = '1vw';
+  searchResults.style.flexWrap = 'nowrap';
 }
+
+searchInput.addEventListener('input', updateGames);
+genreFilter.addEventListener('change', updateGames);
+popularityFilter.addEventListener('change', updateGames);
+
+suggestButton.onclick = () => { modal.style.display = 'block'; };
+closeBtn.onclick = () => { modal.style.display = 'none'; };
+window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 
 sendBtn.onclick = () => {
   const name = document.getElementById("gameName").value.trim();
