@@ -7,7 +7,17 @@
   <title>Salty Game Portal</title>
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
-  <script src="ruffle/ruffle.js"></script>
+<script src="ruffle.js"></script>
+<script>
+    window.RufflePlayer = window.RufflePlayer || {};
+    window.RufflePlayer.config = {
+        publicPath: "/ruffle/"
+    };
+    const ruffle = window.RufflePlayer.newest();
+    const player = ruffle.createPlayer();
+    document.body.appendChild(player);
+    player.load("games/papas-sushiria.swf");
+</script>
 </head>
 <body>
  
