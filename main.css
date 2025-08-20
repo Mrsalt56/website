@@ -6,7 +6,7 @@ body {
     margin: 0;
     padding: 0;
 }
-  
+
 nav {
     position: fixed;
     top: 0;
@@ -131,7 +131,6 @@ nav h1 {
     border: none;              
     width: 100%;               
 }
-
 
 #games {
   display: flex;           
@@ -321,4 +320,73 @@ nav h1 {
     border-radius: 0.5vw;
     border: none;
     font-size: 1.2vw;
+}
+
+.game-card {
+    position: relative;
+    display: inline-block;
+}
+
+.game-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 1vw;
+    text-align: center;
+    padding: 0.5vw;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 0 0 1vw 1vw;
+}
+
+.game-card:hover .game-overlay {
+    opacity: 1;
+}
+
+.like-btn {
+    background: #2c7ffc;
+    border: none;
+    color: #fff;
+    font-size: 1vw;
+    padding: 0.4vw 0.8vw;
+    border-radius: 0.5vw;
+    cursor: pointer;
+    margin-top: 0.5vw;
+}
+
+.like-btn:hover {
+    background: #1f5ecb;
+}
+
+#leaderboard {
+    position: fixed;
+    top: 7vw;
+    right: 1vw;
+    width: 18vw;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    padding: 1vw;
+    border-radius: 1vw;
+    font-family: 'Montserrat', sans-serif;
+    z-index: 10;
+}
+
+#leaderboard h2 {
+    font-size: 1.5vw;
+    margin-bottom: 1vw;
+    text-align: center;
+}
+
+#leaderboard ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#leaderboard li {
+    font-size: 1.2vw;
+    margin: 0.5vw 0;
 }
