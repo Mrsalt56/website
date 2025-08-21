@@ -1,23 +1,175 @@
-<html>
-    <head>
-        <style>
-            iframe {
-                margin: none;
-                padding: none;
-                border: none;
-                display: block;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="/game/brainrot-clicker/">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+    <title>Geometry-arrow</title>
+    <meta name="robots" content="noindex">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            position: relative; /* For positioning splash screen */
+        }
+
+        #game-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .gamePlayerHidden {
+            display: none !important;
+        }
+
+        /* Splash Screen Styles */
+        .gamePlayerSplashPreroll {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000; /* Default background */
+        }
+        .gamePlayerBg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .gamePlayerBgImage {
+            width: 100%;
+            height: 100%;
+            background-image: url('/assets/brainrot-clicker/brainrot-clicker.jpg'); /* Placeholder, ideally game-specific */
+            background-size: cover;
+            background-position: center;
+            filter: blur(3px) brightness(0.7);
+        }
+        .gamePlayerSplashContent {
+            position: relative; /* To be above the blurred background */
+            text-align: center;
+            color: white;
+        }
+        /* .gamePlayerThumb CSS removed as the element is no longer used */
+
+        @keyframes breathingEffect {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             }
-            html, body {
-                margin: 0px !important;
-                padding: 0px !important;
-                border: 0px !important;
-                width: 100%;
-                height: 100%;
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
             }
-        </style>
-        <title>Black Arrow</title>
-    </head>
-    <body>
-        <iframe src="https://html5.gamedistribution.com/rvvASMiM/9ee26ba4405c456094c70af7dc31a524/index.html?gd_sdk_referrer_url=https%3A%2F%2Fwww.y8.com%2Fgames%2Fgeometry_arrow&key=y8&ratio_tolerant=true&value=default&gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL3d3dy55OC5jb20vZ2FtZXMvZ2VvbWV0cnlfYXJyb3ciLCJwYXJlbnREb21haW4iOiJ5OC5jb20iLCJ0b3BEb21haW4iOiJ5OC5jb20iLCJoYXNJbXByZXNzaW9uIjpmYWxzZSwibG9hZGVyRW5hYmxlZCI6dHJ1ZSwiaG9zdCI6Imh0bWw1LmdhbWVkaXN0cmlidXRpb24uY29tIiwidmVyc2lvbiI6IjEuNS4xNyJ9" height="100%" width="100%"></iframe>
-    </body>
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        .gamePlayerPrerollCTA {
+            cursor: pointer;
+            background: linear-gradient(to right, #EE7752, #E73C7E, #23A6D5, #23D5AB); /* Example gradient, adjust to match image */
+            /* A gradient closer to the image: Orange -> Pink -> Purple */
+            background: linear-gradient(to right, #F57F17, #D81B60, #8E24AA);
+            color: white;
+            padding: 15px 30px; /* Slightly larger padding */
+            border-radius: 50px; /* Fully rounded for pill shape */
+            font-size: 20px;   /* Slightly larger font */
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Initial shadow */
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+            animation: breathingEffect 2.5s ease-in-out infinite;
+            z-index: 1000;
+        }
+        .gamePlayerPrerollCTA:hover {
+            transform: scale(1.03); /* Slight scale up on hover, no longer changing bg color */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        .gamePlayerPrerollCTA span { /* Ensure span also behaves with flex for icon alignment */
+            display: inline-flex;
+            align-items: center;
+        }
+        .gamePlayerPrerollCTA svg {
+            width: 24px; /* SVG size */
+            height: 24px;
+            margin-left: 12px; /* Space between text and icon */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="gamePlayerSplashPreroll">
+        <div class="gamePlayerBg">
+            <div class="gamePlayerBgImage"></div>
+        </div>
+        <div class="gamePlayerSplashContent">
+            <div class="gamePlayerCenterContent">
+                <div>
+                    <div class="gamePlayerPrerollInfo" style="margin-top: 30vh; transform: translateY(-50%);">
+                        <div class="gamePlayerButtons">
+                            <div class="gamePlayerPrerollCTA" id="btn_playgame" onclick="showGame()">
+                                <span>Play Now
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Iframe (initially hidden) -->
+    <iframe
+        id="game-iframe"
+        class="gamePlayerHidden"
+        src="https://html5.gamedistribution.com/rvvASMiM/9ee26ba4405c456094c70af7dc31a524/index.html?gd_sdk_referrer_url=https%3A%2F%2Fwww.y8.com%2Fgames%2Fgeometry_arrow&key=y8&ratio_tolerant=true&value=default&gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL3d3dy55OC5jb20vZ2FtZXMvZ2VvbWV0cnlfYXJyb3ciLCJwYXJlbnREb21haW4iOiJ5OC5jb20iLCJ0b3BEb21haW4iOiJ5OC5jb20iLCJoYXNJbXByZXNzaW9uIjpmYWxzZSwibG9hZGVyRW5hYmxlZCI6dHJ1ZSwiaG9zdCI6Imh0bWw1LmdhbWVkaXN0cmlidXRpb24uY29tIiwidmVyc2lvbiI6IjEuNS4xNyJ9"
+        allowfullscreen="true"
+        allow="autoplay; fullscreen; gamepad; keyboard-map; xr-spatial-tracking"
+        title="Geometry-arrow">
+    </iframe>
+
+    <script>
+        function showGame() {
+            // Hide splash screen
+            var splashScreen = document.getElementById('splash-screen');
+            if (splashScreen) {
+                splashScreen.classList.add('gamePlayerHidden');
+            }
+
+            // Show game iframe
+            var gameIframe = document.getElementById('game-iframe');
+            if (gameIframe) {
+                gameIframe.classList.remove('gamePlayerHidden');
+                // Optional: Focus the iframe if needed, though this can be tricky
+                // gameIframe.focus();
+            }
+
+            // Here you would typically trigger ad display if 'showAFG' was for ads.
+            // For this example, we are just showing the game.
+        }
+    </script>
+</body>
 </html>
