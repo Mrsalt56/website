@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <style>
+            iframe {
+                margin: none;
+                padding: none;
+                border: none;
+                display: block;
+            }
+            html, body {
+                margin: 0px !important;
+                padding: 0px !important;
+                border: 0px !important;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+        <title>Black Arrow</title>
+    </head>
+    <body>
+        <iframe src="https://html5.gamedistribution.com/rvvASMiM/9ee26ba4405c456094c70af7dc31a524/index.html?gd_sdk_referrer_url=https%3A%2F%2Fwww.y8.com%2Fgames%2Fgeometry_arrow&key=y8&ratio_tolerant=true&value=default&gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL3d3dy55OC5jb20vZ2FtZXMvZ2VvbWV0cnlfYXJyb3ciLCJwYXJlbnREb21haW4iOiJ5OC5jb20iLCJ0b3BEb21haW4iOiJ5OC5jb20iLCJoYXNJbXByZXNzaW9uIjpmYWxzZSwibG9hZGVyRW5hYmxlZCI6dHJ1ZSwiaG9zdCI6Imh0bWw1LmdhbWVkaXN0cmlidXRpb24uY29tIiwidmVyc2lvbiI6IjEuNS4xNyJ9" height="100%" width="100%"></iframe>
+    </body>
+</html>
