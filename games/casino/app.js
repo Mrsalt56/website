@@ -371,7 +371,7 @@ function doWheelSpin(free=false){
   wheelMsg.classList.remove("error");
   if(!free) setBalance(balance - WHEEL_COST);
 
-  const prize = wheelPrizes[Math.floor(Math.random()*wheelPrizes.length)];
+  const prize = weightedPick(wheelPrizes);
   wheelDisplay.textContent = prize.emoji;
 
   if(prize.amount > 0){
