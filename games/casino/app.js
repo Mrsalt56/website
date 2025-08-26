@@ -20,10 +20,14 @@ document.querySelectorAll(".tab").forEach(btn => {
   });
 });
 
-// Reset
+// Reset with password
 $("#reset").addEventListener("click", ()=>{
-  if(confirm("Reset balance to $1000?")){
+  const pass = prompt("Enter password to reset balance:");
+  if(pass === "loser"){
     setBalance(1000);
+    alert("Balance reset to $1000 ✅");
+  } else if (pass !== null) {
+    alert("❌ Wrong password. Balance not reset.");
   }
 });
 
