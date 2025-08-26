@@ -362,7 +362,7 @@ function weightedPick(items){
   return items[0]; // fallback
 }
 
-function doWheelSpin(free=false){
+async function doWheelSpin(free=false){
   if(!free && balance < WHEEL_COST){
     wheelMsg.textContent = "Not enough balance for $250 spin.";
     wheelMsg.classList.add("error");
@@ -372,19 +372,42 @@ function doWheelSpin(free=false){
   if(!free) setBalance(balance - WHEEL_COST);
 
   const prize = weightedPick(wheelPrizes);
-  wheelDisplay.textContent = prize.emoji;
 
-  if(prize.amount > 0){
-    setBalance(balance + prize.amount);
-    wheelMsg.textContent = `You won $${prize.amount}!`;
-  }else{
-    wheelMsg.textContent = `No prize. Try again!`;
-  }
+  // spin animation
+  const spinSymbols = wheelPrizes.map(p=>p.emoji);
+  let i = 0;
+  let duration = 2500; // spin lasts 2.5s
+  let interval = 80;   // start fast
+  const start = Date.now();
 
-  if(free){
-    localStorage.setItem(FREE_SPIN_KEY, Date.now());
-    updateFreeWheel();
-  }
+  return new Promise(resolve=>{
+    const tick = ()=>{
+      wheelDisplay.textContent = spinSymbols[i % spinSymbols.length];
+      i++;
+      const elapsed = Date.now() - start;
+      if(elapsed < duration){
+        // slow down as time passes
+        interval = 80 + Math.floor((elapsed / duration) * 300);
+        setTimeout(tick, interval);
+      }else{
+        // stop on final prize
+        wheelDisplay.textContent = prize.emoji;
+        if(prize.amount > 0){
+          setBalance(balance + prize.amount);
+          wheelMsg.textContent = `You won $${prize.amount}!`;
+        }else{
+          wheelMsg.textContent = `No prize. Try again!`;
+        }
+
+        if(free){
+          localStorage.setItem(FREE_SPIN_KEY, Date.now());
+          updateFreeWheel();
+        }
+        resolve();
+      }
+    };
+    tick();
+  });
 }
 
 spinWheelBtn.addEventListener("click", ()=>doWheelSpin(false));
