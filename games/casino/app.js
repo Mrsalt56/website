@@ -321,11 +321,11 @@ $("#double").addEventListener("click", playerDouble);
 
 /* -------------------- WHEEL -------------------- */
 const wheelPrizes = [
-  {emoji:"💵", amount:100},
-  {emoji:"💰", amount:250},
-  {emoji:"💎", amount:500},
-  {emoji:"⭐", amount:1000},
-  {emoji:"❌", amount:0}
+  {emoji:"❌", amount:0, weight:50},   // 50% chance: nothing
+  {emoji:"💵", amount:100, weight:25}, // 25% chance: small win
+  {emoji:"💰", amount:250, weight:15}, // 15% chance
+  {emoji:"💎", amount:500, weight:7},  // 7% chance
+  {emoji:"⭐", amount:1000, weight:3}   // 3% chance: jackpot
 ];
 
 const WHEEL_COST = 250;
@@ -351,6 +351,16 @@ function updateFreeWheel(){
 }
 setInterval(updateFreeWheel, 10000);
 updateFreeWheel();
+
+function weightedPick(items){
+  const total = items.reduce((sum, item) => sum + item.weight, 0);
+  let r = Math.random() * total;
+  for(const item of items){
+    if(r < item.weight) return item;
+    r -= item.weight;
+  }
+  return items[0]; // fallback
+}
 
 function doWheelSpin(free=false){
   if(!free && balance < WHEEL_COST){
