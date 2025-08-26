@@ -72,3 +72,16 @@ body{
 .bj-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 
 .fineprint{opacity:.6;text-align:center;margin:28px auto 18px;font-size:12px}
+
+#wheelDisplay{
+  height:160px;
+  font-size:72px;
+  background:#12151c;
+  border:1px solid #303644;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:var(--shadow);
+  margin:0 auto 12px;
+}
