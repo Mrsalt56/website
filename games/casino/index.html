@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini Casino — Slots & Blackjack (Self‑Hosted)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🎲 Mini Casino</div>
+    <div class="balance">Balance: $<span id="balance">0</span></div>
+  </header>
+
+  <main class="container">
+    <nav class="tabs">
+      <button class="tab active" data-tab="slots">🎰 Slots</button>
+      <button class="tab" data-tab="blackjack">🃏 Blackjack</button>
+      <button id="reset" class="ghost">Reset Balance</button>
+    </nav>
+
+    <!-- SLOTS -->
+    <section id="slots" class="panel active">
+      <div class="slots-ui">
+        <div class="reels" id="reels">
+          <div class="reel" id="reel0">🍒</div>
+          <div class="reel" id="reel1">🍋</div>
+          <div class="reel" id="reel2">🔔</div>
+        </div>
+        <div class="controls">
+          <label>Bet
+            <select id="slotBet">
+              <option value="1">$1</option>
+              <option value="5" selected>$5</option>
+              <option value="10">$10</option>
+              <option value="25">$25</option>
+              <option value="50">$50</option>
+            </select>
+          </label>
+          <button id="spin" class="primary">SPIN</button>
+        </div>
+        <div class="payouts">
+          <details>
+            <summary>View payouts</summary>
+            <ul>
+              <li>⭐ ⭐ ⭐ → 50× bet</li>
+              <li>7️⃣ 7️⃣ 7️⃣ → 25× bet</li>
+              <li>🔔 🔔 🔔 → 10× bet</li>
+              <li>🍋 🍋 🍋 → 6× bet</li>
+              <li>🍒 🍒 🍒 → 4× bet</li>
+              <li>Any two matching → 2× bet</li>
+            </ul>
+          </details>
+        </div>
+        <div id="slotMsg" class="msg"></div>
+      </div>
+    </section>
+
+    <!-- BLACKJACK -->
+    <section id="blackjack" class="panel">
+      <div class="bj-table">
+        <div class="hand">
+          <h3>Dealer</h3>
+          <div id="dealerCards" class="cards"></div>
+          <div id="dealerScore" class="score">Score: ?</div>
+        </div>
+        <div class="hand">
+          <h3>You</h3>
+          <div id="playerCards" class="cards"></div>
+          <div id="playerScore" class="score">Score: 0</div>
+        </div>
+
+        <div class="bj-controls">
+          <label>Bet
+            <select id="bjBet">
+              <option value="5" selected>$5</option>
+              <option value="10">$10</option>
+              <option value="25">$25</option>
+              <option value="50">$50</option>
+              <option value="100">$100</option>
+            </select>
+          </label>
+          <button id="deal" class="primary">Deal</button>
+          <button id="hit" disabled>Hit</button>
+          <button id="stand" disabled>Stand</button>
+          <button id="double" disabled>Double</button>
+        </div>
+        <div id="bjMsg" class="msg"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="fineprint">
+    No ads. No tracking. Everything runs locally on your site. Progress saved to your browser (localStorage).
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
