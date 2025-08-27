@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mini Casino — Lots of Mini Games (Self‑Hosted)</title>
+  <title>Mini Casino — All Games</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,209 +19,124 @@
       <button class="tab" data-tab="blackjack">🃏 Blackjack</button>
       <button class="tab" data-tab="wheel">🎡 Wheel</button>
       <button class="tab" data-tab="coinflip">🪙 Coin Flip</button>
-      <button class="tab" data-tab="dice">🎲 Dice / Craps</button>
-      <button class="tab" data-tab="hilo">⬆️⬇️ Higher / Lower</button>
+      <button class="tab" data-tab="dice">🎲 Dice</button>
+      <button class="tab" data-tab="hilo">⬆️⬇️ HiLo</button>
       <button class="tab" data-tab="crash">🚀 Crash</button>
       <button class="tab" data-tab="plinko">🔻 Plinko</button>
       <button class="tab" data-tab="mines">💣 Mines</button>
-      <button class="tab" data-tab="poker">🂡 Poker (Simple)</button>
-      <button class="tab" data-tab="scratch">🧧 Scratch Card</button>
+      <button class="tab" data-tab="poker">🂡 Poker</button>
+      <button class="tab" data-tab="scratch">🧧 Scratch</button>
+      <button class="tab" data-tab="roulette">🎯 Roulette</button>
       <button id="reset" class="ghost">Reset Balance</button>
     </nav>
 
-    <!-- SLOTS -->
+    <!-- Slots -->
     <section id="slots" class="panel active">
-      <div class="slots-ui">
-        <div class="reels" id="reels">
-          <div class="reel" id="reel0">🍒</div>
-          <div class="reel" id="reel1">🍋</div>
-          <div class="reel" id="reel2">🔔</div>
-        </div>
-        <div class="controls">
-          <label>Bet
-            <select id="slotBet">
-              <option value="1">$1</option>
-              <option value="5" selected>$5</option>
-              <option value="10">$10</option>
-              <option value="25">$25</option>
-              <option value="50">$50</option>
-            </select>
-          </label>
-          <button id="spin" class="primary">SPIN</button>
-        </div>
-        <div class="payouts">
-          <details>
-            <summary>View payouts</summary>
-            <ul>
-              <li>⭐ ⭐ ⭐ → 50× bet</li>
-              <li>7️⃣ 7️⃣ 7️⃣ → 25× bet</li>
-              <li>🔔 🔔 🔔 → 10× bet</li>
-              <li>🍋 🍋 🍋 → 6× bet</li>
-              <li>🍒 🍒 🍒 → 4× bet</li>
-              <li>Any two matching → 2× bet</li>
-            </ul>
-          </details>
-        </div>
-        <div id="slotMsg" class="msg"></div>
+      <div class="reels">
+        <div class="reel" id="reel1">🍒</div>
+        <div class="reel" id="reel2">🍋</div>
+        <div class="reel" id="reel3">⭐</div>
       </div>
+      <div class="controls">
+        <label>Bet <input id="slotsBet" type="number" value="10" min="1"></label>
+        <button id="slotsSpin" class="primary">Spin</button>
+      </div>
+      <div id="slotsMsg" class="msg"></div>
     </section>
 
-    <!-- BLACKJACK -->
+    <!-- Blackjack -->
     <section id="blackjack" class="panel">
       <div class="bj-table">
         <div class="hand">
-          <h3>Dealer</h3>
+          <div class="label">Dealer</div>
           <div id="dealerCards" class="cards"></div>
-          <div id="dealerScore" class="score">Score: ?</div>
+          <div class="score" id="dealerScore"></div>
         </div>
         <div class="hand">
-          <h3>You</h3>
+          <div class="label">Player</div>
           <div id="playerCards" class="cards"></div>
-          <div id="playerScore" class="score">Score: 0</div>
+          <div class="score" id="playerScore"></div>
         </div>
-
-        <div class="bj-controls">
-          <label>Bet
-            <select id="bjBet">
-              <option value="5" selected>$5</option>
-              <option value="10">$10</option>
-              <option value="25">$25</option>
-              <option value="50">$50</option>
-              <option value="100">$100</option>
-            </select>
-          </label>
-          <button id="deal" class="primary">Deal</button>
-          <button id="hit" disabled>Hit</button>
-          <button id="stand" disabled>Stand</button>
-          <button id="double" disabled>Double</button>
-        </div>
-        <div id="bjMsg" class="msg"></div>
       </div>
+      <div class="bj-controls controls">
+        <label>Bet <input id="bjBet" type="number" value="10" min="1"></label>
+        <button id="bjDeal" class="primary">Deal</button>
+        <button id="bjHit">Hit</button>
+        <button id="bjStand">Stand</button>
+        <button id="bjDouble">Double</button>
+      </div>
+      <div id="bjMsg" class="msg"></div>
     </section>
 
-    <!-- WHEEL -->
+    <!-- Wheel -->
     <section id="wheel" class="panel">
-      <div class="wheel-ui">
-        <div id="wheelDisplay" class="reel">🎡</div>
-        <div class="controls">
-          <button id="spinWheel" class="primary">SPIN ($250)</button>
-          <button id="freeWheel" disabled>Free Spin</button>
-        </div>
-        <div id="wheelMsg" class="msg"></div>
+      <div id="wheelDisplay">🎡</div>
+      <div class="controls">
+        <label>Bet <input id="wheelBet" type="number" value="10" min="1"></label>
+        <button id="wheelSpin" class="primary">Spin</button>
       </div>
+      <div id="wheelMsg" class="msg"></div>
     </section>
 
-    <!-- COIN FLIP -->
+    <!-- Coin Flip -->
     <section id="coinflip" class="panel">
       <div class="controls">
-        <label>Bet
-          <select id="coinBet">
-            <option value="5" selected>$5</option>
-            <option value="10">$10</option>
-            <option value="25">$25</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-          </select>
+        <label>Bet <input id="coinBet" type="number" value="10" min="1"></label>
+        <label>Pick
+          <select id="coinPick"><option value="H">Heads</option><option value="T">Tails</option></select>
         </label>
-        <button id="pickHeads">Heads</button>
-        <button id="pickTails">Tails</button>
+        <button id="coinFlip" class="primary">Flip</button>
       </div>
-      <div id="coinShow" class="big-emoji">🪙</div>
+      <div class="big-emoji" id="coinShow">🪙</div>
       <div id="coinMsg" class="msg"></div>
     </section>
 
-    <!-- DICE / CRAPS (simple Pass Line) -->
+    <!-- Dice / Craps (simple) -->
     <section id="dice" class="panel">
-      <div class="controls">
-        <label>Bet
-          <select id="crapsBet">
-            <option value="5" selected>$5</option>
-            <option value="10">$10</option>
-            <option value="25">$25</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-          </select>
-        </label>
-        <button id="crapsRoll" class="primary">Roll</button>
-        <button id="crapsReset" class="ghost">Reset Round</button>
-      </div>
       <div class="dice-area">
-        <div id="die1" class="die">⚀</div>
-        <div id="die2" class="die">⚀</div>
+        <div class="die" id="die1">🎲</div>
+        <div class="die" id="die2">🎲</div>
       </div>
-      <div class="score">Point: <span id="crapsPoint">–</span></div>
-      <div id="crapsMsg" class="msg"></div>
+      <div class="controls">
+        <label>Bet <input id="diceBet" type="number" value="10" min="1"></label>
+        <button id="diceRoll" class="primary">Roll</button>
+      </div>
+      <div id="diceMsg" class="msg"></div>
     </section>
 
-    <!-- HIGHER / LOWER -->
+    <!-- HiLo -->
     <section id="hilo" class="panel">
       <div class="controls">
-        <label>Bet
-          <select id="hiloBet">
-            <option value="5" selected>$5</option>
-            <option value="10">$10</option>
-            <option value="25">$25</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-          </select>
-        </label>
-        <button id="hiloNew" class="primary">New Round</button>
-        <button id="guessHigher" disabled>Higher</button>
-        <button id="guessLower" disabled>Lower</button>
+        <label>Bet <input id="hiloBet" type="number" value="10" min="1"></label>
+        <button id="hiloStart" class="primary">Start</button>
+        <button id="hiloHigher">Higher</button>
+        <button id="hiloLower">Lower</button>
       </div>
       <div class="cards-row">
-        <div class="card" id="hiloCardA">?</div>
-        <div class="card" id="hiloCardB">?</div>
+        <div><div class="label">Current</div><div class="card" id="hiloCurrent">?</div></div>
+        <div><div class="label">Next</div><div class="card" id="hiloNext">?</div></div>
       </div>
       <div id="hiloMsg" class="msg"></div>
     </section>
 
-    <!-- CRASH -->
+    <!-- Crash -->
     <section id="crash" class="panel">
+      <div class="crash-display"><div class="crash-mult" id="crashMult">1.00×</div></div>
       <div class="controls">
-        <label>Bet
-          <select id="crashBet">
-            <option value="5" selected>$5</option>
-            <option value="10">$10</option>
-            <option value="25">$25</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-          </select>
-        </label>
-        <button id="crashStart" class="primary">Start</button>
-        <button id="crashCashout" disabled>Cash Out</button>
-      </div>
-      <div class="crash-display">
-        <div id="crashMult" class="crash-mult">1.00×</div>
+        <label>Bet <input id="crashBet" type="number" value="10" min="1"></label>
+        <label>Cash Out @ <input id="crashCash" type="number" value="2" step="0.1" min="1.01"></label>
+        <button id="crashGo" class="primary">Go</button>
       </div>
       <div id="crashMsg" class="msg"></div>
     </section>
 
-    <!-- PLINKO -->
+    <!-- Plinko -->
     <section id="plinko" class="panel">
       <div class="controls">
-        <label>Bet
-          <select id="plinkoBet">
-            <option value="5" selected>$5</option>
-            <option value="10">$10</option>
-            <option value="25">$25</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-          </select>
-        </label>
-        <label>Rows
-          <select id="plinkoRows">
-            <option value="8">8</option>
-            <option value="10" selected>10</option>
-            <option value="12">12</option>
-          </select>
-        </label>
+        <label>Bet <input id="plinkoBet" type="number" value="10" min="1"></label>
+        <label>Rows <input id="plinkoRows" type="number" value="10" min="6" max="14"></label>
         <label>Risk
-          <select id="plinkoRisk">
-            <option value="low">Low</option>
-            <option value="med" selected>Medium</option>
-            <option value="high">High</option>
-          </select>
+          <select id="plinkoRisk"><option value="low">Low</option><option value="med" selected>Med</option><option value="high">High</option></select>
         </label>
         <button id="plinkoDrop" class="primary">Drop</button>
       </div>
@@ -229,75 +144,66 @@
       <div id="plinkoMsg" class="msg"></div>
     </section>
 
-    <!-- MINES -->
+    <!-- Mines -->
     <section id="mines" class="panel">
       <div class="controls">
-        <label>Bet
-          <select id="minesBet">
-            <option value="5" selected>$5</option>
-            <option value="10">$10</option>
-            <option value="25">$25</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-          </select>
-        </label>
-        <label>Mines
-          <select id="minesCount">
-            <option value="3">3</option>
-            <option value="5" selected>5</option>
-            <option value="8">8</option>
-            <option value="10">10</option>
-          </select>
-        </label>
-        <button id="minesNew" class="primary">New Board</button>
-        <button id="minesCashout" disabled>Cash Out</button>
+        <label>Bet <input id="minesBet" type="number" value="10" min="1"></label>
+        <label>Bombs <input id="minesBombs" type="number" value="5" min="1" max="15"></label>
+        <button id="minesStart" class="primary">Start</button>
+        <button id="minesCash">Cash Out</button>
       </div>
-      <div id="minesGrid" class="mines-grid"></div>
+      <div class="mines-grid" id="minesGrid"></div>
       <div id="minesMsg" class="msg"></div>
     </section>
 
-    <!-- POKER (Simplified High Card) -->
+    <!-- Poker (High Card) -->
     <section id="poker" class="panel">
       <div class="controls">
-        <label>Bet
-          <select id="pokerBet">
-            <option value="5" selected>$5</option>
-            <option value="10">$10</option>
-            <option value="25">$25</option>
-            <option value="50">$50</option>
-            <option value="100">$100</option>
-          </select>
-        </label>
+        <label>Bet <input id="pokerBet" type="number" value="10" min="1"></label>
         <button id="pokerDeal" class="primary">Deal</button>
       </div>
       <div class="cards-row">
-        <div>
-          <div class="label">Dealer</div>
-          <div id="pokerDealer" class="cards"></div>
-        </div>
-        <div>
-          <div class="label">You</div>
-          <div id="pokerPlayer" class="cards"></div>
-        </div>
+        <div><div class="label">Dealer</div><div class="card" id="pokerDealer">?</div></div>
+        <div><div class="label">Player</div><div class="card" id="pokerPlayer">?</div></div>
       </div>
       <div id="pokerMsg" class="msg"></div>
     </section>
 
-    <!-- SCRATCH CARD -->
+    <!-- Scratch -->
     <section id="scratch" class="panel">
-      <div class="controls">
-        <label>Ticket ($10)</label>
-        <button id="scratchBuy" class="primary">Buy & Scratch</button>
-      </div>
+      <div class="controls"><button id="scratchBuy" class="primary">Buy Ticket ($10)</button></div>
       <div id="scratchGrid" class="scratch-grid"></div>
       <div id="scratchMsg" class="msg"></div>
     </section>
+
+    <!-- Roulette -->
+    <section id="roulette" class="panel">
+      <div class="controls">
+        <label>Bet <input id="rouletteBet" type="number" value="10" min="1"></label>
+        <label>Type
+          <select id="rouletteType">
+            <option value="number" selected>Number</option>
+            <option value="red">Red</option>
+            <option value="black">Black</option>
+            <option value="odd">Odd</option>
+            <option value="even">Even</option>
+            <option value="low">1-18</option>
+            <option value="high">19-36</option>
+          </select>
+        </label>
+        <button id="rouletteSpin" class="primary">Spin</button>
+      </div>
+      <div class="roulette-area">
+        <div class="roulette-pointer">▼</div>
+        <div id="rouletteWheel" class="roulette-wheel"></div>
+      </div>
+      <div class="roulette-board" id="rouletteBoard"></div>
+      <div id="rouletteMsg" class="msg"></div>
+    </section>
+
   </main>
 
-  <footer class="fineprint">
-    No ads. No tracking. Everything runs locally on your site. Progress saved to your browser (localStorage).
-  </footer>
-
+  <footer class="fineprint">Everything runs locally. Balance is saved in your browser.</footer>
   <script src="app.js"></script>
 </body>
 </html>
