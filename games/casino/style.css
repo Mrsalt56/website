@@ -94,3 +94,12 @@ body{margin:0;background:radial-gradient(900px 600px at 80% -10%, rgba(124,58,23
   box-shadow: 0 10px 30px rgba(0,0,0,.35) inset;
   overflow: hidden;
 }
+.roulette-wheel .num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+}
