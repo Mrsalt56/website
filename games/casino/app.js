@@ -93,15 +93,59 @@ function bjEnd(){
 }
 
 // ------------- WHEEL -------------
-$("#wheelSpin").onclick=()=>{
-  const bet=Number($("#wheelBet").value)||1;
-  if(balance<bet){$("#wheelMsg").textContent="Not enough balance.";return;}
-  setBalance(balance-bet);
-  const mults=[0,0,0,2,3,5,10];
-  const pick=mults[rand(0,mults.length-1)];
-  $("#wheelDisplay").textContent= pick===0?"❌":`${pick}×`;
-  if(pick>0){setBalance(balance+bet*pick); $("#wheelMsg").textContent=`You won $${bet*pick}`;} else $("#wheelMsg").textContent="No win";
-};
+const wheelPrizes = [
+  {emoji:"❌", amount:0, weight:50},   // 50% chance: nothing
+  {emoji:"💵", amount:100, weight:25}, // 25% chance: small win
+  {emoji:"💰", amount:250, weight:15}, // 15% chance
+  {emoji:"💎", amount:500, weight:7},  // 7% chance
+  {emoji:"⭐", amount:1000, weight:3}   // 3% chance: jackpot
+];
+async function doWheelSpin(free=false){
+  if(!free && balance < WHEEL_COST){
+    wheelMsg.textContent = "Not enough balance for $250 spin.";
+    wheelMsg.classList.add("error");
+    return;
+  }
+  wheelMsg.classList.remove("error");
+  if(!free) setBalance(balance - WHEEL_COST);
+
+  const prize = weightedPick(wheelPrizes);
+
+  // spin animation
+  const spinSymbols = wheelPrizes.map(p=>p.emoji);
+  let i = 0;
+  let duration = 2500; // spin lasts 2.5s
+  let interval = 80;   // start fast
+  const start = Date.now();
+
+  return new Promise(resolve=>{
+    const tick = ()=>{
+      wheelDisplay.textContent = spinSymbols[i % spinSymbols.length];
+      i++;
+      const elapsed = Date.now() - start;
+      if(elapsed < duration){
+        // slow down as time passes
+        interval = 80 + Math.floor((elapsed / duration) * 300);
+        setTimeout(tick, interval);
+      }else{
+        // stop on final prize
+        wheelDisplay.textContent = prize.emoji;
+        if(prize.amount > 0){
+          setBalance(balance + prize.amount);
+          wheelMsg.textContent = `You won $${prize.amount}!`;
+        }else{
+          wheelMsg.textContent = `No prize. Try again!`;
+        }
+
+        if(free){
+          localStorage.setItem(FREE_SPIN_KEY, Date.now());
+          updateFreeWheel();
+        }
+        resolve();
+      }
+    };
+    tick();
+  });
 
 // ------------- COIN FLIP -------------
 $("#coinFlip").onclick=()=>{
