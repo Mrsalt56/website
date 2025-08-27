@@ -286,42 +286,47 @@ function buildBoard(){
 }
 buildBoard();
 
-$("#rouletteSpin").onclick=()=>{
-  const bet=Number($("#rouletteBet").value)||1;
-  const type=$("#rouletteType").value;
-  if(balance<bet){$("#rouletteMsg").textContent="Not enough balance.";return;}
-  setBalance(balance-bet);
+$("#rouletteSpin").onclick = () => {
+  const bet = Number($("#rouletteBet").value) || 1;
+  const type = $("#rouletteType").value;
+  if (balance < bet) {
+    $("#rouletteMsg").textContent = "Not enough balance.";
+    return;
+  }
+  setBalance(balance - bet);
 
   // Determine result & animate wheel
-  const result = rouletteOrder[rand(0,rouletteOrder.length-1)];
+  const result = rouletteOrder[rand(0, rouletteOrder.length - 1)];
   const idx = rouletteOrder.indexOf(result);
-  const step=360/rouletteOrder.length;
-  const spins=6;
-const currentRot = wheel._rotation || 0; // store last rotation
-const spins = 6 + rand(0, 3);            // always 6–9 full spins
-const targetRot = -(idx * step) - step / 2 + spins * 360;
+  const step = 360 / rouletteOrder.length;
+  const numSpins = 6; // renamed from "spins"
+  const targetRot = -(idx * step) - step / 2 + numSpins * 360; 
+  wheel.style.transform = `rotate(${targetRot}deg)`;
 
-// Make sure it always moves forward, even if same number as last time
-const finalRot = currentRot + ((targetRot - currentRot) % 360 + 360) % 360 + spins * 360;
-
-wheel._rotation = finalRot; // save rotation
-wheel.style.transform = `rotate(${finalRot}deg)`;
-
-  setTimeout(()=>{
+  setTimeout(() => {
     const col = rouletteColors[idx];
-    let payout=0;
-    const pick=Number(board.dataset.pick||-1);
-    if(type==="number"){
-      if(pick===-1){ $("#rouletteMsg").textContent="Pick a number first."; setBalance(balance+bet); return; }
-      if(pick===result) payout=bet*35;
-    }else if(type==="red" && col==="red") payout=bet*2;
-    else if(type==="black" && col==="black") payout=bet*2;
-    else if(type==="odd" && result%2===1) payout=bet*2;
-    else if(type==="even" && result!==0 && result%2===0) payout=bet*2;
-    else if(type==="low" && result>=1 && result<=18) payout=bet*2;
-    else if(type==="high" && result>=19 && result<=36) payout=bet*2;
+    let payout = 0;
+    const pick = Number(board.dataset.pick || -1);
 
-    if(payout>0){ setBalance(balance+payout); $("#rouletteMsg").textContent=`Result ${result} (${col}). You win $${payout}!`; }
-    else { $("#rouletteMsg").textContent=`Result ${result} (${col}). You lose.`; }
+    if (type === "number") {
+      if (pick === -1) {
+        $("#rouletteMsg").textContent = "Pick a number first.";
+        setBalance(balance + bet);
+        return;
+      }
+      if (pick === result) payout = bet * 35;
+    } else if (type === "red" && col === "red") payout = bet * 2;
+    else if (type === "black" && col === "black") payout = bet * 2;
+    else if (type === "odd" && result % 2 === 1) payout = bet * 2;
+    else if (type === "even" && result !== 0 && result % 2 === 0) payout = bet * 2;
+    else if (type === "low" && result >= 1 && result <= 18) payout = bet * 2;
+    else if (type === "high" && result >= 19 && result <= 36) payout = bet * 2;
+
+    if (payout > 0) {
+      setBalance(balance + payout);
+      $("#rouletteMsg").textContent = `Result ${result} (${col}). You win $${payout}!`;
+    } else {
+      $("#rouletteMsg").textContent = `Result ${result} (${col}). You lose.`;
+    }
   }, 3200);
 };
