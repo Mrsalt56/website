@@ -300,3 +300,29 @@ setBalance(balance-bet);
 
 // Determine result & animate wheel
 const result = rouletteOrder[rand(0,rouletteOrder.length-1)];
+const idx = rouletteOrder.indexOf(result);
+const step=360/rouletteOrder.length;
+const numSpins=6; // fixed unique name
+const targetRot = -(idx*step) - step/2 + numSpins*360;
+wheel.style.transform=`rotate(${targetRot}deg)`;
+
+
+setTimeout(()=>{
+const col = rouletteColors[idx];
+let payout=0;
+const pick=Number(board.dataset.pick||-1);
+if(type==="number"){
+if(pick===-1){ $("#rouletteMsg").textContent="Pick a number first."; setBalance(balance+bet); return; }
+if(pick===result) payout=bet*35;
+}else if(type==="red" && col==="red") payout=bet*2;
+else if(type==="black" && col==="black") payout=bet*2;
+else if(type==="odd" && result%2===1) payout=bet*2;
+else if(type==="even" && result!==0 && result%2===0) payout=bet*2;
+else if(type==="low" && result>=1 && result<=18) payout=bet*2;
+else if(type==="high" && result>=19 && result<=36) payout=bet*2;
+
+
+if(payout>0){ setBalance(balance+payout); $("#rouletteMsg").textContent=`Result ${result} (${col}). You win $${payout}!`; }
+else { $("#rouletteMsg").textContent=`Result ${result} (${col}). You lose.`; }
+}, 3200);
+};
