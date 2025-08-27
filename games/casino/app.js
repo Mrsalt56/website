@@ -458,10 +458,12 @@ setBalance(balance-bet);
 // Determine result & animate wheel
 const result = rouletteOrder[rand(0,rouletteOrder.length-1)];
 const idx = rouletteOrder.indexOf(result);
-const step=360/rouletteOrder.length;
-const numSpins=6; // fixed unique name
-const targetRot = -(idx*step) - step/2 + numSpins*360;
-wheel.style.transform=`rotate(${targetRot}deg)`;
+const currentRot = wheel._rotation || 0;
+const spins = 6 + rand(0, 3);          
+const targetRot = -(idx * step) - step / 2 + spins * 360;
+const finalRot = currentRot + ((targetRot - currentRot) % 360 + 360) % 360 + spins * 360;
+wheel._rotation = finalRot;
+wheel.style.transform = `rotate(${finalRot}deg)`;
 
 
 setTimeout(()=>{
