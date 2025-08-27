@@ -802,9 +802,12 @@ function pokerDeal(){
 const pokerDealBtn=$("#pokerDeal");
 if(pokerDealBtn) pokerDealBtn.addEventListener("click", pokerDeal);
 
+
 /* -------------------- SCRATCH CARD -------------------- */
 const scratchMsg = $("#scratchMsg");
 const scratchGrid = $("#scratchGrid");
+let scratchCells = [], scratchRevealed = 0, scratchPrize = null;
+
 function scratchBuy(){
   const cost = 10;
   if(balance < cost){
@@ -813,7 +816,7 @@ function scratchBuy(){
   }
   if(scratchMsg) scratchMsg.classList.remove("error");
   setBalance(balance - cost);
-  // Build 3x3 grid with weighted symbols
+
   const prizes = [
     {emoji:"❌", amount:0, weight:50},
     {emoji:"💵", amount:20, weight:28},
@@ -823,89 +826,46 @@ function scratchBuy(){
   ];
   const bag = [];
   for(const p of prizes){ for(let i=0;i<p.weight;i++) bag.push(p); }
-  const cells = [];
-  for(let i=0;i<9;i++){
-    cells.push(bag[Math.floor(Math.random()*bag.length)]);
-  }
+  scratchCells = [];
+  for(let i=0;i<9;i++) scratchCells.push(bag[Math.floor(Math.random()*bag.length)]);
+
   if(scratchGrid){
     scratchGrid.innerHTML="";
-    cells.forEach((cell,idx)=>{
+    scratchCells.forEach((cell,idx)=>{
       const b = document.createElement("button");
       b.className="scratch-cell";
       b.textContent="🧧";
       b.dataset.idx = String(idx);
-      b.addEventListener("click", ()=>{
-        if(b.classList.contains("revealed")) return;
-        b.classList.add("revealed");
-        b.textContent = cell.emoji;
-      });
+      b.addEventListener("click", ()=>scratchReveal(idx,b,cell));
       scratchGrid.appendChild(b);
     });
   }
-  // Check best triplet (match 3)
-  const counts = {};
-  cells.forEach(c=>{ counts[c.emoji]=(counts[c.emoji]||0)+1; });
-  let best=null;
-  for(const p of prizes){
-    if((counts[p.emoji]||0)>=3) { best = p; break; }
-  }
-  if(best && best.amount>0){
-    setTimeout(()=>{
-      setBalance(balance + best.amount);
-      if(scratchMsg) scratchMsg.textContent = `You matched 3 ${best.emoji}! Win $${best.amount}.`;
-    }, 300);
-  }else{
-    if(scratchMsg) scratchMsg.textContent = "No three-of-a-kind. Better luck next time.";
+  scratchRevealed=0; scratchPrize=null;
+  if(scratchMsg) scratchMsg.textContent="Scratch all tiles to reveal!";
+}
+function scratchReveal(idx, el, cell){
+  if(el.classList.contains("revealed")) return;
+  el.classList.add("revealed");
+  el.textContent = cell.emoji;
+  scratchRevealed++;
+  if(scratchRevealed===9){
+    // Check for 3 of a kind
+    const counts={};
+    scratchCells.forEach(c=>{counts[c.emoji]=(counts[c.emoji]||0)+1;});
+    for(const [emoji,count] of Object.entries(counts)){
+      if(count>=3){
+        const p = scratchCells.find(c=>c.emoji===emoji);
+        if(p.amount>0){
+          setBalance(balance + p.amount);
+          if(scratchMsg) scratchMsg.textContent=`You matched 3 ${emoji}! Win $${p.amount}.`;
+          return;
+        }
+      }
+    }
+    if(scratchMsg) scratchMsg.textContent="No three-of-a-kind. Try again.";
   }
 }
 const scratchBtn=$("#scratchBuy");
 if(scratchBtn) scratchBtn.addEventListener("click", scratchBuy);
 
-// Initial UI for BJ
 setBJButtons({deal:true,hit:false,stand:false,double:false});
-
-
-/* -------------------- ROULETTE -------------------- */
-const rouletteBoard=$("#rouletteBoard");
-const rouletteMsg=$("#rouletteMsg");
-const rouletteColors=["green"].concat(Array(18).fill("red"),Array(18).fill("black")); // 37 numbers
-
-function buildRoulette(){
-  if(!rouletteBoard) return;
-  rouletteBoard.innerHTML="";
-  for(let i=0;i<37;i++){
-    const cell=document.createElement("div");
-    cell.className="roulette-cell "+rouletteColors[i];
-    cell.textContent=i;
-    cell.addEventListener("click",()=>{
-      document.querySelectorAll(".roulette-cell").forEach(c=>c.classList.remove("active"));
-      cell.classList.add("active");
-      rouletteBoard.dataset.pick=i;
-    });
-    rouletteBoard.appendChild(cell);
-  }
-}
-buildRoulette();
-
-const rouletteSpinBtn=$("#rouletteSpin");
-if(rouletteSpinBtn) rouletteSpinBtn.addEventListener("click",()=>{
-  const bet=Number($("#rouletteBet")?.value||5);
-  if(balance<bet){
-    if(rouletteMsg){rouletteMsg.textContent="Not enough balance"; rouletteMsg.classList.add("error");}
-    return;
-  }
-  if(rouletteMsg) rouletteMsg.classList.remove("error");
-  setBalance(balance-bet);
-  const pick=Number(rouletteBoard?.dataset.pick||-1);
-  const result=Math.floor(Math.random()*37);
-  const winColor=rouletteColors[result];
-  let payout=0;
-  if(pick===result){payout=bet*35;}
-  if(pick===-1){ if(rouletteMsg){rouletteMsg.textContent="Pick a number!";} setBalance(balance+bet); return;}
-  if(payout>0){
-    setBalance(balance+payout);
-    if(rouletteMsg) rouletteMsg.textContent=`Result ${result} (${winColor}). You win $${payout}!`;
-  }else{
-    if(rouletteMsg) rouletteMsg.textContent=`Result ${result} (${winColor}). You lose.`;
-  }
-});
