@@ -13,7 +13,17 @@ $$(".tab").forEach(btn=>btn.onclick=()=>{
   btn.classList.add("active");
   $("#"+btn.dataset.tab).classList.add("active");
 });
-$("#reset").onclick=()=>setBalance(1000);
+document.getElementById("reset").onclick = () => {
+  const pass = prompt("Enter password to reset balance:");
+  if (pass === "loser") {
+    balance = 1000;
+    localStorage.setItem("casinoBalance", balance);
+    updateBalance();
+    alert("Balance reset to $1000 ✅");
+  } else {
+    alert("❌ Wrong password. Balance not reset.");
+  }
+};
 
 // RNG helper
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
