@@ -258,16 +258,18 @@ const rouletteOrder=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16
 const rouletteColors=["green","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black"];
 const wheel=$("#rouletteWheel");
 function buildWheel(){
-  wheel.innerHTML="";
-  const step=360/rouletteOrder.length;
-  rouletteOrder.forEach((num,idx)=>{
-    const slice=document.createElement("div");
-    slice.className="slice "+rouletteColors[idx];
-    slice.style.transform=`translate(-50%,-50%) rotate(${idx*step}deg)`;
-    const lab=document.createElement("div"); lab.className="num"; lab.textContent=num;
-    slice.appendChild(lab); wheel.appendChild(slice);
+  wheel.innerHTML = "";
+  const step = 360 / rouletteOrder.length;
+  rouletteOrder.forEach((num, idx) => {
+    const angle = idx * step + step / 2; // center of slice
+    const lab = document.createElement("div");
+    lab.className = "num";
+    lab.textContent = num;
+    lab.style.transform = `rotate(${angle}deg) translate(110px) rotate(-${angle}deg)`;
+    wheel.appendChild(lab);
   });
 }
+
 buildWheel();
 // Number grid board for direct pick
 const board=$("#rouletteBoard");
