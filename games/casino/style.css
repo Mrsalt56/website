@@ -103,3 +103,6 @@ body{margin:0;background:radial-gradient(900px 600px at 80% -10%, rgba(124,58,23
   font-weight: bold;
   color: #fff;
 }
+.slice {
+  pointer-events: none;
+}
