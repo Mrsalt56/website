@@ -1,3 +1,4 @@
+
 /* Minimal clean look */
 :root{
   --bg:#0f1115;
@@ -70,6 +71,43 @@ body{
 .card.red{color:#f87171}
 .score{color:var(--muted);margin-top:6px}
 .bj-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+.big-emoji{
+  font-size:64px;text-align:center;margin:10px 0;
+}
+
+.dice-area{display:flex;gap:14px;justify-content:center;margin:8px 0}
+.die{font-size:64px}
+
+.cards-row{display:flex;gap:18px;justify-content:center;align-items:flex-start;margin:8px 0}
+.label{color:var(--muted);font-size:12px;margin-bottom:6px}
+
+.crash-display{
+  display:flex;justify-content:center;align-items:center;
+  background:#12151c;border:1px solid #303644;border-radius:14px;height:140px; box-shadow:var(--shadow);
+}
+.crash-mult{font-size:48px;font-weight:900}
+
+.plinko-board{display:flex;flex-direction:column;gap:6px;align-items:center;margin-top:8px}
+.plinko-row{display:grid;grid-template-columns:repeat(auto-fit,24px);gap:6px}
+.plinko-peg{
+  width:18px;height:18px;border-radius:50%;background:#303644;border:1px solid #3b4253;
+}
+.plinko-peg.active{background:var(--accent);}
+
+.mines-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:420px;margin:10px auto}
+.mine-tile{
+  height:56px;border-radius:10px;border:1px solid #3b4253;background:#12151c;color:#e6edf3;cursor:pointer;
+  box-shadow:var(--shadow);font-size:20px
+}
+.mine-tile.revealed.safe{background:#0f1b13;border-color:#1b3a28}
+.mine-tile.revealed.bomb{background:#2a1313;border-color:#5b2222}
+
+.scratch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:360px;margin:10px auto}
+.scratch-cell{
+  height:70px;border-radius:12px;border:1px solid #3b4253;background:#12151c;color:#e6edf3;cursor:pointer;
+  box-shadow:var(--shadow);font-size:28px
+}
 
 .fineprint{opacity:.6;text-align:center;margin:28px auto 18px;font-size:12px}
 
