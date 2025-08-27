@@ -297,8 +297,15 @@ $("#rouletteSpin").onclick=()=>{
   const idx = rouletteOrder.indexOf(result);
   const step=360/rouletteOrder.length;
   const spins=6;
-  const targetRot = -(idx*step) - step/2 + spins*360; // align center of slice to pointer
-  wheel.style.transform=`rotate(${targetRot}deg)`;
+const currentRot = wheel._rotation || 0; // store last rotation
+const spins = 6 + rand(0, 3);            // always 6–9 full spins
+const targetRot = -(idx * step) - step / 2 + spins * 360;
+
+// Make sure it always moves forward, even if same number as last time
+const finalRot = currentRot + ((targetRot - currentRot) % 360 + 360) % 360 + spins * 360;
+
+wheel._rotation = finalRot; // save rotation
+wheel.style.transform = `rotate(${finalRot}deg)`;
 
   setTimeout(()=>{
     const col = rouletteColors[idx];
