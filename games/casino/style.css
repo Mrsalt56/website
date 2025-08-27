@@ -106,3 +106,13 @@ body{margin:0;background:radial-gradient(900px 600px at 80% -10%, rgba(124,58,23
 .slice {
   pointer-events: none;
 }
+/* 2) Make sure the actual UI sits above any decorative pieces */
+.panel, .tabs, .topbar { position: relative; z-index: 2; }
+.roulette-area { position: relative; z-index: 1; }
+
+/* 3) Extra safety: hidden panels can’t catch events even if mis-styled */
+.panel:not(.active) { display: none !important; visibility: hidden; }
+/* 1) Never let the roulette visuals block clicks anywhere */
+.roulette-wheel { 
+  overflow: hidden;     /* clips the big triangle slices to the wheel */
+  pointer-events: none;
