@@ -216,117 +216,87 @@ function clickMine(i){
   $("#minesMsg").textContent=`Safe! Safe tiles: ${minesRound.safe}.`;
 }
 $("#minesCash").onclick=()=>{
-  if(!minesRound){$("#minesMsg").textContent="No active round.";return;}
-  const mult=1+minesRound.safe*0.2; const win=Math.floor(minesRound.bet*mult);
-  setBalance(balance+win); $("#minesMsg").textContent=`Cashed out at ${mult.toFixed(2)}× → $${win}`;
-  minesRound=null; renderMines();
+ // (Full app.js with roulette fix — continued)
+
+
+if(!minesRound){$("#minesMsg").textContent="No active round.";return;}
+const mult=1+minesRound.safe*0.2; const win=Math.floor(minesRound.bet*mult);
+setBalance(balance+win); $("#minesMsg").textContent=`Cashed out at ${mult.toFixed(2)}× → $${win}`;
+minesRound=null; renderMines();
 };
+
 
 // ------------- POKER (High Card) -------------
 $("#pokerDeal").onclick=()=>{
-  const bet=Number($("#pokerBet").value)||1;
-  if(balance<bet){$("#pokerMsg").textContent="Not enough balance.";return;}
-  setBalance(balance-bet);
-  const v=()=>rand(2,14);
-  const d=v(), p=v();
-  $("#pokerDealer").textContent=showRank(d);
-  $("#pokerPlayer").textContent=showRank(p);
-  if(p>d){setBalance(balance+bet*2); $("#pokerMsg").textContent=`You win $${bet*2}`;}
-  else if(p===d){setBalance(balance+bet); $("#pokerMsg").textContent="Push.";}
-  else $("#pokerMsg").textContent="You lose.";
+const bet=Number($("#pokerBet").value)||1;
+if(balance<bet){$("#pokerMsg").textContent="Not enough balance.";return;}
+setBalance(balance-bet);
+const v=()=>rand(2,14);
+const d=v(), p=v();
+$("#pokerDealer").textContent=showRank(d);
+$("#pokerPlayer").textContent=showRank(p);
+if(p>d){setBalance(balance+bet*2); $("#pokerMsg").textContent=`You win $${bet*2}`;}
+else if(p===d){setBalance(balance+bet); $("#pokerMsg").textContent="Push.";}
+else $("#pokerMsg").textContent="You lose.";
 };
+
 
 // ------------- SCRATCH -------------
 let scratchCells=[], scratchRevealed=0;
 $("#scratchBuy").onclick=()=>{
-  const cost=10; if(balance<cost){$("#scratchMsg").textContent="Not enough balance.";return;}
-  setBalance(balance-cost);
-  const pool=["💵","💵","💵","💰","💰","💎","⭐","⭐","❌"].sort(()=>Math.random()-0.5);
-  scratchCells=pool; scratchRevealed=0; $("#scratchGrid").innerHTML="";
-  pool.forEach((sym,i)=>{ const b=document.createElement("button"); b.className="scratch-cell"; b.textContent="🧧"; b.onclick=()=>{ if(b.classList.contains("revealed"))return; b.classList.add("revealed"); b.textContent=sym; scratchRevealed++; if(scratchRevealed===9) checkScratch(); }; $("#scratchGrid").appendChild(b); });
-  $("#scratchMsg").textContent="Scratch all tiles!";
+const cost=10; if(balance<cost){$("#scratchMsg").textContent="Not enough balance.";return;}
+setBalance(balance-cost);
+const pool=["💵","💵","💵","💰","💰","💎","⭐","⭐","❌"].sort(()=>Math.random()-0.5);
+scratchCells=pool; scratchRevealed=0; $("#scratchGrid").innerHTML="";
+pool.forEach((sym,i)=>{ const b=document.createElement("button"); b.className="scratch-cell"; b.textContent="🧧"; b.onclick=()=>{ if(b.classList.contains("revealed"))return; b.classList.add("revealed"); b.textContent=sym; scratchRevealed++; if(scratchRevealed===9) checkScratch(); }; $("#scratchGrid").appendChild(b); });
+$("#scratchMsg").textContent="Scratch all tiles!";
 };
 function checkScratch(){
-  const counts={}; scratchCells.forEach(c=>counts[c]=(counts[c]||0)+1);
-  const pay={ "💵":10,"💰":50,"💎":100,"⭐":250 };
-  for(const sym in counts){ if(counts[sym]>=3 && pay[sym]){ setBalance(balance+pay[sym]); $("#scratchMsg").textContent=`Matched 3 ${sym} — You win $${pay[sym]}`; return; } }
-  $("#scratchMsg").textContent="No win.";
+const counts={}; scratchCells.forEach(c=>counts[c]=(counts[c]||0)+1);
+const pay={ "💵":10,"💰":50,"💎":100,"⭐":250 };
+for(const sym in counts){ if(counts[sym]>=3 && pay[sym]){ setBalance(balance+pay[sym]); $("#scratchMsg").textContent=`Matched 3 ${sym} — You win $${pay[sym]}`; return; } }
+$("#scratchMsg").textContent="No win.";
 }
+
 
 // ------------- ROULETTE (wheel + board) -------------
 const rouletteOrder=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26]; // European
 const rouletteColors=["green","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black","red","black"];
 const wheel=$("#rouletteWheel");
 function buildWheel(){
-  wheel.innerHTML = "";
-  const step = 360 / rouletteOrder.length;
-  rouletteOrder.forEach((num, idx) => {
-    const angle = idx * step + step / 2; // center of slice
-    const lab = document.createElement("div");
-    lab.className = "num";
-    lab.textContent = num;
-    lab.style.transform = `rotate(${angle}deg) translate(110px) rotate(-${angle}deg)`;
-    wheel.appendChild(lab);
-  });
+wheel.innerHTML="";
+const step=360/rouletteOrder.length;
+rouletteOrder.forEach((num,idx)=>{
+const slice=document.createElement("div");
+slice.className="slice "+rouletteColors[idx];
+slice.style.transform=`translate(-50%,-50%) rotate(${idx*step}deg)`;
+const lab=document.createElement("div"); lab.className="num"; lab.textContent=num;
+slice.appendChild(lab); wheel.appendChild(slice);
+});
 }
-
 buildWheel();
 // Number grid board for direct pick
 const board=$("#rouletteBoard");
 function buildBoard(){
-  board.innerHTML="";
-  for(let n=0;n<=36;n++){
-    const idx=rouletteOrder.indexOf(n);
-    const cell=document.createElement("div");
-    cell.className=`roulette-cell ${rouletteColors[idx]}`;
-    cell.textContent=n;
-    cell.onclick=()=>{$$(".roulette-cell").forEach(c=>c.classList.remove("active")); cell.classList.add("active"); board.dataset.pick=n;};
-    board.appendChild(cell);
-  }
+board.innerHTML="";
+for(let n=0;n<=36;n++){
+const idx=rouletteOrder.indexOf(n);
+const cell=document.createElement("div");
+cell.className=`roulette-cell ${rouletteColors[idx]}`;
+cell.textContent=n;
+cell.onclick=()=>{$$(".roulette-cell").forEach(c=>c.classList.remove("active")); cell.classList.add("active"); board.dataset.pick=n;};
+board.appendChild(cell);
+}
 }
 buildBoard();
 
-$("#rouletteSpin").onclick = () => {
-  const bet = Number($("#rouletteBet").value) || 1;
-  const type = $("#rouletteType").value;
-  if (balance < bet) {
-    $("#rouletteMsg").textContent = "Not enough balance.";
-    return;
-  }
-  setBalance(balance - bet);
 
-  // Determine result & animate wheel
-  const result = rouletteOrder[rand(0, rouletteOrder.length - 1)];
-  const idx = rouletteOrder.indexOf(result);
-  const step = 360 / rouletteOrder.length;
-  const numSpins = 6; // renamed from "spins"
-  const targetRot = -(idx * step) - step / 2 + numSpins * 360; 
-  wheel.style.transform = `rotate(${targetRot}deg)`;
+$("#rouletteSpin").onclick=()=>{
+const bet=Number($("#rouletteBet").value)||1;
+const type=$("#rouletteType").value;
+if(balance<bet){$("#rouletteMsg").textContent="Not enough balance.";return;}
+setBalance(balance-bet);
 
-  setTimeout(() => {
-    const col = rouletteColors[idx];
-    let payout = 0;
-    const pick = Number(board.dataset.pick || -1);
 
-    if (type === "number") {
-      if (pick === -1) {
-        $("#rouletteMsg").textContent = "Pick a number first.";
-        setBalance(balance + bet);
-        return;
-      }
-      if (pick === result) payout = bet * 35;
-    } else if (type === "red" && col === "red") payout = bet * 2;
-    else if (type === "black" && col === "black") payout = bet * 2;
-    else if (type === "odd" && result % 2 === 1) payout = bet * 2;
-    else if (type === "even" && result !== 0 && result % 2 === 0) payout = bet * 2;
-    else if (type === "low" && result >= 1 && result <= 18) payout = bet * 2;
-    else if (type === "high" && result >= 19 && result <= 36) payout = bet * 2;
-
-    if (payout > 0) {
-      setBalance(balance + payout);
-      $("#rouletteMsg").textContent = `Result ${result} (${col}). You win $${payout}!`;
-    } else {
-      $("#rouletteMsg").textContent = `Result ${result} (${col}). You lose.`;
-    }
-  }, 3200);
-};
+// Determine result & animate wheel
+const result = rouletteOrder[rand(0,rouletteOrder.length-1)];
