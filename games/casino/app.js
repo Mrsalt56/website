@@ -29,21 +29,81 @@ document.getElementById("reset").onclick = () => {
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
 // ------------- SLOTS -------------
-const symbols=["🍒","🍋","🍇","🔔","⭐","💎"];
-$("#slotsSpin").onclick=()=>{
-  const bet=Number($("#slotsBet").value)||1;
-  if(balance<bet){$("#slotsMsg").textContent="Not enough balance.";return;}
-  setBalance(balance-bet);
-  const r1=symbols[rand(0,symbols.length-1)];
-  const r2=symbols[rand(0,symbols.length-1)];
-  const r3=symbols[rand(0,symbols.length-1)];
-  $("#reel1").textContent=r1; $("#reel2").textContent=r2; $("#reel3").textContent=r3;
-  let payout=0;
-  if(r1===r2&&r2===r3) payout=bet*5;
-  else if(r1===r2||r2===r3||r1===r3) payout=bet*2;
-  if(payout>0){setBalance(balance+payout); $("#slotsMsg").textContent=`You win $${payout}`;}
-  else $("#slotsMsg").textContent="No win";
-};
+const symbols = ["🍒","🍋","🔔","7️⃣","⭐"];
+const weights = [4,4,3,2,1]; // relative frequency; stars are rare
+function spinOne(){
+  const total = weights.reduce((a,b)=>a+b,0);
+  const pick = Math.floor(Math.random()*total);
+  let sum=0;
+  for(let i=0;i<symbols.length;i++){
+    sum+=weights[i];
+    if(pick<sum) return symbols[i];
+  }
+  return symbols[0];
+}
+
+const reelEls = [$("#reel0"), $("#reel1"), $("#reel2")];
+const slotMsg = $("#slotMsg");
+
+function slotsPayout(a,b,c,bet){
+  // Three of a kind multipliers
+  const threeMult = { "⭐":50, "7️⃣":25, "🔔":10, "🍋":6, "🍒":4 };
+  if(a===b && b===c){
+    return bet * (threeMult[a] || 0);
+  }
+  // Any two matching → 2× bet
+  if(a===b || a===c || b===c) return bet * 2;
+  return 0;
+}
+
+async function animateReels(results){
+  const durations = [900, 1200, 1500];
+  // quick spin animation
+  for(let i=0;i<reelEls.length;i++){
+    const el = reelEls[i];
+    let t = 0;
+    await new Promise(res=>{
+      const start = performance.now();
+      const tick = (now)=>{
+        t = now - start;
+        if(t < durations[i]){
+          // show random symbol while spinning
+          el.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = results[i];
+          res();
+        }
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+}
+
+let spinning=false;
+$("#spin").addEventListener("click", async ()=>{
+  if(spinning) return;
+  const bet = Number($("#slotBet").value);
+  if(balance < bet){
+    slotMsg.textContent = "Not enough balance.";
+    slotMsg.classList.add("error");
+    return;
+  }
+  slotMsg.classList.remove("error");
+  setBalance(balance - bet);
+  spinning = true;
+  const res = [spinOne(), spinOne(), spinOne()];
+  await animateReels(res);
+  const win = slotsPayout(...res, bet);
+  if(win>0){
+    setBalance(balance + win);
+    slotMsg.textContent = `You won $${win}! (${res.join(" ")})`;
+  }else{
+    slotMsg.textContent = `No win. (${res.join(" ")})`;
+  }
+  spinning = false;
+});
+
 
 // ------------- BLACKJACK -------------
 let deck=[], player=[], dealer=[], bjActive=false;
