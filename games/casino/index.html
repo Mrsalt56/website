@@ -69,14 +69,16 @@
     </section>
 
     <!-- Wheel -->
-    <section id="wheel" class="panel">
-      <div id="wheelDisplay">🎡</div>
-      <div class="controls">
-        <label>Bet <input id="wheelBet" type="number" value="10" min="1"></label>
-        <button id="wheelSpin" class="primary">Spin</button>
-      </div>
-      <div id="wheelMsg" class="msg"></div>
-    </section>
+<section id="wheel" class="panel">
+  <div class="wheel-ui">
+    <div id="wheelDisplay" class="reel">🎡</div>
+    <div class="controls">
+      <button id="spinWheel" class="primary">SPIN ($250)</button>
+      <button id="freeWheel" disabled>Free Spin</button>
+    </div>
+    <div id="wheelMsg" class="msg"></div>
+  </div>
+</section>
 
     <!-- Coin Flip -->
     <section id="coinflip" class="panel">
