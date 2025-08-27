@@ -100,6 +100,44 @@ const wheelPrizes = [
   {emoji:"💎", amount:500, weight:7},  // 7% chance
   {emoji:"⭐", amount:1000, weight:3}   // 3% chance: jackpot
 ];
+
+const WHEEL_COST = 250;
+const FREE_SPIN_KEY = "mini_casino_free_wheel";
+const FREE_INTERVAL = 60*60*1000; // 1 hour
+
+const wheelDisplay = $("#wheelDisplay");
+const wheelMsg = $("#wheelMsg");
+const spinWheelBtn = $("#spinWheel");
+const freeWheelBtn = $("#freeWheel");
+
+// --- Helper: weighted random pick ---
+function weightedPick(items){
+  const total = items.reduce((sum, item) => sum + item.weight, 0);
+  let r = Math.random() * total;
+  for(const item of items){
+    if(r < item.weight) return item;
+    r -= item.weight;
+  }
+  return items[0]; // fallback
+}
+
+// --- Free spin availability ---
+function updateFreeWheel(){
+  const last = Number(localStorage.getItem(FREE_SPIN_KEY) || 0);
+  const now = Date.now();
+  if(now - last >= FREE_INTERVAL){
+    freeWheelBtn.disabled = false;
+    freeWheelBtn.textContent = "Free Spin Ready!";
+  }else{
+    freeWheelBtn.disabled = true;
+    const remain = Math.ceil((FREE_INTERVAL - (now-last))/60000);
+    freeWheelBtn.textContent = `Free in ${remain}m`;
+  }
+}
+setInterval(updateFreeWheel, 10000);
+updateFreeWheel();
+
+// --- Main spin function ---
 async function doWheelSpin(free=false){
   if(!free && balance < WHEEL_COST){
     wheelMsg.textContent = "Not enough balance for $250 spin.";
@@ -114,8 +152,8 @@ async function doWheelSpin(free=false){
   // spin animation
   const spinSymbols = wheelPrizes.map(p=>p.emoji);
   let i = 0;
-  let duration = 2500; // spin lasts 2.5s
-  let interval = 80;   // start fast
+  let duration = 2500; // total spin time in ms
+  let interval = 80;   // starting speed
   const start = Date.now();
 
   return new Promise(resolve=>{
@@ -124,7 +162,7 @@ async function doWheelSpin(free=false){
       i++;
       const elapsed = Date.now() - start;
       if(elapsed < duration){
-        // slow down as time passes
+        // slow down over time
         interval = 80 + Math.floor((elapsed / duration) * 300);
         setTimeout(tick, interval);
       }else{
@@ -146,6 +184,11 @@ async function doWheelSpin(free=false){
     };
     tick();
   });
+}
+
+// --- Button hooks ---
+spinWheelBtn.addEventListener("click", ()=>doWheelSpin(false));
+freeWheelBtn.addEventListener("click", ()=>doWheelSpin(true));
 
 // ------------- COIN FLIP -------------
 $("#coinFlip").onclick=()=>{
