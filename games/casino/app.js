@@ -90,7 +90,49 @@ $("#spin").addEventListener("click", async ()=>{
   slotMsg.classList.remove("error");
   setBalance(balance - bet);
   spinning = true;
-  const res = [spinOne(), spinOne(), spinOne()];
+const AVOID_PAIR_BIAS = 0.7;  // 0 = allow natural pairs, 1 = almost never allow pairs from first two different
+const TRIPLE_BIAS     = 0.6;  // 0 = never force triples, 1 = always turn a pair into a triple
+
+// Weighted pick, with ability to avoid certain symbols
+function pickWeighted(avoidSet = new Set()) {
+  let total = 0;
+  for (let i = 0; i < symbols.length; i++) {
+    if (!avoidSet.has(symbols[i])) total += weights[i];
+  }
+  let r = Math.random() * total, acc = 0;
+  for (let i = 0; i < symbols.length; i++) {
+    if (avoidSet.has(symbols[i])) continue;
+    acc += weights[i];
+    if (r < acc) return symbols[i];
+  }
+  return symbols[0]; // fallback
+}
+
+// New spin function that reduces 2-of-a-kind outcomes
+function spinResultBiased() {
+  const r0 = spinOne();
+  const r1 = spinOne();
+  let r2;
+
+  if (r0 === r1) {
+    // We already have a pair
+    if (Math.random() < TRIPLE_BIAS) {
+      r2 = r0; // make triple
+    } else {
+      r2 = pickWeighted(new Set([r0])); // different -> stays 2-of-a-kind
+    }
+  } else {
+    // First two are different
+    if (Math.random() < AVOID_PAIR_BIAS) {
+      // force all three different
+      r2 = pickWeighted(new Set([r0, r1]));
+    } else {
+      // allow chance of creating a pair
+      r2 = spinOne();
+    }
+  }
+  return [r0, r1, r2];
+}
   await animateReels(res);
   const win = slotsPayout(...res, bet);
   if(win>0){
