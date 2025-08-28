@@ -16,9 +16,7 @@ $$(".tab").forEach(btn=>btn.onclick=()=>{
 document.getElementById("reset").onclick = () => {
   const pass = prompt("Enter password to reset balance:");
   if (pass === "loser") {
-    balance = 1000;
-    localStorage.setItem("casinoBalance", balance);
-    updateBalance();
+    setBalance(1000); // this updates balance + localStorage + UI
     alert("Balance reset to $1000 ✅");
   } else {
     alert("❌ Wrong password. Balance not reset.");
