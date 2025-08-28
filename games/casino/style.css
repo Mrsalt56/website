@@ -9,7 +9,7 @@ body{margin:0;background:radial-gradient(900px 600px at 80% -10%, rgba(124,58,23
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tab,.ghost{padding:8px 12px;border-radius:12px;background:var(--panel);border:1px solid #242836;color:var(--text);cursor:pointer}
 .tab.active{outline:2px solid var(--accent)}
-.panel{display:none;background: none;border: none;}
+.panel {background: var(--panel);border: 1px solid #242836;border-radius: 16px;padding: 16px;height: auto;min-height: unset;}
 .panel.active{display:block}
 .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .primary{background:linear-gradient(135deg,var(--accent),#4f46e5);border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
