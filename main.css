@@ -125,19 +125,16 @@ nav h1 {
 }
 
 #search-divider {
-    border-top: 2px solid #4582bf;
-    margin: 1vw 0;
-    text-align: center;
-    position: relative;
-}
-
-#search-divider span {
-    background: white;        
-    padding: 0 10px;            
-    position: relative;
-    top: -12px;                
-    color: #4582bf;
-    font-weight: bold;
+    background-color: #4582bf;   /* banner background */
+    margin: 1vw 0;               /* spacing above/below */
+    width: 100%;                 /* full width */
+    padding: 15px;               /* space around text */
+    color: white;                /* text color */
+    font-size: 1.4rem;           /* bigger text */
+    font-weight: bold;           /* bold text */
+    text-align: center;          /* center the text */
+    border-radius: 8px;          /* rounded corners */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* subtle shadow */
 }
 
 #games {
