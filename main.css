@@ -125,11 +125,19 @@ nav h1 {
 }
 
 #search-divider {
-    height: 10px;           
-    background-color: #4582bf; 
-    margin: 1vw 0;         
-    border: none;              
-    width: 100%;               
+    border-top: 2px solid #4582bf;
+    margin: 1vw 0;
+    text-align: center;
+    position: relative;
+}
+
+#search-divider span {
+    background: white;        
+    padding: 0 10px;            
+    position: relative;
+    top: -12px;                
+    color: #4582bf;
+    font-weight: bold;
 }
 
 #games {
