@@ -1,0 +1,34 @@
+{
+  "Metadata": {
+    "title": "使用条款 | Escape Road",
+    "description": "在开始您的高速冒险之前，请仔细阅读我们的使用条款。"
+  },
+  "title": "使用条款",
+  "subtitle": "Escape Road 刺激逃亡的基本准则",
+  "sections": {
+    "acceptance": {
+      "title": "条款接受",
+      "content": "通过访问或使用 Escape Road，您同意遵守并受这些条款的约束。您的高速追逐从理解这些规则开始。"
+    },
+    "userBehavior": {
+      "title": "用户行为",
+      "content": "在 Escape Road 的世界中，您的行为会产生后果。我们期望所有玩家公平竞技并尊重其他用户。作弊、骚扰或任何形式的破坏性行为可能会导致惩罚或游戏限制。"
+    },
+    "disclaimer": {
+      "title": "免责声明",
+      "content": "Escape Road 是一款激烈、充满动作的驾驶游戏，可能不适合所有玩家。对于玩家因游戏内容（包括高速追逐或竞争性游戏）而可能经历的任何不适或强烈情绪反应，我们不承担责任。"
+    },
+    "modification": {
+      "title": "条款修改",
+      "content": "我们保留随时修改这些条款的权利，就像 Escape Road 中的街道和障碍物可能随每次更新而改变一样。在做出更改后继续使用游戏表示您接受新的条款。"
+    },
+    "noAccount": {
+      "title": "无需账户",
+      "content": "Escape Road 不需要用户账户。您可以直接在浏览器中玩游戏，无需注册。但这意味着您的游戏进度和成就可能不会在不同会话之间保存。"
+    },
+    "intellectualProperty": {
+      "title": "知识产权",
+      "content": "Escape Road 中的所有内容，包括但不限于图形、车辆设计和游戏机制，均受版权和其他知识产权法律保护。未经我们明确许可，用户禁止复制、分发或创作衍生作品。"
+    }
+  }
+}
