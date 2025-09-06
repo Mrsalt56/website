@@ -1,0 +1,30 @@
+{
+  "Metadata": {
+    "title": "Privacy Policy | Escape Road",
+    "description": "Learn how we protect your privacy while playing Escape Road."
+  },
+  "title": "Privacy Policy",
+  "subtitle": "How We Safeguard Your Data in Escape Road",
+  "sections": {
+    "informationCollection": {
+      "title": "Information Collection",
+      "content": "We collect your game data, including your performance, vehicle choices, and gameplay statistics in Escape Road. This data is used to optimize your gaming experience and improve the game."
+    },
+    "dataSecurity": {
+      "title": "Data Security",
+      "content": "We use advanced encryption technology to protect your data, much like the high-speed security systems in Escape Road. However, in this digital world, we remain vigilant at all times to ensure your information stays safe."
+    },
+    "cookieUsage": {
+      "title": "Cookie Usage",
+      "content": "We use cookies to record your game preferences and settings, similar to how Escape Road remembers your favorite vehicles and routes. These cookies help us provide a more personalized and exciting gaming experience."
+    },
+    "policyUpdate": {
+      "title": "Policy Updates",
+      "content": "We may update this privacy policy from time to time, just as Escape Road receives new features and improvements. Please check back periodically to stay informed about how we handle your information."
+    },
+    "noLogin": {
+      "title": "No Login Required",
+      "content": "Escape Road does not require users to create an account or log in. You can start your high-speed adventure directly in your browser without providing any personal identification information."
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "Metadata": {
+    "title": "Escape Road: Jogo Emocionante de Perseguição e Fuga | Experimente a Adrenalina da Direção Extrema",
+    "description": "Escape Road é um jogo de direção cheio de adrenalina. Mostre suas habilidades fugindo da polícia, explore terrenos diversos e desbloqueie 45 veículos incríveis. Comece sua aventura de fuga agora!",
+    "keywords": ["Escape Road", "Jogo de Fuga", "Jogo de Direção", "Perseguição Policial", "Desvio de Obstáculos", "Desbloqueio de Veículos", "Exploração Multi-terreno"]
+  },
+  "hero": {
+    "title": "Escape Road: A Aventura de Direção Definitiva",
+    "subtitle": "Experimente perseguições eletrizantes e fugas audaciosas. Leve suas habilidades de direção ao limite!",
+    "startButton": "Jogar Agora"
+  },
+  "play": {
+    "title": "Inicie Sua Aventura de Fuga",
+    "description": "Pronto para o desafio? Clique abaixo para começar o jogo e sentir a adrenalina!"
+  },
+  "introduction": {
+    "title": "Visão Geral do Jogo",
+    "content": "Escape Road é um jogo de direção cheio de adrenalina que coloca você na pele de um audacioso assaltante de banco. Supere a perseguição implacável da polícia enquanto navega por ruas movimentadas da cidade, paisagens rurais pitorescas e desertos traiçoeiros. Cada segundo é repleto de tensão, e cada curva pode ser a sua última. Por quanto tempo você consegue sobreviver nesta perseguição de tirar o fôlego?"
+  },
+  "features": {
+    "title": "Destaques do Jogo",
+    "items": [
+      {
+        "title": "Ambientes de Fuga Diversos",
+        "description": "De cidades agitadas a desertos desolados, cada terreno oferece desafios únicos."
+      },
+      {
+        "title": "45 Veículos Desbloqueáveis",
+        "description": "Ganhe dinheiro jogando para desbloquear uma variedade de veículos de alto desempenho."
+      },
+      {
+        "title": "Gameplay de Perseguição Intensa",
+        "description": "Enfrente carros de polícia e jipes militares para uma emoção extrema!"
+      },
+      {
+        "title": "Sistema de Controle Intuitivo",
+        "description": "Controles de setas fáceis de dominar permitem que você se concentre na fuga intensa."
+      },
+      {
+        "title": "Áudio e Visuais Impressionantes",
+        "description": "Mergulhe na ação com efeitos sonoros cuidadosamente elaborados e gráficos detalhados."
+      }
+    ]
+  },
+  "howToPlay": {
+    "title": "Regras e Controles do Jogo",
+    "description": "Em Escape Road, seu objetivo é fugir da polícia pelo maior tempo possível. Use as setas do teclado para controlar seu veículo, desvie de obstáculos e carros de polícia. Colete moedas ao longo do caminho para desbloquear mais veículos e aumentar sua pontuação. Lembre-se, colisões irão diminuir sua velocidade, então fique alerta e ágil!",
+    "controls": {
+      "title": "Controles:",
+      "items": [
+        "Seta Esquerda: Virar à Esquerda",
+        "Seta Direita: Virar à Direita",
+        "Seta para Cima: Acelerar",
+        "Seta para Baixo: Frear/Marcha Ré"
+      ]
+    }
+  },
+  "playerReviews": {
+    "title": "Avaliações dos Jogadores",
+    "reviews": [
+      {
+        "content": "Escape Road é o jogo de direção mais emocionante que já joguei! Cada fuga faz meu coração disparar. Não consigo parar de jogar!",
+        "author": "ViciadoEmVelocidade"
+      },
+      {
+        "content": "A variedade de veículos e terrenos diversos tornam este jogo incrivelmente rejogável. Estou completamente viciado!",
+        "author": "GamerPro Alexandre"
+      },
+      {
+        "content": "Gráficos impressionantes, jogabilidade suave - é a maneira perfeita de passar o tempo. Altamente recomendado para todos os amantes de adrenalina!",
+        "author": "JogadorCasual Lúcia"
+      },
+      {
+        "content": "Como entusiasta de jogos de direção, devo dizer que Escape Road é excepcional. Combina perfeitamente elementos de perseguição, fuga e exploração.",
+        "author": "MestreDasEstradas Tiago"
+      },
+      {
+        "content": "Este jogo é tão viciante! Controles simples, mas uma jogabilidade tão intensa. Estou jogando há horas!",
+        "author": "JogadorIniciante Mariana"
+      },
+      {
+        "content": "Escape Road me faz sentir como se estivesse em um filme de ação de alta octanagem. Cada partida é uma descarga de adrenalina!",
+        "author": "CinéfiloCarlos"
+      }
+    ]
+  },
+  "footer": {
+    "copyright": "© 2024 Escape Road. Todos os direitos reservados."
+  }
+}
