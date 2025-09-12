@@ -8,8 +8,8 @@ const suggestButton = document.getElementById('suggestButton');
 const modal = document.getElementById('suggestionForm');
 const closeBtn = document.querySelector('.close');
 const sendBtn = document.getElementById('sendSuggestion');
-const webhookURL = "https://discord.com/api/webhooks/1405341631078727753/23FCdrJHMuOfcBBeUgpNugGopa_njHiJz_U0I7FIWD9TW2wxaHyv102cuJ_eIMcldpWE";
-const reportWebhookURL = "https://discord.com/api/webhooks/1405419496331808789/WxRxJIiqmG9xVXrIdXx2VqzIJkikX6lE3uzk6A2QzrHfxdUuQJgGnD1wZqxO5Qalq_Ts";
+const webhookURL = "https://discord.com/api/webhooks/1415474812037628005/qPca1ARqtULY44_5dbar6dSSLiMvaKrVRchKjXPULxwJElh-M0U2zeogMrs34jv2OWuB";
+const reportWebhookURL = "https://discord.com/api/webhooks/1415474903880171632/FlXBps-LswodW8fRTjkx4VWHAs19CuUR3iuFm63FMa5pLay5uI8jPvxSRVVPRrlQHDAr";
 
 function updateGames() {
   const searchTerm = searchInput.value.toLowerCase();
