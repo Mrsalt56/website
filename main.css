@@ -109,10 +109,13 @@ body {
   color: #fff;
 }
 .games-grid {
-  display: flex;
+  display: flex !important;   /* force flexbox instead of grid */
+  flex-direction: row;
   gap: 15px;
   overflow-x: auto;
-  padding-bottom: 10px;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 10px 0;
   scroll-behavior: smooth;
 }
 
@@ -141,9 +144,8 @@ body {
   border-radius: 4px;
 }
 .game-card {
-  flex: 0 0 auto;     /* prevents shrinking */
-  width: 150px;       /* set fixed width */
-  max-width: 150px;
+  flex: 0 0 auto;   /* don’t shrink */
+  width: 160px;     /* fixed card width */
   cursor: pointer;
 }
 
