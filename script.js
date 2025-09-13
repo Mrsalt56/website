@@ -82,3 +82,35 @@ document.querySelectorAll('.game-card').forEach(card => {
     }
   });
 });
+const navLinks = document.querySelectorAll('.site-nav a');
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const filter = link.getAttribute('data-filter');
+
+    document.querySelectorAll('.game-card').forEach(card => {
+      const genre = card.getAttribute('data-genre');
+      const popularity = card.getAttribute('data-popularity');
+
+      if (
+        filter === 'trending' && popularity === 'hot' ||
+        filter === 'new' && popularity === 'new' ||
+        filter === genre // matches "action", "puzzle", "sports", "platformer"
+      ) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+if (filter === 'all' ||
+    (filter === 'trending' && popularity === 'hot') ||
+    (filter === 'new' && popularity === 'new') ||
+    filter === genre) {
+  card.style.display = 'block';
+} else {
+  card.style.display = 'none';
+}
+        
+      }
+    });
+  });
+});
