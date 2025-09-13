@@ -144,23 +144,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // NAV FILTER - single declaration and logic
-  const navLinks = Array.from(document.querySelectorAll('.site-nav a'));
-  navLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      // update active tab
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
+// --- NAV FILTER (unified row mode) ---
+const navLinks = document.querySelectorAll('.site-nav a');
+const allSections = document.querySelectorAll('.games-section');
 
-      const filter = (link.getAttribute('data-filter') || 'all').toLowerCase();
-      currentFilter = filter;
-      // if a search is active, keep search behavior; else apply the filter
-      const searchTerm = (searchInput && searchInput.value || '').trim();
-      if (searchTerm.length === 0) applyFilter(filter);
-      else updateGames();
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    // update active tab
+    navLinks.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+
+    const filter = (link.getAttribute('data-filter') || 'all').toLowerCase();
+
+    const unifiedContainer = document.getElementById('search-results');
+    unifiedContainer.innerHTML = '';
+
+    if (filter === 'all') {
+      // show normal layout again
+      unifiedContainer.style.display = 'none';
+      allSections.forEach(section => section.style.display = 'block');
+      document.querySelectorAll('.game-card').forEach(card => {
+        card.style.display = '';
+      });
+      return;
+    }
+
+    // otherwise, hide sections and build a unified row
+    allSections.forEach(section => section.style.display = 'none');
+    unifiedContainer.style.display = 'flex';
+
+    let found = 0;
+    document.querySelectorAll('.game-card').forEach(card => {
+      const genre = (card.getAttribute('data-genre') || '').toLowerCase();
+      const popularity = (card.getAttribute('data-popularity') || '').toLowerCase();
+
+      if (filter === genre || filter === popularity) {
+        const clone = card.cloneNode(true);
+        clone.addEventListener('click', () => {
+          const link = clone.getAttribute('data-link');
+          if (link) window.open(link, '_blank');
+        });
+        unifiedContainer.appendChild(clone);
+        found++;
+      }
     });
+
+    if (found === 0) {
+      unifiedContainer.innerHTML = '<p>No games found.</p>';
+    }
   });
+});
 
   // === Force cards to stay horizontal (keeps your previous behavior) ===
   function enforceHorizontal() {
