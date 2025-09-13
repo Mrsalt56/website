@@ -173,6 +173,9 @@ body {
   position: relative;
   color: #fff;
   text-decoration: none; /* removes underline */
+
+  flex: 0 0 auto;   /* 🚀 don’t shrink, don’t wrap */
+  width: 160px;     /* 🚀 consistent width */
 }
 
 .game-card:hover {
