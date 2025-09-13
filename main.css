@@ -109,14 +109,14 @@ body {
   color: #fff;
 }
 .games-grid {
-  display: flex !important;   /* force flexbox instead of grid */
-  flex-direction: row;
+  display: flex;
+  flex-wrap: nowrap;     /* ✅ keep everything in one row */
   gap: 15px;
-  overflow-x: auto;
+  overflow-x: auto;      /* ✅ allow sideways scrolling */
   overflow-y: hidden;
-  white-space: nowrap;
   padding: 10px 0;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .games-grid::-webkit-scrollbar {
@@ -144,8 +144,8 @@ body {
   border-radius: 4px;
 }
 .game-card {
-  flex: 0 0 auto;   /* don’t shrink */
-  width: 160px;     /* fixed card width */
+  flex: 0 0 auto;        /* ✅ prevents shrinking/wrapping */
+  width: 160px;          /* ✅ fixed card width */
   cursor: pointer;
 }
 
