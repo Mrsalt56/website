@@ -165,11 +165,12 @@ body {
 }
 
 .game-card h3 {
-  padding: 10px;
-  font-size: 1rem;
-  margin: 0;
+  display: inline-block;   /* only as wide as the text */
+  padding: 6px 8px;
+  margin: 8px auto 0;
+  background: rgba(0,0,0,0.5);  /* optional: little tag look */
+  border-radius: 4px;
 }
-
 .game-card-title {
   margin-top: 6px;
   white-space: nowrap;
