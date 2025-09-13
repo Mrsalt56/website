@@ -71,3 +71,14 @@ document.querySelectorAll('.game-card').forEach(card => {
     }
   });
 })
+// --- MAKE GAME CARDS CLICKABLE ---
+document.querySelectorAll('.game-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const link = card.getAttribute('data-link');
+    if (link) {
+      window.open(link, "_blank"); // opens in a new tab
+    } else {
+      alert("This game doesn't have a link yet.");
+    }
+  });
+});
