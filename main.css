@@ -109,13 +109,41 @@ body {
   color: #fff;
 }
 .games-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* change to appropriate size */
-  gap: 10px; /* small gap between cards */
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+.games-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.games-grid::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+.games-grid {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+.games-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.games-grid::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
 }
 .game-card {
-  max-width: 160px;   /* keeps cards at a nice size */
-  margin: auto;
+  flex: 0 0 auto;     /* prevents shrinking */
+  width: 150px;       /* set fixed width */
+  max-width: 150px;
   cursor: pointer;
 }
 
