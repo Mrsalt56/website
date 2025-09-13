@@ -63,3 +63,11 @@ sendReportBtn.onclick = () => {
     body: JSON.stringify({ content: `🚨 **Problem Reported**\n**Title:** ${title}\n**Details:** ${details}` })
   }).then(() => alert("Report sent!"));
 };
+document.querySelectorAll('.game-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const link = card.getAttribute('data-link');
+    if (link) {
+      window.open(link, "_blank"); // opens in new tab
+    }
+  });
+})
