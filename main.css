@@ -98,7 +98,22 @@ body {
   border-radius: 0 6px 6px 0;
   cursor: pointer;
 }
+#search-results {
+  display: none;              /* hidden by default */
+  flex-wrap: nowrap;          /* stay in one row */
+  overflow-x: auto;           /* scroll sideways */
+  overflow-y: hidden;         /* prevent vertical scroll */
+  gap: 15px;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
 
+#search-results .game-card {
+  flex: 0 0 auto;             /* don’t shrink or wrap */
+  width: 160px;
+  max-width: 160px;
+}
 /* GAMES GRID */
 .games-section {
   margin: 40px 20px;
