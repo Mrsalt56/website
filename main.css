@@ -114,8 +114,9 @@ body {
   gap: 10px; /* small gap between cards */
 }
 .game-card {
-  text-align: center;
-  font-size: 0.9rem;  /* adjust title text size */
+  max-width: 160px;   /* keeps cards at a nice size */
+  margin: auto;
+  cursor: pointer;
 }
 
 .game-card img {
