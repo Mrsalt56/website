@@ -110,8 +110,8 @@ body {
 }
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* was 160px */
+  gap: 15px; /* a little tighter spacing */
 }
 .game-card {
   background: rgba(20, 20, 30, 0.9);
@@ -124,9 +124,9 @@ body {
 }
 .game-card img {
   width: 100%;
-  aspect-ratio: 1 / 1; 
-  object-fit: contain;  
-  background: #000;  
+  aspect-ratio: 1 / 1;   /* force squares */
+  object-fit: contain;   /* fit image fully inside */
+  background: #000;      /* optional background */
 }
 .game-card h3 {
   padding: 10px;
