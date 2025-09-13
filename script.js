@@ -143,3 +143,21 @@ navLinks.forEach(link => {
     });
   });
 });
+// === Force cards to stay horizontal ===
+function enforceHorizontal() {
+  document.querySelectorAll('.games-grid').forEach(g => {
+    g.style.display = 'flex';
+    g.style.flexWrap = 'nowrap';
+    g.style.overflowX = 'auto';
+    g.style.overflowY = 'hidden';
+    g.style.gap = '15px';
+  });
+
+  document.querySelectorAll('.games-grid .game-card').forEach(c => {
+    c.style.flex = '0 0 auto';
+    c.style.width = '160px';
+    c.style.maxWidth = '160px';
+  });
+}
+
+window.addEventListener('load', enforceHorizontal);
