@@ -114,3 +114,32 @@ if (filter === 'all' ||
     });
   });
 });
+// --- NAV FILTER ---
+const navLinks = document.querySelectorAll('.site-nav a');
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    // remove active class from all tabs
+    navLinks.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+
+    const filter = link.getAttribute('data-filter');
+
+    document.querySelectorAll('.game-card').forEach(card => {
+      const genre = card.getAttribute('data-genre');
+      const popularity = card.getAttribute('data-popularity');
+
+      if (
+        filter === 'all' ||
+        filter === genre ||
+        filter === popularity
+      ) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
