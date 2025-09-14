@@ -1,0 +1,22 @@
+<html>
+    <meta charset="utf-8">
+    <head>
+        <title>All NOW.GG Games</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <select id="dropDownId">
+            <option class='gameoption' value=''>Select roblox to play</option>
+            <option class='gameoption' value='https://now.gg/apps/a/19900/b.html'>Roblox</option>
+        </select>
+
+        <input class="SubmitButton" type="submit" name="SUBMITBUTTON"  value="Play!"/>
+        <script src = "//code.jquery.com/jquery-3.0.0.min.js"></script>
+        <script type = "text/javascript">
+        $('.SubmitButton').click(function(){
+            window.location.href = $('#dropDownId :selected').val();
+        });
+        
+        </script>
+    </body>
+</html>
