@@ -7,7 +7,6 @@ body {
   color: #f0f0f0;
 }
 
-/* HEADER */
 .site-header {
   display: flex;
   justify-content: space-between;
@@ -61,7 +60,6 @@ body {
   color: #fff;
 }
 
-/* HERO */
 .hero {
   text-align: center;
   padding: 60px 20px;
@@ -99,10 +97,10 @@ body {
   cursor: pointer;
 }
 #search-results {
-  display: none;              /* hidden by default */
-  flex-wrap: nowrap;          /* stay in one row */
-  overflow-x: auto;           /* scroll sideways */
-  overflow-y: hidden;         /* prevent vertical scroll */
+  display: none;            
+  flex-wrap: nowrap;       
+  overflow-x: auto;        
+  overflow-y: hidden;        
   gap: 15px;
   padding: 10px 0;
   scroll-behavior: smooth;
@@ -110,7 +108,7 @@ body {
 }
 
 #search-results .game-card {
-  flex: 0 0 auto;             /* don’t shrink or wrap */
+  flex: 0 0 auto;            
   width: 160px;
   max-width: 160px;
 }
@@ -127,9 +125,9 @@ body {
 
 .games-grid {
   display: flex !important;
-  flex-wrap: nowrap !important;     /* 🚀 force single row */
-  overflow-x: auto !important;      /* 🚀 scroll sideways */
-  overflow-y: hidden !important;    /* 🚀 no vertical scrollbar */
+  flex-wrap: nowrap !important;  
+  overflow-x: auto !important;  
+  overflow-y: hidden !important; 
   gap: 15px !important;
   padding: 10px 0;
   scroll-behavior: smooth;
@@ -146,8 +144,8 @@ body {
 }
 
 .game-card {
-  flex: 0 0 auto !important;        /* 🚀 don’t shrink, don’t wrap */
-  width: 160px !important;          /* 🚀 fixed card width */
+  flex: 0 0 auto !important;      
+  width: 160px !important;        
   max-width: 160px !important;
   background: rgba(20,20,30,0.9);
   border-radius: 8px;
@@ -190,7 +188,6 @@ body {
   text-overflow: ellipsis;
 }
 
-/* BADGES */
 .badge {
   position: absolute;
   top: 8px;
@@ -203,7 +200,6 @@ body {
 .badge.hot { background: #e74c3c; }
 .badge.new { background: #27ae60; }
 
-/* MODALS */
 .modal {
   display: none;
   position: fixed;
@@ -226,10 +222,10 @@ body {
 }
 .site-nav {
   display: flex;
-  flex-wrap: nowrap;         /* force a single row */
-  overflow-x: auto;          /* enable horizontal scrolling */
-  -webkit-overflow-scrolling: touch; /* smooth scroll on mobile */
-  gap: 15px;                 /* space between tabs */
+  flex-wrap: nowrap;         
+  overflow-x: auto;  
+  -webkit-overflow-scrolling: touch;
+  gap: 15px;            
   padding: 10px 0;
 }
 
@@ -243,8 +239,8 @@ body {
 }
 
 .site-nav a {
-  flex: 0 0 auto;            /* keep tabs from shrinking */
-  white-space: nowrap;       /* prevent text from breaking */
+  flex: 0 0 auto;        
+  white-space: nowrap;     
   margin: 0;
   padding: 6px 12px;
   font-weight: 600;
