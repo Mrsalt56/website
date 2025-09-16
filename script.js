@@ -12,10 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const webhookURL = "https://discord.com/api/webhooks/1415474812037628005/qPca1ARqtULY44_5dbar6dSSLiMvaKrVRchKjXPULxwJElh-M0U2zeogMrs34jv2OWuB";
   const reportWebhookURL = "https://discord.com/api/webhooks/1415474903880171632/FlXBps-LswodW8fRTjkx4VWHAs19CuUR3iuFm63FMa5pLay5uI8jPvxSRVVPRrlQHDAr";
 
-  // Current active filter (keeps state when searching)
   let currentFilter = 'all';
 
-  // Helper: show/hide cards according to currentFilter
   const popularityAliases = {
     hot: ['hot', 'trending'],
     trending: ['hot', 'trending']
@@ -33,30 +31,26 @@ document.addEventListener('DOMContentLoaded', () => {
       else if (f === popularity) show = true;
       else if (popularityAliases[f] && popularityAliases[f].includes(popularity)) show = true;
 
-      card.style.display = show ? '' : 'none'; // '' -> use CSS default (flex item), 'none' hides
+      card.style.display = show ? '' : 'none';
     });
   }
 
-  // SEARCH - show clones in the search bar (clones get click handlers)
   function updateGames() {
     const searchTerm = (searchInput && searchInput.value || '').trim().toLowerCase();
     searchResults.innerHTML = '';
 
     if (searchTerm.length === 0) {
-      // no search: hide results and reapply active filter
       searchResults.style.display = 'none';
       applyFilter();
       return;
     }
 
-    // search: show matching clones in search-results and hide non-matching in main grid
     let found = 0;
     gameCards.forEach(card => {
       const name = (card.querySelector('h3')?.innerText || '').toLowerCase();
       const matches = name.includes(searchTerm);
       if (matches) {
         const clone = card.cloneNode(true);
-        // ensure clones open the game
         clone.addEventListener('click', () => {
           const link = clone.getAttribute('data-link');
           if (link) window.open(link, '_blank');
@@ -65,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         searchResults.appendChild(clone);
         found++;
       }
-      // hide original card if it doesn't match (so the grid reflects search)
       card.style.display = matches ? '' : 'none';
     });
 
@@ -73,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (searchInput) searchInput.addEventListener('input', updateGames);
 
-  // MODALS
   if (suggestButton && modal) {
     suggestButton.addEventListener('click', () => { modal.style.display = 'flex'; });
   }
@@ -81,14 +73,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const m = btn.closest('.modal');
     if (m) m.style.display = 'none';
   }));
-  // click outside to close
   window.addEventListener('click', e => {
     if (e.target && e.target.classList && e.target.classList.contains('modal')) {
       e.target.style.display = 'none';
     }
   });
 
-  // SUGGESTION submit
   if (sendBtn) {
     sendBtn.addEventListener('click', () => {
       const name = document.getElementById('gameName')?.value.trim();
@@ -108,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // REPORT FORM
   const reportButton = document.getElementById('reportButton');
   const reportModal = document.getElementById('reportForm');
   const sendReportBtn = document.getElementById('sendReport');
@@ -135,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Make original game cards clickable (single listener set)
   gameCards.forEach(card => {
     card.addEventListener('click', () => {
       const link = card.getAttribute('data-link');
@@ -144,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-// --- NAV FILTER (unified row mode) ---
 const navLinks = document.querySelectorAll('.site-nav a');
 const allSections = document.querySelectorAll('.games-section');
 
@@ -152,7 +139,6 @@ navLinks.forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
 
-    // update active tab
     navLinks.forEach(l => l.classList.remove('active'));
     link.classList.add('active');
 
@@ -162,7 +148,6 @@ navLinks.forEach(link => {
     unifiedContainer.innerHTML = '';
 
     if (filter === 'all') {
-      // show normal layout again
       unifiedContainer.style.display = 'none';
       allSections.forEach(section => section.style.display = 'block');
       document.querySelectorAll('.game-card').forEach(card => {
@@ -171,7 +156,6 @@ navLinks.forEach(link => {
       return;
     }
 
-    // otherwise, hide sections and build a unified row
     allSections.forEach(section => section.style.display = 'none');
     unifiedContainer.style.display = 'flex';
 
@@ -197,7 +181,6 @@ navLinks.forEach(link => {
   });
 });
 
-  // === Force cards to stay horizontal (keeps your previous behavior) ===
   function enforceHorizontal() {
     document.querySelectorAll('.games-grid').forEach(g => {
       g.style.display = 'flex';
@@ -215,6 +198,5 @@ navLinks.forEach(link => {
   }
   window.addEventListener('load', enforceHorizontal);
 
-  // initialize
   applyFilter('all');
 });
