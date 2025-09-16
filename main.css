@@ -253,3 +253,15 @@ body {
   color: #4da6ff;
   border-bottom: 2px solid #4da6ff;
 }
+
+.discord-link img {
+  height: 32px;
+  width: 32px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.discord-link img:hover {
+  transform: scale(1.1);
+}
