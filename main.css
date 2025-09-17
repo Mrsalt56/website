@@ -254,14 +254,26 @@ body {
   border-bottom: 2px solid #4da6ff;
 }
 
-.discord-link img {
-  height: 32px;
-  width: 32px;
+.discord-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-left: 10px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  background: #5865F2; 
+  color: #fff;
+  height: 36px;
+  width: 36px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.discord-link img:hover {
+.discord-link:hover {
   transform: scale(1.1);
+  background: #4752C4; 
+}
+
+.discord-link i {
+  font-size: 20px;
+  line-height: 1;
 }
