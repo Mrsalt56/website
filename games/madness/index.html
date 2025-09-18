@@ -28,15 +28,13 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Create a new Ruffle player
       const ruffle = window.RufflePlayer.newest();
       const player = ruffle.createPlayer();
 
-      // Append player to #game div
       document.getElementById("game").appendChild(player);
 
-      // Load your SWF file
-      player.load("https://cdn.jsdelivr.net/gh/oldflashgames/games4@630f33f2ea89cfa120d42a0b3d0bf0b1f9edde8f/madness-project-nexus.swf");
+      // Load from your local "games" folder
+      player.load("games/madness-project-nexus.swf");
     });
   </script>
 </body>
