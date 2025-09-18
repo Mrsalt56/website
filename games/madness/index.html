@@ -20,20 +20,23 @@
       background: black;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/gh/somer-sheff-73/xv@main/ruffle.js"></script>
+  <!-- Load Ruffle -->
+  <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
 </head>
 <body>
-  <ruffle-player id="game"></ruffle-player>
+  <div id="game"></div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const ruffle = window.RufflePlayer?.newest() || window.RufflePlayer?.createPlayer();
-      if (ruffle) {
-        const player = document.getElementById("game");
-        player.load("https://cdn.jsdelivr.net/gh/oldflashgames/games4@630f33f2ea89cfa120d42a0b3d0bf0b1f9edde8f/madness-project-nexus.swf");
-      } else {
-        document.body.textContent = "Ruffle failed to load.";
-      }
+      // Create a new Ruffle player
+      const ruffle = window.RufflePlayer.newest();
+      const player = ruffle.createPlayer();
+
+      // Append player to #game div
+      document.getElementById("game").appendChild(player);
+
+      // Load your SWF file
+      player.load("https://cdn.jsdelivr.net/gh/oldflashgames/games4@630f33f2ea89cfa120d42a0b3d0bf0b1f9edde8f/madness-project-nexus.swf");
     });
   </script>
 </body>
