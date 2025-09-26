@@ -168,16 +168,6 @@ var startCommercialFirst = function(){
   muted = 0;
    //Poki stuff...
 
-  PokiSDK.commercialBreak().then(
-    () => { //you can also use a normal function here
-      firstPlay = true;
-        console.log('End of commercial break');
-        game.scene.start("SceneGameOver",{ down: 1, touchdown: false, yards_to_go:100, tds:0 });
-        game.scene.remove("SceneMainMenu");
-        muted = 1;
-    }
-  );
-
  game.scene.start("SceneGameOver",{ down: 1, touchdown: false, yards_to_go:100, tds:0 });
  game.scene.remove("SceneMainMenu");
   //end Poki stuff
