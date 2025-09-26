@@ -25,6 +25,7 @@ var config = {
   roundPixels: true
 };
 
+// --- Game variables ---
 var adBlocker = false;
 var activateEndzone = false;
 var beastmode = false;
@@ -121,22 +122,9 @@ var yardsTotal = 0;
 
 var game = new Phaser.Game(config);
 
-/* 
-// PokiSDK initialization removed to disable ads
-PokiSDK.init().then(
-    () => {
-        console.log("PokiSDK initialized");
-    }
-).catch(
-    () => {
-        console.log("Adblock enabled");
-        adBlocker = true;
-    }
-);
-*/
+console.log("Poki/ads disabled — running game normally");
 
-console.log("not at www.glowmonkey.com");
-
+// --- Functions for skipping ads ---
 var StartLoading = function () {
   console.log("Loading start skipped");
 }
@@ -146,16 +134,26 @@ var LoadingComplete = function() {
 }
 
 var startCommercialFirst = function(){
-  console.log("Commercial skipped");
+  console.log("Commercial skipped — starting game immediately");
   muted = 0;
-  game.scene.start("SceneGameOver",{ down: 1, touchdown: false, yards_to_go:100, tds:0 });
+  game.scene.start("SceneMain", { level: 1 });
   game.scene.remove("SceneMainMenu");
 }
 
 var gameStart = function(){
-  console.log("Game start skipped");
+  console.log("Game start skipped — gameplay active");
 }
 
 var gameStop = function(){
   console.log("Game stop skipped");
 }
+
+// --- MainMenu Play button ---
+SceneMainMenu.prototype.create = function() {
+  this.startButton = this.add.image(504, 284, 'buttonPlay').setInteractive();
+  this.startButton.on('pointerdown', () => {
+    console.log("Play button clicked — starting game");
+    game.scene.start("SceneMain", { level: 1 });
+    game.scene.remove("SceneMainMenu");
+  });
+};
