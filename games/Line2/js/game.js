@@ -129,20 +129,6 @@ var yardsTotal = 0;
 var game = new Phaser.Game(config);
 
 
-    // successfully initialized
-    console.log("PokiSDK initialized");
-    // continue to game
-}
-).catch(
-() => {
-    // initialized but the user has an adblock
-    console.log("Adblock enabled");
-    adBlocker = true;
-    // feel free to kindly ask the user to disable AdBlock, like forcing weird usernames or showing a sad face; be creative!
-    // continue to the game
-}
-);
-
 //console.log(document.location.host);
 if(document.location.host != "www.glowmonkey.com"){
 //Poki lock
