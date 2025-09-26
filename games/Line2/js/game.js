@@ -129,9 +129,6 @@ var yardsTotal = 0;
 var game = new Phaser.Game(config);
 
 
-//Poki stuff
-PokiSDK.init().then(
-() => {
     // successfully initialized
     console.log("PokiSDK initialized");
     // continue to game
@@ -163,35 +160,6 @@ var LoadingComplete = function() {
 }
 
 
-var startCommercial = function(){
-  //muted = 0;
-  console.log("Commercial Starting");
-   //Poki stuff...
-  PokiSDK.commercialBreak().then(
-    () => { //you can also use a normal function here
-        console.log('End of commercial break');
-        //muted = 1;
-    }
-  );
-  //end Poki stuff
-}
-
-
-var startCommercialFirst = function(){
-  console.log("Commercial Starting");
-  muted = 0;
-   //Poki stuff...
-
-  PokiSDK.commercialBreak().then(
-    () => { //you can also use a normal function here
-      firstPlay = true;
-        console.log('End of commercial break');
-        game.scene.start("SceneGameOver",{ down: 1, touchdown: false, yards_to_go:100, tds:0 });
-        game.scene.remove("SceneMainMenu");
-        muted = 1;
-    }
-  );
-
  game.scene.start("SceneGameOver",{ down: 1, touchdown: false, yards_to_go:100, tds:0 });
  game.scene.remove("SceneMainMenu");
   //end Poki stuff
@@ -212,4 +180,3 @@ var gameStop = function(){
   PokiSDK.gameplayStop();
 
 }
-
