@@ -129,9 +129,6 @@ var yardsTotal = 0;
 var game = new Phaser.Game(config);
 
 
-//Poki stuff
-PokiSDK.init().then(
-() => {
     // successfully initialized
     console.log("PokiSDK initialized");
     // continue to game
@@ -162,11 +159,6 @@ var LoadingComplete = function() {
   PokiSDK.gameLoadingFinished();
 }
 
-
-var startCommercialFirst = function(){
-  console.log("Commercial Starting");
-  muted = 0;
-   //Poki stuff...
 
  game.scene.start("SceneGameOver",{ down: 1, touchdown: false, yards_to_go:100, tds:0 });
  game.scene.remove("SceneMainMenu");
