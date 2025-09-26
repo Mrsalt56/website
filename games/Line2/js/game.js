@@ -163,20 +163,6 @@ var LoadingComplete = function() {
 }
 
 
-var startCommercial = function(){
-  //muted = 0;
-  console.log("Commercial Starting");
-   //Poki stuff...
-  PokiSDK.commercialBreak().then(
-    () => { //you can also use a normal function here
-        console.log('End of commercial break');
-        //muted = 1;
-    }
-  );
-  //end Poki stuff
-}
-
-
 var startCommercialFirst = function(){
   console.log("Commercial Starting");
   muted = 0;
