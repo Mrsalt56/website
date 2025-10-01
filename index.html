@@ -8,6 +8,41 @@
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
 </head>
+<!-- SIDEBAR START -->
+<aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
+  <button id="sidebarClose" class="sidebar-close" aria-label="Close sidebar">&times;</button>
+
+  <div class="sidebar-section">
+    <h3>Quick Actions</h3>
+    <button id="sbSuggest" class="sb-btn"><i class="fa-solid fa-lightbulb"></i> Suggest a game</button>
+    <button id="sbReport" class="sb-btn sb-danger"><i class="fa-solid fa-flag"></i> Report a problem</button>
+  </div>
+
+  <div class="sidebar-section">
+    <h3>Community</h3>
+    <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
+      <i class="fa-brands fa-discord"></i> Join Discord
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <h3>Proxies</h3>
+    <ul class="proxy-list">
+      <li><a href="https://example-proxy1.com" target="_blank" rel="noopener">Proxy 1</a></li>
+      <li><a href="https://example-proxy2.com" target="_blank" rel="noopener">Proxy 2</a></li>
+      <li><a href="https://example-proxy3.com" target="_blank" rel="noopener">Proxy 3</a></li>
+    </ul>
+    <a id="moreProxies" class="sb-link" href="Proxies.html" target="_blank" rel="noopener">
+      <i class="fa-solid fa-list"></i> More proxies
+    </a>
+  </div>
+</aside>
+
+<!-- Button that opens sidebar (sits where your old Suggest/Report buttons were) -->
+<button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
+  <i class="fa-solid fa-bars"></i>
+</button>
+<!-- SIDEBAR END -->
 <body>
   <header class="site-header">
     <div class="logo">
@@ -32,8 +67,6 @@
   <a href="#" data-filter="racing">Racing</a>
 </nav>
     <div class="header-buttons">
-      <button id="suggestButton">Suggest a Game</button>
-      <button id="reportButton">Report a Problem</button>
       <a href="https://discord.gg/qJn2PgFbdH" target="_blank" class="discord-link">
         <img src="images/discord.png" alt="Discord" />
   </a>
