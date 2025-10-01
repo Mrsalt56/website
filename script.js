@@ -200,3 +200,59 @@ navLinks.forEach(link => {
 
   applyFilter('all');
 });
+
+(function() {
+  const sidebar = document.getElementById('siteSidebar');
+  const toggle = document.getElementById('sidebarToggle');
+  const closeBtn = document.getElementById('sidebarClose');
+
+
+  const sbSuggest = document.getElementById('sbSuggest');
+  const sbReport = document.getElementById('sbReport');
+
+  if (!sidebar || !toggle) return;
+
+  function openSidebar() {
+    sidebar.setAttribute('aria-hidden', 'false');
+  }
+  function closeSidebar() {
+    sidebar.setAttribute('aria-hidden', 'true');
+  }
+
+  toggle.addEventListener('click', openSidebar);
+  closeBtn && closeBtn.addEventListener('click', closeSidebar);
+
+
+  document.addEventListener('click', (e) => {
+    if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+
+      closeSidebar();
+    }
+  });
+
+  if (sbSuggest) {
+    sbSuggest.addEventListener('click', (e) => {
+      e.preventDefault();
+      const modal = document.getElementById('suggestionForm');
+      if (modal) modal.style.display = 'flex';
+      closeSidebar();
+    });
+  }
+  if (sbReport) {
+    sbReport.addEventListener('click', (e) => {
+      e.preventDefault();
+      const modal = document.getElementById('reportForm');
+      if (modal) modal.style.display = 'flex';
+      closeSidebar();
+    });
+  }
+
+  sidebar.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebar();
+  });
+})();
