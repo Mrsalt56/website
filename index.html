@@ -8,6 +8,37 @@
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.0/css/all.css">
 </head>
+
+<aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
+  <button id="sidebarClose" class="sidebar-close" aria-label="Close sidebar">&times;</button>
+
+  <div class="sidebar-section">
+    <h3>Quick Actions</h3>
+    <button id="sbSuggest" class="sb-btn"><i class="fa-solid fa-lightbulb"></i> Suggest a game</button>
+    <button id="sbReport" class="sb-btn sb-danger"><i class="fa-solid fa-flag"></i> Report a problem</button>
+  </div>
+
+  <div class="sidebar-section">
+    <h3>Community</h3>
+    <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
+      <i class="fa-brands fa-discord"></i> Join Discord
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <h3>Proxy</h3>
+    <ul class="proxy-list">
+      <li><a href="https://mrsalt56.com/games/proxy" target="_blank" rel="noopener">Proxy</a></li>
+      
+  <p class="proxy-note">⚠️ Make sure to use the full link — example: <code>discord.com</code></p>
+    </ul>
+    </a>
+  </div>
+</aside>
+
+<button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
+  <i class="fa-solid fa-bars"></i>
+</button>
 <body>
   <header class="site-header">
     <div class="logo">
@@ -30,13 +61,7 @@
   <a href="#" data-filter="simulation">Simulation</a>
   <a href="#" data-filter="rhythm">Rhythm</a>
   <a href="#" data-filter="racing">Racing</a>
-  <a href="Proxies.html" target="_blank">Proxies</a>
 </nav>
-    <div class="header-buttons">
-      <button id="suggestButton">Suggest a Game</button>
-      <button id="reportButton">Report a Problem</button>
-      <a href="https://discord.gg/qJn2PgFbdH" target="_blank" class="discord-link">
-        <img src="images/discord.png" alt="Discord" />
   </a>
     </div>
   </header>

@@ -269,3 +269,37 @@ body {
 .discord-link img:hover {
   transform: scale(1.1);
 }
+
+.site-sidebar {
+  position: fixed;
+  top: 60px;      
+  right: 0;      
+  width: 280px;
+  background: rgba(10,12,20,0.96);
+  color: #fff;
+  border-radius: 8px 0 0 8px;
+  padding: 16px;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+  transform: translateX(100%);
+  transition: transform 220ms ease;
+  z-index: 999;
+}
+
+.site-sidebar[aria-hidden="false"] {
+  transform: translateX(0);
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: 20px;    
+  right: 20px;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  background: linear-gradient(180deg,#0078ff,#005bb5);
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
