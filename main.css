@@ -319,3 +319,23 @@ body {
   font-family: monospace;
   color: #fff;
 }
+
+.suggest-btn {
+  background: #0078ff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.report-btn {
+  background: #ff4d4d;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
