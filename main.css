@@ -272,8 +272,8 @@ body {
 
 .site-sidebar {
   position: fixed;
-  top: 60px;       /* adjust to match your header height */
-  right: 0;        /* keep on right side */
+  top: 60px;      
+  right: 0;      
   width: 280px;
   background: rgba(10,12,20,0.96);
   color: #fff;
@@ -291,7 +291,7 @@ body {
 
 .sidebar-toggle {
   position: fixed;
-  top: 20px;     /* adjust to match old button spot */
+  top: 20px;    
   right: 20px;
   z-index: 1000;
   width: 44px;
