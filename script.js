@@ -200,3 +200,61 @@ navLinks.forEach(link => {
 
   applyFilter('all');
 });
+// SIDEBAR behaviour
+(function() {
+  const sidebar = document.getElementById('siteSidebar');
+  const toggle = document.getElementById('sidebarToggle');
+  const closeBtn = document.getElementById('sidebarClose');
+
+  // Buttons inside sidebar mapped to existing modals/links
+  const sbSuggest = document.getElementById('sbSuggest');
+  const sbReport = document.getElementById('sbReport');
+
+  if (!sidebar || !toggle) return;
+
+  function openSidebar() {
+    sidebar.setAttribute('aria-hidden', 'false');
+  }
+  function closeSidebar() {
+    sidebar.setAttribute('aria-hidden', 'true');
+  }
+
+  toggle.addEventListener('click', openSidebar);
+  closeBtn && closeBtn.addEventListener('click', closeSidebar);
+
+  // Close when clicking outside (for desktop)
+  document.addEventListener('click', (e) => {
+    if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      // keep sidebar open if toggle was clicked
+      closeSidebar();
+    }
+  });
+
+  // wire Suggest and Report buttons to existing modals (you already have these in page)
+  if (sbSuggest) {
+    sbSuggest.addEventListener('click', (e) => {
+      e.preventDefault();
+      const modal = document.getElementById('suggestionForm');
+      if (modal) modal.style.display = 'flex';
+      closeSidebar();
+    });
+  }
+  if (sbReport) {
+    sbReport.addEventListener('click', (e) => {
+      e.preventDefault();
+      const modal = document.getElementById('reportForm');
+      if (modal) modal.style.display = 'flex';
+      closeSidebar();
+    });
+  }
+
+  // Prevent closing when clicking inside sidebar (so user can interact)
+  sidebar.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  // accessibility: close with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebar();
+  });
+})();
