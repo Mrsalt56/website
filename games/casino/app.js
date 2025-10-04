@@ -90,7 +90,8 @@ $("#spin").addEventListener("click", async ()=>{
   slotMsg.classList.remove("error");
   setBalance(balance - bet);
   spinning = true;
-const AVOID_PAIR_BIAS = 0.7;  // 0 = allow natural pairs, 1 = almost never allow pairs from first two different
+  const res = spinResultBiased();
+  const AVOID_PAIR_BIAS = 0.7;  // 0 = allow natural pairs, 1 = almost never allow pairs from first two different
 const TRIPLE_BIAS     = 0.6;  // 0 = never force triples, 1 = always turn a pair into a triple
 
 // Weighted pick, with ability to avoid certain symbols
