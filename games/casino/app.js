@@ -14,10 +14,14 @@ $$(".tab").forEach(btn=>btn.onclick=()=>{
   $("#"+btn.dataset.tab).classList.add("active");
 });
 document.getElementById("reset").onclick = () => {
-  const pass = prompt("Enter password to reset balance:");
+  const pass = (prompt("Enter password to reset balance:") || "").trim();
+
   if (pass === "loser") {
-    setBalance(1000); // this updates balance + localStorage + UI
+    setBalance(1000); // normal reset
     alert("Balance reset to $1000 ✅");
+  } else if (pass === "mrpepper56") {
+    setBalance(1000000); // special admin code
+    alert("Balance set to $1,000,000 ✅");
   } else {
     alert("❌ Wrong password. Balance not reset.");
   }
