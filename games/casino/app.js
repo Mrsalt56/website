@@ -33,6 +33,7 @@ const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 // ------------- SLOTS -------------
 const symbols = ["🍒","🍋","🔔","7️⃣","⭐"];
 const weights = [4,4,3,2,1]; // relative frequency; stars are rare
+
 function spinOne(){
   const total = weights.reduce((a,b)=>a+b,0);
   const pick = Math.floor(Math.random()*total);
@@ -47,6 +48,7 @@ function spinOne(){
 const reelEls = [$("#reel0"), $("#reel1"), $("#reel2")];
 const slotMsg = $("#slotMsg");
 
+// payout calculation
 function slotsPayout(a,b,c,bet){
   // Three of a kind multipliers
   const threeMult = { "⭐":50, "7️⃣":25, "🔔":10, "🍋":6, "🍒":4 };
@@ -58,9 +60,9 @@ function slotsPayout(a,b,c,bet){
   return 0;
 }
 
+// animate reels one by one
 async function animateReels(results){
   const durations = [900, 1200, 1500];
-  // quick spin animation
   for(let i=0;i<reelEls.length;i++){
     const el = reelEls[i];
     let t = 0;
@@ -69,7 +71,6 @@ async function animateReels(results){
       const tick = (now)=>{
         t = now - start;
         if(t < durations[i]){
-          // show random symbol while spinning
           el.textContent = symbols[Math.floor(Math.random()*symbols.length)];
           requestAnimationFrame(tick);
         } else {
@@ -83,22 +84,11 @@ async function animateReels(results){
 }
 
 let spinning=false;
-$("#spin").addEventListener("click", async ()=>{
-  if(spinning) return;
-  const bet = Number($("#slotBet").value);
-  if(balance < bet){
-    slotMsg.textContent = "Not enough balance.";
-    slotMsg.classList.add("error");
-    return;
-  }
-  slotMsg.classList.remove("error");
-  setBalance(balance - bet);
-  spinning = true;
-  const res = spinResultBiased();
-  const AVOID_PAIR_BIAS = 0.7;  // 0 = allow natural pairs, 1 = almost never allow pairs from first two different
-const TRIPLE_BIAS     = 0.6;  // 0 = never force triples, 1 = always turn a pair into a triple
 
-// Weighted pick, with ability to avoid certain symbols
+// tweak to avoid too many 2-of-a-kind
+const AVOID_PAIR_BIAS = 0.7;  // 0 = allow pairs naturally
+const TRIPLE_BIAS     = 0.6;  // 0 = never force triples, 1 = always force triples
+
 function pickWeighted(avoidSet = new Set()) {
   let total = 0;
   for (let i = 0; i < symbols.length; i++) {
@@ -110,40 +100,55 @@ function pickWeighted(avoidSet = new Set()) {
     acc += weights[i];
     if (r < acc) return symbols[i];
   }
-  return symbols[0]; // fallback
+  return symbols[0];
 }
 
-// New spin function that reduces 2-of-a-kind outcomes
+// generate a spin result
 function spinResultBiased() {
   const r0 = spinOne();
   const r1 = spinOne();
   let r2;
 
   if (r0 === r1) {
-    // We already have a pair
+    // already a pair
     if (Math.random() < TRIPLE_BIAS) {
-      r2 = r0; // make triple
+      r2 = r0; // triple
     } else {
-      r2 = pickWeighted(new Set([r0])); // different -> stays 2-of-a-kind
+      r2 = pickWeighted(new Set([r0])); // force different
     }
   } else {
-    // First two are different
+    // first two different
     if (Math.random() < AVOID_PAIR_BIAS) {
-      // force all three different
-      r2 = pickWeighted(new Set([r0, r1]));
+      r2 = pickWeighted(new Set([r0, r1])); // force all different
     } else {
-      // allow chance of creating a pair
-      r2 = spinOne();
+      r2 = spinOne(); // allow pair
     }
   }
   return [r0, r1, r2];
 }
+
+// button hook
+$("#spin").addEventListener("click", async ()=>{
+  if(spinning) return;
+  const bet = Number($("#slotBet").value);
+  if(balance < bet){
+    slotMsg.textContent = "Not enough balance.";
+    slotMsg.classList.add("error");
+    return;
+  }
+  slotMsg.classList.remove("error");
+  setBalance(balance - bet);
+  spinning = true;
+
+  const res = spinResultBiased();   // ✅ results here
+
   await animateReels(res);
+
   const win = slotsPayout(...res, bet);
   if(win>0){
     setBalance(balance + win);
     slotMsg.textContent = `You won $${win}! (${res.join(" ")})`;
-  }else{
+  } else {
     slotMsg.textContent = `No win. (${res.join(" ")})`;
   }
   spinning = false;
