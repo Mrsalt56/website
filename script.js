@@ -256,18 +256,36 @@ navLinks.forEach(link => {
     if (e.key === 'Escape') closeSidebar();
   });
 })();
+
+
 document.querySelectorAll('.games-row').forEach(row => {
   const grid = row.querySelector('.games-grid');
   const leftBtn = row.querySelector('.scroll-btn.left');
   const rightBtn = row.querySelector('.scroll-btn.right');
 
-  const scrollAmount = 300; 
+  let scrollInterval;
+  const scrollSpeed = 8; 
 
-  leftBtn.addEventListener('click', () => {
-    grid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-  });
+  const startScroll = (direction) => {
+    stopScroll();
+    scrollInterval = setInterval(() => {
+      grid.scrollLeft += direction * scrollSpeed;
+    }, 10);
+  };
 
-  rightBtn.addEventListener('click', () => {
-    grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-  });
+  const stopScroll = () => clearInterval(scrollInterval);
+
+  leftBtn.addEventListener('mousedown', () => startScroll(-1));
+  rightBtn.addEventListener('mousedown', () => startScroll(1));
+
+  leftBtn.addEventListener('mouseup', stopScroll);
+  rightBtn.addEventListener('mouseup', stopScroll);
+  leftBtn.addEventListener('mouseleave', stopScroll);
+  rightBtn.addEventListener('mouseleave', stopScroll);
+
+
+  leftBtn.addEventListener('touchstart', () => startScroll(-1));
+  rightBtn.addEventListener('touchstart', () => startScroll(1));
+  leftBtn.addEventListener('touchend', stopScroll);
+  rightBtn.addEventListener('touchend', stopScroll);
 });
