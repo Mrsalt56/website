@@ -380,3 +380,6 @@ body {
 .games-row .games-grid::-webkit-scrollbar {
   display: none;
 }
+.games-grid {
+  scroll-behavior: smooth;
+}
