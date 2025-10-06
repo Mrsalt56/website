@@ -290,44 +290,93 @@ document.querySelectorAll('.games-row').forEach(row => {
   rightBtn.addEventListener('touchend', stopScroll);
 });
 
+
 // === Shoutout Queue Integration ===
-const shoutoutForm = document.getElementById('shoutoutForm');
-const shoutoutNameInput = document.getElementById('shoutoutName');
-const shoutoutQueueList = document.getElementById('shoutoutQueue');
+document.addEventListener('DOMContentLoaded', () => {
+  const shoutoutForm = document.getElementById('shoutoutForm');
+  const shoutoutNameInput = document.getElementById('shoutoutName');
+  const shoutoutQueueList = document.getElementById('shoutoutQueue');
 
-let shoutoutQueue = [];
+  const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424611296778653786/wTVLd0EQB2ZRifvDXAJsz9T1j9L-p1AU852T_W3uMfQ7Aq78d0UDM2t8uGQaGTtNnRpj";
+  const SHOUTOUT_PASSWORD = "html,js,css,56";
 
-const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424611296778653786/wTVLd0EQB2ZRifvDXAJsz9T1j9L-p1AU852T_W3uMfQ7Aq78d0UDM2t8uGQaGTtNnRpj";
+  let shoutoutQueue = [];
 
-function updateShoutoutQueue() {
-  shoutoutQueueList.innerHTML = '';
-  shoutoutQueue.forEach(name => {
-    const li = document.createElement('li');
-    li.textContent = name;
-    shoutoutQueueList.appendChild(li);
-  });
-}
+  // Send new shoutout to Discord
+  function sendShoutoutToDiscord(name) {
+    fetch(shoutoutWebhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+    }).catch(err => console.error('Error sending shoutout webhook:', err));
+  }
 
-function sendShoutoutToDiscord(name) {
-  fetch(shoutoutWebhookURL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
-  }).catch(err => console.error('Error sending shoutout webhook:', err));
-}
+  // Send completion notification to Discord
+  function sendShoutoutCompleteToDiscord(name) {
+    fetch(shoutoutWebhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: `✅ Shoutout completed: **${name}**` })
+    }).catch(err => console.error('Error sending completion webhook:', err));
+  }
 
-if (shoutoutForm) {
-  shoutoutForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = shoutoutNameInput.value.trim();
-    if (!name) return;
-
-    shoutoutQueue.push(name);
+  // Remove shoutout from queue by actual index
+  function removeShoutoutByQueueIndex(queueIndex) {
+    const name = shoutoutQueue[queueIndex];
+    shoutoutQueue.splice(queueIndex, 1);
     updateShoutoutQueue();
+    sendShoutoutCompleteToDiscord(name);
+  }
 
+  // Update the visible queue (first 10)
+  function updateShoutoutQueue() {
+    shoutoutQueueList.innerHTML = '';
 
-    sendShoutoutToDiscord(name);
+    shoutoutQueue.slice(0, 10).forEach((name, i) => {
+      const li = document.createElement('li');
+      li.textContent = name;
 
-    shoutoutNameInput.value = '';
-  });
-}
+      const completeBtn = document.createElement('button');
+      completeBtn.textContent = '✅';
+      completeBtn.style.marginLeft = '10px';
+      completeBtn.style.cursor = 'pointer';
+      completeBtn.title = 'Mark as complete';
+      completeBtn.addEventListener('click', () => {
+        const entered = prompt("Enter password to complete this shoutout:");
+        if (entered === SHOUTOUT_PASSWORD) {
+          removeShoutoutByQueueIndex(i);
+        } else {
+          alert("Incorrect password!");
+        }
+      });
+
+      li.appendChild(completeBtn);
+      shoutoutQueueList.appendChild(li);
+    });
+
+    // Show note if more than 10
+    if (shoutoutQueue.length > 10) {
+      const note = document.createElement('li');
+      note.textContent = `...and ${shoutoutQueue.length - 10} more`;
+      note.style.fontStyle = 'italic';
+      shoutoutQueueList.appendChild(note);
+    }
+  }
+
+  // Handle new shoutout submission
+  if (shoutoutForm) {
+    shoutoutForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = shoutoutNameInput.value.trim();
+      if (!name) return;
+
+      shoutoutQueue.push(name);
+      updateShoutoutQueue();
+      sendShoutoutToDiscord(name);
+      shoutoutNameInput.value = '';
+    });
+  }
+
+  // Initial render
+  updateShoutoutQueue();
+});
