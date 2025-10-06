@@ -256,3 +256,18 @@ navLinks.forEach(link => {
     if (e.key === 'Escape') closeSidebar();
   });
 })();
+document.querySelectorAll('.games-row').forEach(row => {
+  const grid = row.querySelector('.games-grid');
+  const leftBtn = row.querySelector('.scroll-btn.left');
+  const rightBtn = row.querySelector('.scroll-btn.right');
+
+  const scrollAmount = 300; 
+
+  leftBtn.addEventListener('click', () => {
+    grid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  });
+
+  rightBtn.addEventListener('click', () => {
+    grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  });
+});
