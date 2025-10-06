@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const shoutoutNameInput = document.getElementById('shoutoutName');
   const shoutoutQueueList = document.getElementById('shoutoutQueue');
 
-  const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424611296778653786/wTVLd0EQB2ZRifvDXAJsz9T1j9L-p1AU852T_W3uMfQ7Aq78d0UDM2t8uGQaGTtNnRpj";
+  const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424616479097098341/X9-BZHSWdTcyC86PvyT0JnJEigdce6Ra06LICanWaoY1uPvoZi1P74LRAIbiSujiLCqD";
   const SHOUTOUT_PASSWORD = "html,js,css,56";
   const TIME_LIMIT_MS = 60000;
 
