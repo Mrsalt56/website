@@ -291,104 +291,97 @@ document.querySelectorAll('.games-row').forEach(row => {
 });
 
 
-// === Shoutout Queue with Persistence and Cooldown ===
-document.addEventListener('DOMContentLoaded', () => {
-  const shoutoutForm = document.getElementById('shoutoutForm');
-  const shoutoutNameInput = document.getElementById('shoutoutName');
-  const shoutoutQueueList = document.getElementById('shoutoutQueue');
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
-  const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO";
-  const SHOUTOUT_PASSWORD = "html,js,css,56";
-  const SUBMISSION_COOLDOWN_MS = 60000;
+    const firebaseConfig = {
+      apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+      authDomain: "mrsalt56-e6066.firebaseapp.com",
+      databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+      projectId: "mrsalt56-e6066",
+      storageBucket: "mrsalt56-e6066.firebasestorage.app",
+      messagingSenderId: "716178119141",
+      appId: "1:716178119141:web:e164601c8dfebc7638b70c",
+      measurementId: "G-5JYY38J53S"
+    };
 
-  let shoutoutQueue = JSON.parse(localStorage.getItem('shoutoutQueue')) || [];
-  let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime')) || 0;
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-  function saveState() {
-    localStorage.setItem('shoutoutQueue', JSON.stringify(shoutoutQueue));
-    localStorage.setItem('lastSubmissionTime', lastSubmissionTime.toString());
-  }
+    const shoutoutForm = document.getElementById('shoutoutForm');
+    const shoutoutNameInput = document.getElementById('shoutoutName');
+    const shoutoutQueueList = document.getElementById('shoutoutQueue');
+    const cooldownMsg = document.getElementById('cooldownMessage');
 
-  function sendShoutoutToDiscord(name) {
-    fetch(shoutoutWebhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
-    }).catch(err => console.error('Error sending shoutout webhook:', err));
-  }
+    const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424611296778653786/wTVLd0EQB2ZRifvDXAJsz9T1j9L-p1AU852T_W3uMfQ7Aq78d0UDM2t8uGQaGTtNnRpj";
 
-  function sendShoutoutCompleteToDiscord(name) {
-    fetch(shoutoutWebhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: `✅ Shoutout completed: **${name}**` })
-    }).catch(err => console.error('Error sending completion webhook:', err));
-  }
+    const COOLDOWN_TIME = 60 * 1000; // 1 minute
 
-  function removeShoutoutByQueueIndex(queueIndex) {
-    if (queueIndex >= 0 && queueIndex < shoutoutQueue.length) {
-      const name = shoutoutQueue[queueIndex].name;
-      shoutoutQueue.splice(queueIndex, 1);
-      updateShoutoutQueue();
-      saveState();
-      sendShoutoutCompleteToDiscord(name);
-    }
-  }
+    // Load queue live
+    const shoutoutsRef = ref(db, 'shoutouts');
+    onValue(shoutoutsRef, (snapshot) => {
+      const data = snapshot.val();
+      shoutoutQueueList.innerHTML = '';
 
-  function updateShoutoutQueue() {
-    shoutoutQueueList.innerHTML = '';
+      if (data) {
+        const entries = Object.entries(data);
+        entries.slice(0, 10).forEach(([key, value]) => {
+          const li = document.createElement('li');
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = value.name;
+          li.appendChild(nameSpan);
 
-    shoutoutQueue.slice(0, 10).forEach((item, i) => {
-      const li = document.createElement('li');
-      li.textContent = item.name;
+          // Delete button (requires password)
+          const delBtn = document.createElement('button');
+          delBtn.textContent = 'Remove';
+          delBtn.addEventListener('click', () => {
+            const pw = prompt('Enter password to remove:');
+            if (pw === 'html,js,css,56') {
+              remove(ref(db, 'shoutouts/' + key));
+            } else {
+              alert('Incorrect password.');
+            }
+          });
 
-      const completeBtn = document.createElement('button');
-      completeBtn.textContent = '✅';
-      completeBtn.style.marginLeft = '10px';
-      completeBtn.style.cursor = 'pointer';
-      completeBtn.title = 'Mark as complete';
-      completeBtn.addEventListener('click', () => {
-        const entered = prompt("Enter password to complete this shoutout:");
-        if (entered === SHOUTOUT_PASSWORD) {
-          removeShoutoutByQueueIndex(i);
-        } else {
-          alert("Incorrect password!");
-        }
-      });
-
-      li.appendChild(completeBtn);
-      shoutoutQueueList.appendChild(li);
+          li.appendChild(delBtn);
+          shoutoutQueueList.appendChild(li);
+        });
+      } else {
+        shoutoutQueueList.innerHTML = '<li>No shoutouts yet!</li>';
+      }
     });
 
-    if (shoutoutQueue.length > 10) {
-      const note = document.createElement('li');
-      note.textContent = `...and ${shoutoutQueue.length - 10} more`;
-      note.style.fontStyle = 'italic';
-      shoutoutQueueList.appendChild(note);
+    // Send to Discord
+    function sendToDiscord(name) {
+      fetch(shoutoutWebhookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+      }).catch(err => console.error('Webhook error:', err));
     }
-  }
 
-  if (shoutoutForm) {
-    shoutoutForm.addEventListener('submit', (e) => {
+    // Handle form
+    shoutoutForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = shoutoutNameInput.value.trim();
       if (!name) return;
 
+      const lastTime = localStorage.getItem('lastShoutout');
       const now = Date.now();
-      if (now - lastSubmissionTime < SUBMISSION_COOLDOWN_MS) {
-        alert("Please wait 1 minute before submitting another shoutout.");
+      if (lastTime && now - lastTime < COOLDOWN_TIME) {
+        cooldownMsg.style.display = 'block';
         return;
       }
 
-      lastSubmissionTime = now;
-      shoutoutQueue.push({ name });
-      saveState();
-      updateShoutoutQueue();
-      sendShoutoutToDiscord(name);
+      cooldownMsg.style.display = 'none';
+      localStorage.setItem('lastShoutout', now);
+
+      await push(shoutoutsRef, { name });
+      sendToDiscord(name);
       shoutoutNameInput.value = '';
     });
-  }
-
-  updateShoutoutQueue();
-});
-
+  </script>
+</body>
+</html>
