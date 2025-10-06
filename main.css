@@ -112,7 +112,6 @@ body {
   width: 160px;
   max-width: 160px;
 }
-/* GAMES GRID */
 .games-section {
   margin: 40px 20px;
 }
@@ -309,7 +308,7 @@ body {
   padding-top: 8px;
   border-top: 1px solid rgba(255,255,255,0.08);
   font-size: 0.85rem;
-  color: #ffcccc;  /* soft warning red */
+  color: #ffcccc;  
   line-height: 1.4;
 }
 .proxy-note code {
@@ -375,9 +374,9 @@ body {
 
 .games-row .games-grid {
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
 
 .games-row .games-grid::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
+  display: none;
 }
