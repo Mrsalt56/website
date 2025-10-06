@@ -290,98 +290,97 @@ document.querySelectorAll('.games-row').forEach(row => {
   rightBtn.addEventListener('touchend', stopScroll);
 });
 
+// Import Firebase modules (only if using module type script)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+  authDomain: "mrsalt56-e6066.firebaseapp.com",
+  databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+  projectId: "mrsalt56-e6066",
+  storageBucket: "mrsalt56-e6066.firebasestorage.app",
+  messagingSenderId: "716178119141",
+  appId: "1:716178119141:web:e164601c8dfebc7638b70c",
+  measurementId: "G-5JYY38J53S"
+};
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
-      authDomain: "mrsalt56-e6066.firebaseapp.com",
-      databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
-      projectId: "mrsalt56-e6066",
-      storageBucket: "mrsalt56-e6066.firebasestorage.app",
-      messagingSenderId: "716178119141",
-      appId: "1:716178119141:web:e164601c8dfebc7638b70c",
-      measurementId: "G-5JYY38J53S"
-    };
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+// Elements
+const shoutoutForm = document.getElementById('shoutoutForm');
+const shoutoutNameInput = document.getElementById('shoutoutName');
+const shoutoutQueueList = document.getElementById('shoutoutQueue');
+const cooldownMsg = document.getElementById('cooldownMessage');
 
-    const shoutoutForm = document.getElementById('shoutoutForm');
-    const shoutoutNameInput = document.getElementById('shoutoutName');
-    const shoutoutQueueList = document.getElementById('shoutoutQueue');
-    const cooldownMsg = document.getElementById('cooldownMessage');
+// Discord Webhook URL
+const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424611296778653786/wTVLd0EQB2ZRifvDXAJsz9T1j9L-p1AU852T_W3uMfQ7Aq78d0UDM2t8uGQaGTtNnRpj";
 
-    const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424611296778653786/wTVLd0EQB2ZRifvDXAJsz9T1j9L-p1AU852T_W3uMfQ7Aq78d0UDM2t8uGQaGTtNnRpj";
+// Cooldown in milliseconds
+const COOLDOWN_TIME = 60 * 1000; // 1 minute
 
-    const COOLDOWN_TIME = 60 * 1000; // 1 minute
+// Firebase reference
+const shoutoutsRef = ref(db, 'shoutouts');
 
-    // Load queue live
-    const shoutoutsRef = ref(db, 'shoutouts');
-    onValue(shoutoutsRef, (snapshot) => {
-      const data = snapshot.val();
-      shoutoutQueueList.innerHTML = '';
+// Load queue live
+onValue(shoutoutsRef, (snapshot) => {
+  const data = snapshot.val();
+  shoutoutQueueList.innerHTML = '';
 
-      if (data) {
-        const entries = Object.entries(data);
-        entries.slice(0, 10).forEach(([key, value]) => {
-          const li = document.createElement('li');
-          const nameSpan = document.createElement('span');
-          nameSpan.textContent = value.name;
-          li.appendChild(nameSpan);
+  if (data) {
+    Object.entries(data).slice(0, 10).forEach(([key, value]) => {
+      const li = document.createElement('li');
+      li.textContent = value.name;
 
-          // Delete button (requires password)
-          const delBtn = document.createElement('button');
-          delBtn.textContent = 'Remove';
-          delBtn.addEventListener('click', () => {
-            const pw = prompt('Enter password to remove:');
-            if (pw === 'html,js,css,56') {
-              remove(ref(db, 'shoutouts/' + key));
-            } else {
-              alert('Incorrect password.');
-            }
-          });
+      // Remove button
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'Remove';
+      delBtn.addEventListener('click', () => {
+        const pw = prompt('Enter password to remove:');
+        if (pw === 'html,js,css,56') {
+          remove(ref(db, 'shoutouts/' + key));
+        } else {
+          alert('Incorrect password.');
+        }
+      });
 
-          li.appendChild(delBtn);
-          shoutoutQueueList.appendChild(li);
-        });
-      } else {
-        shoutoutQueueList.innerHTML = '<li>No shoutouts yet!</li>';
-      }
+      li.appendChild(delBtn);
+      shoutoutQueueList.appendChild(li);
     });
+  } else {
+    shoutoutQueueList.innerHTML = '<li>No shoutouts yet!</li>';
+  }
+});
 
-    // Send to Discord
-    function sendToDiscord(name) {
-      fetch(shoutoutWebhookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
-      }).catch(err => console.error('Webhook error:', err));
-    }
+// Send to Discord
+function sendToDiscord(name) {
+  fetch(shoutoutWebhookURL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+  }).catch(err => console.error('Webhook error:', err));
+}
 
-    // Handle form
-    shoutoutForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = shoutoutNameInput.value.trim();
-      if (!name) return;
+// Form submission
+shoutoutForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = shoutoutNameInput.value.trim();
+  if (!name) return;
 
-      const lastTime = localStorage.getItem('lastShoutout');
-      const now = Date.now();
-      if (lastTime && now - lastTime < COOLDOWN_TIME) {
-        cooldownMsg.style.display = 'block';
-        return;
-      }
+  const lastTime = localStorage.getItem('lastShoutout');
+  const now = Date.now();
+  if (lastTime && now - lastTime < COOLDOWN_TIME) {
+    cooldownMsg.style.display = 'block';
+    return;
+  }
 
-      cooldownMsg.style.display = 'none';
-      localStorage.setItem('lastShoutout', now);
+  cooldownMsg.style.display = 'none';
+  localStorage.setItem('lastShoutout', now);
 
-      await push(shoutoutsRef, { name });
-      sendToDiscord(name);
-      shoutoutNameInput.value = '';
-    });
-  </script>
-</body>
-</html>
+  await push(shoutoutsRef, { name });
+  sendToDiscord(name);
+  shoutoutNameInput.value = '';
+})
