@@ -291,18 +291,23 @@ document.querySelectorAll('.games-row').forEach(row => {
 });
 
 
-// === Shoutout Queue Integration ==
+// === Shoutout Queue with Persistence and Cooldown ===
 document.addEventListener('DOMContentLoaded', () => {
   const shoutoutForm = document.getElementById('shoutoutForm');
   const shoutoutNameInput = document.getElementById('shoutoutName');
   const shoutoutQueueList = document.getElementById('shoutoutQueue');
 
-  const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424616479097098341/X9-BZHSWdTcyC86PvyT0JnJEigdce6Ra06LICanWaoY1uPvoZi1P74LRAIbiSujiLCqD";
+  const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO";
   const SHOUTOUT_PASSWORD = "html,js,css,56";
-  const TIME_LIMIT_MS = 60000;
+  const SUBMISSION_COOLDOWN_MS = 60000;
 
-  let shoutoutQueue = [];
+  let shoutoutQueue = JSON.parse(localStorage.getItem('shoutoutQueue')) || [];
+  let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime')) || 0;
 
+  function saveState() {
+    localStorage.setItem('shoutoutQueue', JSON.stringify(shoutoutQueue));
+    localStorage.setItem('lastSubmissionTime', lastSubmissionTime.toString());
+  }
 
   function sendShoutoutToDiscord(name) {
     fetch(shoutoutWebhookURL, {
@@ -323,9 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function removeShoutoutByQueueIndex(queueIndex) {
     if (queueIndex >= 0 && queueIndex < shoutoutQueue.length) {
       const name = shoutoutQueue[queueIndex].name;
-      clearTimeout(shoutoutQueue[queueIndex].timer);
       shoutoutQueue.splice(queueIndex, 1);
       updateShoutoutQueue();
+      saveState();
       sendShoutoutCompleteToDiscord(name);
     }
   }
@@ -369,12 +374,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = shoutoutNameInput.value.trim();
       if (!name) return;
 
-      const timer = setTimeout(() => {
-        const index = shoutoutQueue.findIndex(item => item.name === name);
-        if (index !== -1) removeShoutoutByQueueIndex(index);
-      }, TIME_LIMIT_MS);
+      const now = Date.now();
+      if (now - lastSubmissionTime < SUBMISSION_COOLDOWN_MS) {
+        alert("Please wait 1 minute before submitting another shoutout.");
+        return;
+      }
 
-      shoutoutQueue.push({ name, timer });
+      lastSubmissionTime = now;
+      shoutoutQueue.push({ name });
+      saveState();
       updateShoutoutQueue();
       sendShoutoutToDiscord(name);
       shoutoutNameInput.value = '';
@@ -383,3 +391,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateShoutoutQueue();
 });
+
