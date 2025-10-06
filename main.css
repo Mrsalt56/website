@@ -339,3 +339,45 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+.games-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 80px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 5;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.scroll-btn:hover {
+  background: rgba(0, 120, 255, 0.8);
+}
+
+.scroll-btn.left {
+  left: 0;
+}
+
+.scroll-btn.right {
+  right: 0;
+}
+
+.games-row .games-grid {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.games-row .games-grid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
