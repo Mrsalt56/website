@@ -77,9 +77,11 @@
 
   <div id="search-results" class="search-results-bar"></div>
 
-  <main>
+
 <section class="games-section">
   <h2>Trending Now</h2>
+  <div class="games-row">
+  <button class="scroll-btn left"><i class="fa-solid fa-chevron-left"></i></button>
   <div class="games-grid">
 <div class="game-card" data-genre="multiplayer" data-popularity="hot" data-link="games/1v1lol/">
   <img src="images/1v1-lol_1x1.jpg" alt="1v1lol">
@@ -392,12 +394,18 @@
   <span class="badge trending">Trending</span>
   <h3>btd4</h3>
 </div>
+     </div>
+      <button class="scroll-btn right"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </section>
 </div>
 </section>
     <section class="games-section">
       <h2>New & Featured</h2>
-      <div class="games-grid">
-      <div class="game-card" data-genre="arcade" data-popularity="new" data-link="games/flappy-2048/">
+      <div class="games-row">
+   <button class="scroll-btn left"><i class="fa-solid fa-chevron-left"></i></button>
+  <div class="games-grid">
+<div class="game-card" data-genre="arcade" data-popularity="new" data-link="games/flappy-2048/">
   <img src="images/flappy2048.png" alt="Flappy 2048">
   <span class="badge new">New</span>
   <h3>Flappy 2048</h3>
@@ -653,9 +661,10 @@
   <h3>Vex 7</h3>
 </div>
 </div>
-
-      </div>
-    </section>
+   </div>
+      <button class="scroll-btn right"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </section>   
   </main>
 
   <div id="suggestionForm" class="modal">
@@ -667,7 +676,6 @@
       <button id="sendSuggestion">Send</button>
     </div>
   </div>
-
   <div id="reportForm" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
