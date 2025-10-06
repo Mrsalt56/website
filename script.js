@@ -289,3 +289,45 @@ document.querySelectorAll('.games-row').forEach(row => {
   leftBtn.addEventListener('touchend', stopScroll);
   rightBtn.addEventListener('touchend', stopScroll);
 });
+
+// === Shoutout Queue Integration ===
+const shoutoutForm = document.getElementById('shoutoutForm');
+const shoutoutNameInput = document.getElementById('shoutoutName');
+const shoutoutQueueList = document.getElementById('shoutoutQueue');
+
+let shoutoutQueue = [];
+
+const shoutoutWebhookURL = "https://discord.com/api/webhooks/1424611296778653786/wTVLd0EQB2ZRifvDXAJsz9T1j9L-p1AU852T_W3uMfQ7Aq78d0UDM2t8uGQaGTtNnRpj";
+
+function updateShoutoutQueue() {
+  shoutoutQueueList.innerHTML = '';
+  shoutoutQueue.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    shoutoutQueueList.appendChild(li);
+  });
+}
+
+function sendShoutoutToDiscord(name) {
+  fetch(shoutoutWebhookURL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+  }).catch(err => console.error('Error sending shoutout webhook:', err));
+}
+
+if (shoutoutForm) {
+  shoutoutForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = shoutoutNameInput.value.trim();
+    if (!name) return;
+
+    shoutoutQueue.push(name);
+    updateShoutoutQueue();
+
+
+    sendShoutoutToDiscord(name);
+
+    shoutoutNameInput.value = '';
+  });
+}
