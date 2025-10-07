@@ -264,7 +264,7 @@ document.querySelectorAll('.games-row').forEach(row => {
   const rightBtn = row.querySelector('.scroll-btn.right');
 
   let scrollInterval;
-  const scrollSpeed = 50; 
+  const scrollSpeed = 500; 
 
   const startScroll = (direction) => {
     stopScroll();
