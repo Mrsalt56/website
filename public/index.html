@@ -10,12 +10,10 @@
 </head>
 <body>
 
-  <!-- Sidebar toggle button -->
   <button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
     <i class="fa-solid fa-bars"></i>
   </button>
 
-  <!-- Sidebar -->
   <aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
     <button id="sidebarClose" class="sidebar-close" aria-label="Close sidebar">&times;</button>
 
@@ -41,13 +39,23 @@
     </ul>
     </a>
   </div>
+    
+    <div class="sidebar-section">
+  <h3>Shoutout Queue</h3>
+
+  <div id="shoutoutForm">
+    <input type="text" id="userName" placeholder="Enter your name">
+    <button id="submitBtn">Submit</button>
+    <p id="cooldownMsg" style="color:red; font-size:0.8rem;"></p>
+  </div>
+
+  <ul id="queueList" style="list-style:none; padding-left:0; max-height:200px; overflow-y:auto;"></ul>
+</div>
   </aside>
   
 
-  <!-- Main content -->
   <main>
 
-    <!-- Header -->
     <header class="site-header">
       <div class="logo">
         <img src="images/logo.png" alt="Salty Logo">
