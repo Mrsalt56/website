@@ -155,36 +155,69 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --------------------------
-  // Sidebar toggle & scrolling
-  // --------------------------
-  const sidebar = document.getElementById('siteSidebar');
-  const toggle = document.getElementById('sidebarToggle');
-  const closeBtn = document.getElementById('sidebarClose');
+// --------------------------
+// Sidebar toggle & scrolling
+// --------------------------
+const sidebar = document.getElementById('siteSidebar');
+const toggle = document.getElementById('sidebarToggle');
+const closeBtn = document.getElementById('sidebarClose');
 
-  toggle.addEventListener('click', () => sidebar.setAttribute('aria-hidden', 'false'));
-  closeBtn.addEventListener('click', () => sidebar.setAttribute('aria-hidden', 'true'));
-  document.addEventListener('click', e => { if (!sidebar.contains(e.target) && !toggle.contains(e.target)) sidebar.setAttribute('aria-hidden', 'true'); });
-
-  document.querySelectorAll('.games-row').forEach(row => {
-    const grid = row.querySelector('.games-grid');
-    const leftBtn = row.querySelector('.scroll-btn.left');
-    const rightBtn = row.querySelector('.scroll-btn.right');
-    let scrollInterval;
-    const scrollSpeed = 500;
-
-    const startScroll = (dir) => { clearInterval(scrollInterval); scrollInterval = setInterval(() => grid.scrollLeft += dir * scrollSpeed, 10); };
-    const stopScroll = () => clearInterval(scrollInterval);
-
-    [leftBtn, rightBtn].forEach((btn, i) => {
-      const dir = i === 0 ? -1 : 1;
-      btn.addEventListener('mousedown', () => startScroll(dir));
-      btn.addEventListener('mouseup', stopScroll);
-      btn.addEventListener('mouseleave', stopScroll);
-      btn.addEventListener('touchstart', () => startScroll(dir));
-      btn.addEventListener('touchend', stopScroll);
-    });
+if (sidebar && toggle) {
+  // Open sidebar
+  toggle.addEventListener('click', e => {
+    e.stopPropagation(); // Prevent the document click listener from immediately closing it
+    sidebar.setAttribute('aria-hidden', 'false');
   });
+
+  // Close button
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => sidebar.setAttribute('aria-hidden', 'true'));
+  }
+
+  // Click outside closes sidebar
+  document.addEventListener('click', e => {
+    if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+      sidebar.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  // Prevent clicks inside sidebar from bubbling
+  sidebar.addEventListener('click', e => e.stopPropagation());
+
+  // Escape key closes sidebar
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') sidebar.setAttribute('aria-hidden', 'true');
+  });
+}
+
+// --------------------------
+// Horizontal scrolling
+// --------------------------
+document.querySelectorAll('.games-row').forEach(row => {
+  const grid = row.querySelector('.games-grid');
+  const leftBtn = row.querySelector('.scroll-btn.left');
+  const rightBtn = row.querySelector('.scroll-btn.right');
+  if (!grid || !leftBtn || !rightBtn) return;
+
+  let scrollInterval;
+  const scrollSpeed = 5000;
+
+  const startScroll = dir => {
+    clearInterval(scrollInterval);
+    scrollInterval = setInterval(() => grid.scrollLeft += dir * scrollSpeed, 25);
+  };
+  const stopScroll = () => clearInterval(scrollInterval);
+
+  [leftBtn, rightBtn].forEach((btn, i) => {
+    const dir = i === 0 ? -1 : 1;
+    btn.addEventListener('mousedown', () => startScroll(dir));
+    btn.addEventListener('mouseup', stopScroll);
+    btn.addEventListener('mouseleave', stopScroll);
+    btn.addEventListener('touchstart', () => startScroll(dir));
+    btn.addEventListener('touchend', stopScroll);
+  });
+});
+
 
   // --------------------------
   // Horizontal game grids
