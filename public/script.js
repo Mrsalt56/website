@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(closeBtn) closeBtn.addEventListener('click', ()=>sidebar.setAttribute('aria-hidden','true'));
   document.addEventListener('click', e=>{ if(sidebar && toggle && !sidebar.contains(e.target) && !toggle.contains(e.target)) sidebar.setAttribute('aria-hidden','true'); });
 
- // ------------------------
+// ------------------------
 // Firebase Shoutouts
 // ------------------------
 const firebaseConfig = {
@@ -221,7 +221,7 @@ const firebaseConfig = {
   measurementId: "G-FZWFSV1K2D"
 };
 
-// Initialize Firebase
+// Initialize Firebase (compat)
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
@@ -246,7 +246,7 @@ submitBtn.addEventListener("click", () => {
   cooldownMsg.textContent = "";
 
   // Push to Firebase
-  db.ref("shoutouts").push({ name });
+  db.ref("shoutouts").push({ name, timestamp: Date.now() });
 
   // Clear input
   userNameInput.value = "";
@@ -259,22 +259,30 @@ submitBtn.addEventListener("click", () => {
   }).catch(console.error);
 });
 
-// Listen for updates and display the 10 most recent shoutouts
-db.ref("shoutouts").orderByKey().limitToLast(10).on("value", snapshot => {
+// Listen for updates and display shoutouts
+db.ref("shoutouts").orderByChild("timestamp").on("value", snapshot => {
   const shoutouts = [];
   snapshot.forEach(childSnap => {
     shoutouts.push({ key: childSnap.key, name: childSnap.val().name });
   });
 
-  // Reverse to show most recent first
-  shoutouts.reverse();
+  // Keep oldest first (first-come-first-serve)
+  shoutouts.sort((a, b) => a.timestamp - b.timestamp);
+
+  // Display first 10
+  const MAX_VISIBLE = 10;
+  const visibleShoutouts = shoutouts.slice(0, MAX_VISIBLE);
+  const hiddenCount = shoutouts.length - visibleShoutouts.length;
 
   // Update the list
   queueList.innerHTML = "";
-  shoutouts.forEach(entry => {
+  visibleShoutouts.forEach(entry => {
     const li = document.createElement("li");
     li.textContent = entry.name;
+    li.style.color = "black"; // black font
+    li.style.marginBottom = "4px";
 
+    // Remove button
     const removeBtn = document.createElement("button");
     removeBtn.textContent = "Remove";
     removeBtn.className = "remove-btn";
@@ -286,8 +294,16 @@ db.ref("shoutouts").orderByKey().limitToLast(10).on("value", snapshot => {
     li.appendChild(removeBtn);
     queueList.appendChild(li);
   });
-});
 
+  // Show "and X more" if needed
+  if (hiddenCount > 0) {
+    const moreLi = document.createElement("li");
+    moreLi.textContent = `and ${hiddenCount} more`;
+    moreLi.style.color = "black";
+    moreLi.style.fontStyle = "italic";
+    queueList.appendChild(moreLi);
+  }
+});
   // ------------------------
   // Initialize filter
   // ------------------------
