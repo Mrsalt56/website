@@ -207,40 +207,86 @@ document.addEventListener('DOMContentLoaded', () => {
   if(closeBtn) closeBtn.addEventListener('click', ()=>sidebar.setAttribute('aria-hidden','true'));
   document.addEventListener('click', e=>{ if(sidebar && toggle && !sidebar.contains(e.target) && !toggle.contains(e.target)) sidebar.setAttribute('aria-hidden','true'); });
 
-  // ------------------------
-  // Firebase Shoutouts
-  // ------------------------
-  const submitBtn = document.getElementById("submitBtn");
-  const userNameInput = document.getElementById("userName");
-  const queueList = document.getElementById("queueList");
-  const cooldownMsg = document.getElementById("cooldownMsg");
-  const COOLDOWN = 60*1000;
+ // ------------------------
+// Firebase Shoutouts
+// ------------------------
+const firebaseConfig = {
+  apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+  authDomain: "mrsalt56-e6066.firebaseapp.com",
+  databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+  projectId: "mrsalt56-e6066",
+  storageBucket: "mrsalt56-e6066.appspot.com",
+  messagingSenderId: "716178119141",
+  appId: "1:716178119141:web:2c39c7f79213699a38b70c",
+  measurementId: "G-FZWFSV1K2D"
+};
 
-  if(submitBtn) {
-    submitBtn.addEventListener("click", () => {
-      const name = userNameInput.value.trim();
-      if(!name) return alert("Please enter your name.");
-      const lastTime = localStorage.getItem("lastShoutout") || 0;
-      if(Date.now()-lastTime<COOLDOWN){ cooldownMsg.textContent="Please wait before submitting again!"; return; }
-      localStorage.setItem("lastShoutout", Date.now());
-      cooldownMsg.textContent="";
-      firebase.database().ref("shoutouts").push({name});
-      userNameInput.value="";
-      fetch("YOUR_DISCORD_WEBHOOK_URL",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({content:`📢 New shoutout request: **${name}**`})}).catch(console.error);
-    });
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-    firebase.database().ref("shoutouts").on("value", snapshot => {
-      queueList.innerHTML="";
-      snapshot.forEach(childSnap=>{
-        const key = childSnap.key;
-        const {name} = childSnap.val();
-        const li = document.createElement("li"); li.textContent=name;
-        const removeBtn = document.createElement("button"); removeBtn.textContent="Remove"; removeBtn.className="remove-btn";
-        removeBtn.onclick=()=>{ if(prompt("Enter admin password:")==="56") firebase.database().ref(`shoutouts/${key}`).remove(); };
-        li.appendChild(removeBtn); queueList.appendChild(li);
-      });
-    });
+const submitBtn = document.getElementById("submitBtn");
+const userNameInput = document.getElementById("userName");
+const queueList = document.getElementById("queueList");
+const cooldownMsg = document.getElementById("cooldownMsg");
+const COOLDOWN = 60 * 1000;
+
+// Submit a shoutout
+submitBtn.addEventListener("click", () => {
+  const name = userNameInput.value.trim();
+  if (!name) return alert("Please enter your name.");
+
+  const lastTime = localStorage.getItem("lastShoutout") || 0;
+  if (Date.now() - lastTime < COOLDOWN) {
+    cooldownMsg.textContent = "Please wait before submitting again!";
+    return;
   }
+
+  localStorage.setItem("lastShoutout", Date.now());
+  cooldownMsg.textContent = "";
+
+  // Push to Firebase
+  db.ref("shoutouts").push({ name });
+
+  // Clear input
+  userNameInput.value = "";
+
+  // Send to Discord webhook
+  fetch("https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+  }).catch(console.error);
+});
+
+// Listen for updates and display the 10 most recent shoutouts
+db.ref("shoutouts").orderByKey().limitToLast(10).on("value", snapshot => {
+  const shoutouts = [];
+  snapshot.forEach(childSnap => {
+    shoutouts.push({ key: childSnap.key, name: childSnap.val().name });
+  });
+
+  // Reverse to show most recent first
+  shoutouts.reverse();
+
+  // Update the list
+  queueList.innerHTML = "";
+  shoutouts.forEach(entry => {
+    const li = document.createElement("li");
+    li.textContent = entry.name;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => {
+      const password = prompt("Enter admin password:");
+      if (password === "56") db.ref(`shoutouts/${entry.key}`).remove();
+    };
+
+    li.appendChild(removeBtn);
+    queueList.appendChild(li);
+  });
+});
 
   // ------------------------
   // Initialize filter
