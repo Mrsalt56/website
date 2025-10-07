@@ -289,86 +289,85 @@ document.querySelectorAll('.games-row').forEach(row => {
   leftBtn.addEventListener('touchend', stopScroll);
   rightBtn.addEventListener('touchend', stopScroll);
 });
-// ----- Firebase Setup -----
+
+// Import Firebase functions
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, push, onValue, remove } from "firebase/database";
+
+// Firebase config (yours)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+  authDomain: "mrsalt56-e6066.firebaseapp.com",
+  databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+  projectId: "mrsalt56-e6066",
+  storageBucket: "mrsalt56-e6066.firebasestorage.app",
+  messagingSenderId: "716178119141",
+  appId: "1:716178119141:web:2c39c7f79213699a38b70c",
+  measurementId: "G-FZWFSV1K2D"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-// ----- Discord Webhook -----
-const webhookURL = "YOUR_DISCORD_WEBHOOK_URL";
+// DOM Elements
+const submitBtn = document.getElementById("submitBtn");
+const userNameInput = document.getElementById("userName");
+const queueList = document.getElementById("queueList");
+const cooldownMsg = document.getElementById("cooldownMsg");
 
-// ----- Cooldown -----
-const COOLDOWN = 60000; // 1 minute in ms
-const lastSubmit = localStorage.getItem('lastShoutout') || 0;
+// Cooldown (1 min)
+const COOLDOWN = 60 * 1000;
 
-// ----- DOM Elements -----
-const submitBtn = document.getElementById('submitBtn');
-const userNameInput = document.getElementById('userName');
-const queueList = document.getElementById('queueList');
-const cooldownMsg = document.getElementById('cooldownMsg');
-
-submitBtn.addEventListener('click', () => {
+// Push shoutout to Firebase
+submitBtn.addEventListener("click", () => {
   const name = userNameInput.value.trim();
-  if (!name) return alert("Enter your name");
+  if (!name) return alert("Please enter your name.");
 
-  const now = Date.now();
-  if (now - lastSubmit < COOLDOWN) {
-    cooldownMsg.textContent = `Please wait ${Math.ceil((COOLDOWN - (now - lastSubmit))/1000)}s before submitting again.`;
+  const lastTime = localStorage.getItem("lastShoutout") || 0;
+  if (Date.now() - lastTime < COOLDOWN) {
+    cooldownMsg.textContent = "Please wait before submitting again!";
     return;
   }
 
-  // Save to Firebase
-  const newRef = db.ref('shoutouts').push();
-  newRef.set({ name });
+  localStorage.setItem("lastShoutout", Date.now());
+  cooldownMsg.textContent = "";
 
-  // Save cooldown
-  localStorage.setItem('lastShoutout', now);
+  const shoutoutRef = ref(db, "shoutouts");
+  push(shoutoutRef, { name });
+  userNameInput.value = "";
 
   // Send Discord webhook
-  fetch(webhookURL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  fetch("https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
   });
-
-  userNameInput.value = '';
 });
 
-// ----- Live Queue Updates -----
-db.ref('shoutouts').on('value', snapshot => {
-  const data = snapshot.val();
-  queueList.innerHTML = '';
-  if (data) {
-    Object.keys(data).forEach(key => {
-      const li = document.createElement('li');
-      li.textContent = data[key].name;
+// Live update queue
+const shoutoutRef = ref(db, "shoutouts");
+onValue(shoutoutRef, (snapshot) => {
+  queueList.innerHTML = "";
+  snapshot.forEach(childSnap => {
+    const key = childSnap.key;
+    const { name } = childSnap.val();
 
-      const removeBtn = document.createElement('button');
-      removeBtn.textContent = 'Remove';
-      removeBtn.className = 'remove-btn';
-      removeBtn.onclick = () => removeItem(key);
+    const li = document.createElement("li");
+    li.textContent = name;
 
-      li.appendChild(removeBtn);
-      queueList.appendChild(li);
-    });
-  }
+    // Admin remove button
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => {
+      const password = prompt("Enter admin password:");
+      if (password === "56") {
+        remove(ref(db, `shoutouts/${key}`));
+      }
+    };
+
+    li.appendChild(removeBtn);
+    queueList.appendChild(li);
+  });
 });
-
-// ----- Admin Remove -----
-function removeItem(key) {
-  const password = prompt("Enter admin password:");
-  if (password === "56") {
-    db.ref('shoutouts/' + key).remove();
-  } else {
-    alert("Wrong password!");
-  }
-}
