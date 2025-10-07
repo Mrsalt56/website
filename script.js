@@ -264,13 +264,13 @@ document.querySelectorAll('.games-row').forEach(row => {
   const rightBtn = row.querySelector('.scroll-btn.right');
 
   let scrollInterval;
-  const scrollSpeed =  30; 
+  const scrollSpeed = 50; 
 
   const startScroll = (direction) => {
     stopScroll();
     scrollInterval = setInterval(() => {
       grid.scrollLeft += direction * scrollSpeed;
-    }, 5);
+    }, 10);
   };
 
   const stopScroll = () => clearInterval(scrollInterval);
