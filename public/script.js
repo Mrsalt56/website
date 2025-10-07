@@ -290,68 +290,98 @@ document.querySelectorAll('.games-row').forEach(row => {
   rightBtn.addEventListener('touchend', stopScroll);
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
 
-  // Sidebar shoutout elements
-  const submitBtn = document.getElementById("submitBtn");
-  const userNameInput = document.getElementById("userName");
-  const queueList = document.getElementById("queueList");
-  const cooldownMsg = document.getElementById("cooldownMsg");
+// 🔹 Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+  authDomain: "mrsalt56-e6066.firebaseapp.com",
+  databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+  projectId: "mrsalt56-e6066",
+  storageBucket: "mrsalt56-e6066.firebasestorage.app",
+  messagingSenderId: "716178119141",
+  appId: "1:716178119141:web:2c39c7f79213699a38b70c",
+  measurementId: "G-FZWFSV1K2D"
+};
 
-  if (!submitBtn || !userNameInput || !queueList) return; // Stop if elements missing
+// 🔹 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  const COOLDOWN = 60 * 1000; // 1 min
+// 🔹 DOM elements
+const submitBtn = document.getElementById("submitBtn");
+const userNameInput = document.getElementById("userName");
+const queueList = document.getElementById("queueList");
+const cooldownMsg = document.getElementById("cooldownMsg");
 
-  // Submit shoutout
-  submitBtn.addEventListener("click", () => {
-    const name = userNameInput.value.trim();
-    if (!name) return alert("Please enter your name.");
+const sidebar = document.getElementById("siteSidebar");
+const sidebarToggle = document.getElementById("sidebarToggle");
+const sidebarClose = document.getElementById("sidebarClose");
 
-    const lastTime = localStorage.getItem("lastShoutout") || 0;
-    if (Date.now() - lastTime < COOLDOWN) {
-      cooldownMsg.textContent = "Please wait before submitting again!";
-      return;
-    }
-    localStorage.setItem("lastShoutout", Date.now());
-    cooldownMsg.textContent = "";
+// 🔹 Cooldown (1 min)
+const COOLDOWN = 60 * 1000;
 
-    // Push to Firebase
-    const shoutoutRef = ref(db, "shoutouts");
-    push(shoutoutRef, { name });
-    userNameInput.value = "";
+// 🔹 Toggle sidebar
+sidebarToggle.addEventListener("click", () => sidebar.setAttribute("aria-hidden", "false"));
+sidebarClose.addEventListener("click", () => sidebar.setAttribute("aria-hidden", "true"));
+document.addEventListener("click", e => {
+  if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+    sidebar.setAttribute("aria-hidden", "true");
+  }
+});
 
-    // Discord webhook
-    fetch("https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
-    });
-  });
+// 🔹 Submit shoutout
+submitBtn.addEventListener("click", () => {
+  const name = userNameInput.value.trim();
+  if (!name) return alert("Please enter your name.");
 
-  // Live queue
+  const lastTime = localStorage.getItem("lastShoutout") || 0;
+  if (Date.now() - lastTime < COOLDOWN) {
+    cooldownMsg.textContent = "Please wait before submitting again!";
+    return;
+  }
+
+  localStorage.setItem("lastShoutout", Date.now());
+  cooldownMsg.textContent = "";
+
+  // Push to Firebase
   const shoutoutRef = ref(db, "shoutouts");
-  onValue(shoutoutRef, (snapshot) => {
-    queueList.innerHTML = "";
-    snapshot.forEach(childSnap => {
-      const key = childSnap.key;
-      const { name } = childSnap.val();
+  push(shoutoutRef, { name });
+  userNameInput.value = "";
 
-      const li = document.createElement("li");
-      li.textContent = name;
+  // Send to Discord webhook
+  fetch("YOUR_DISCORD_WEBHOOK_URL", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+  }).catch(console.error);
+});
 
-      const removeBtn = document.createElement("button");
-      removeBtn.textContent = "Remove";
-      removeBtn.className = "remove-btn";
-      removeBtn.onclick = () => {
-        const password = prompt("Enter admin password:");
-        if (password === "56") remove(ref(db, `shoutouts/${key}`));
-      };
+// 🔹 Live update queue
+const shoutoutRef = ref(db, "shoutouts");
+onValue(shoutoutRef, snapshot => {
+  queueList.innerHTML = "";
+  snapshot.forEach(childSnap => {
+    const key = childSnap.key;
+    const { name } = childSnap.val();
 
-      li.appendChild(removeBtn);
-      queueList.appendChild(li);
-    });
+    const li = document.createElement("li");
+    li.textContent = name;
+
+    // Admin remove button
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => {
+      const password = prompt("Enter admin password:");
+      if (password === "56") remove(ref(db, `shoutouts/${key}`));
+    };
+
+    li.appendChild(removeBtn);
+    queueList.appendChild(li);
   });
 });
+</script>
+
