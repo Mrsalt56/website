@@ -184,7 +184,7 @@
     let scrollInterval;
     const scrollSpeed = 45;
 
-    const startScroll = dir => { clearInterval(scrollInterval); scrollInterval=setInterval(()=>grid.scrollLeft+=dir*scrollSpeed,1); };
+    const startScroll = dir => { clearInterval(scrollInterval); scrollInterval=setInterval(()=>grid.scrollLeft+=dir*scrollSpeed,5); };
     const stopScroll = () => clearInterval(scrollInterval);
 
     [leftBtn, rightBtn].forEach((btn,i)=>{
