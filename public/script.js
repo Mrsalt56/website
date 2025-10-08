@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+2document.addEventListener('DOMContentLoaded', () => {
   // ------------------------
   // Game search & filter
   // ------------------------
@@ -182,9 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const leftBtn = row.querySelector('.scroll-btn.left');
     const rightBtn = row.querySelector('.scroll-btn.right');
     let scrollInterval;
-    const scrollSpeed = 25;
+    const scrollSpeed = 45;
 
-    const startScroll = dir => { clearInterval(scrollInterval); scrollInterval=setInterval(()=>grid.scrollLeft+=dir*scrollSpeed,5); };
+    const startScroll = dir => { clearInterval(scrollInterval); scrollInterval=setInterval(()=>grid.scrollLeft+=dir*scrollSpeed,1); };
     const stopScroll = () => clearInterval(scrollInterval);
 
     [leftBtn, rightBtn].forEach((btn,i)=>{
