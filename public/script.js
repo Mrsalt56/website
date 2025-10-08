@@ -159,44 +159,47 @@
   });
 
   // ------------------------
-  // Horizontal scrolling grids
+  // Horizontal scrolling grids (smooth + fast)
   // ------------------------
-  function enforceHorizontal() {
-    document.querySelectorAll('.games-grid').forEach(g => {
-      g.style.display='flex';
-      g.style.flexWrap='nowrap';
-      g.style.overflowX='auto';
-      g.style.overflowY='hidden';
-      g.style.gap='15px';
-    });
-    document.querySelectorAll('.games-grid .game-card').forEach(c => {
-      c.style.flex='0 0 auto';
-      c.style.width='160px';
-      c.style.maxWidth='160px';
-    });
-  }
-  window.addEventListener('load', enforceHorizontal);
-
   document.querySelectorAll('.games-row').forEach(row => {
     const grid = row.querySelector('.games-grid');
     const leftBtn = row.querySelector('.scroll-btn.left');
     const rightBtn = row.querySelector('.scroll-btn.right');
-    let scrollInterval;
-    const scrollSpeed = 45;
 
-    const startScroll = dir => { clearInterval(scrollInterval); scrollInterval=setInterval(()=>grid.scrollLeft+=dir*scrollSpeed,5); };
-    const stopScroll = () => clearInterval(scrollInterval);
+    let scrolling = false;
+    let direction = 0;
+    const scrollSpeed = 60; // 🚀 pixels per frame
 
-    [leftBtn, rightBtn].forEach((btn,i)=>{
-      const dir = i===0?-1:1;
-      btn.addEventListener('mousedown', ()=>startScroll(dir));
-      btn.addEventListener('mouseup', stopScroll);
-      btn.addEventListener('mouseleave', stopScroll);
-      btn.addEventListener('touchstart', ()=>startScroll(dir));
-      btn.addEventListener('touchend', stopScroll);
-    });
+    function step() {
+      if (!scrolling) return;
+      grid.scrollLeft += direction * scrollSpeed;
+      requestAnimationFrame(step);
+    }
+
+    const startScroll = dir => {
+      direction = dir;
+      if (!scrolling) {
+        scrolling = true;
+        requestAnimationFrame(step);
+      }
+    };
+
+    const stopScroll = () => { scrolling = false; };
+
+    leftBtn.addEventListener('mousedown', () => startScroll(-1));
+    rightBtn.addEventListener('mousedown', () => startScroll(1));
+    leftBtn.addEventListener('mouseup', stopScroll);
+    rightBtn.addEventListener('mouseup', stopScroll);
+    leftBtn.addEventListener('mouseleave', stopScroll);
+    rightBtn.addEventListener('mouseleave', stopScroll);
+
+    // Mobile touch support
+    leftBtn.addEventListener('touchstart', () => startScroll(-1));
+    rightBtn.addEventListener('touchstart', () => startScroll(1));
+    leftBtn.addEventListener('touchend', stopScroll);
+    rightBtn.addEventListener('touchend', stopScroll);
   });
-
+  
   // ------------------------
   // Sidebar toggle
   // ------------------------
