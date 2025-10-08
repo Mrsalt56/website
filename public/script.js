@@ -1,4 +1,4 @@
-2document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   // ------------------------
   // Game search & filter
   // ------------------------
