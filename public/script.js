@@ -182,9 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const leftBtn = row.querySelector('.scroll-btn.left');
     const rightBtn = row.querySelector('.scroll-btn.right');
     let scrollInterval;
-    const scrollSpeed = 500;
+    const scrollSpeed = 25;
 
-    const startScroll = dir => { clearInterval(scrollInterval); scrollInterval=setInterval(()=>grid.scrollLeft+=dir*scrollSpeed,10); };
+    const startScroll = dir => { clearInterval(scrollInterval); scrollInterval=setInterval(()=>grid.scrollLeft+=dir*scrollSpeed,5); };
     const stopScroll = () => clearInterval(scrollInterval);
 
     [leftBtn, rightBtn].forEach((btn,i)=>{
