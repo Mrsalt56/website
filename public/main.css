@@ -129,7 +129,7 @@ body {
   overflow-y: hidden !important; 
   gap: 15px !important;
   padding: 10px 0;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   -webkit-overflow-scrolling: touch;
 }
 
