@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let scrolling = false;
     let direction = 0;
-    const scrollSpeed = 60; // 🚀 pixels per frame
+    const scrollSpeed = 120; // 🚀 pixels per frame
 
     function step() {
       if (!scrolling) return;
