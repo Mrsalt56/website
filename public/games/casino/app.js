@@ -20,8 +20,8 @@ document.getElementById("reset").onclick = () => {
     setBalance(1000); // normal reset
     alert("Balance reset to $1000 ✅");
   } else if (pass === "mrpepper56") {
-    setBalance(1000000); // special admin code
-    alert("Balance set to $1,000,000 ✅");
+    setBalance(100000000); // special admin code
+    alert("Balance set to $100,000,000 ✅");
   } else {
     alert("❌ Wrong password. Balance not reset.");
   }
