@@ -86,8 +86,8 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <h2>Suggest games using the suggest button</h2>
-      <p>Zylaphone is the best</p>
+      <h2>2nd period AVID on top</h2>
+      <p>❤️❤️❤️ Braydihh ❤️❤️❤️</p>
       <div class="search">
         <input type="text" placeholder="Search games...">
         <button><i class="fas fa-search"></i></button>
@@ -705,83 +705,81 @@
 
 <script type="module">
 
-document.addEventListener('DOMContentLoaded', () => {
-  // 🔹 Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
-    authDomain: "mrsalt56-e6066.firebaseapp.com",
-    databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
-    projectId: "mrsalt56-e6066",
-    storageBucket: "mrsalt56-e6066.appspot.com",
-    messagingSenderId: "716178119141",
-    appId: "1:716178119141:web:2c39c7f79213699a38b70c",
-    measurementId: "G-FZWFSV1K2D"
-  };
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+  authDomain: "mrsalt56-e6066.firebaseapp.com",
+  databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+  projectId: "mrsalt56-e6066",
+  storageBucket: "mrsalt56-e6066.appspot.com",
+  messagingSenderId: "716178119141",
+  appId: "1:716178119141:web:2c39c7f79213699a38b70c",
+  measurementId: "G-FZWFSV1K2D"
+};
 
-  // 🔹 Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database(app);
 
-  // 🔹 DOM elements
-  const submitBtn = document.getElementById("submitBtn");
-  const userNameInput = document.getElementById("userName");
-  const queueList = document.getElementById("queueList");
-  const cooldownMsg = document.getElementById("cooldownMsg");
+const submitBtn = document.getElementById("submitBtn");
+const userNameInput = document.getElementById("userName");
+const queueList = document.getElementById("queueList");
+const cooldownMsg = document.getElementById("cooldownMsg");
+const COOLDOWN = 60 * 1000;
 
-  // 🔹 Cooldown (1 min)
-  const COOLDOWN = 60 * 1000;
+// Submit a shoutout
+submitBtn.addEventListener("click", () => {
+  const name = userNameInput.value.trim();
+  if (!name) return alert("Please enter your name.");
 
-  // 🔹 Submit shoutout
-  submitBtn.addEventListener("click", () => {
-    const name = userNameInput.value.trim();
-    if (!name) return alert("Please enter your name.");
+  const lastTime = localStorage.getItem("lastShoutout") || 0;
+  if (Date.now() - lastTime < COOLDOWN) {
+    cooldownMsg.textContent = "Please wait before submitting again!";
+    return;
+  }
 
-    const lastTime = localStorage.getItem("lastShoutout") || 0;
-    if (Date.now() - lastTime < COOLDOWN) {
-      cooldownMsg.textContent = "Please wait before submitting again!";
-      return;
-    }
+  localStorage.setItem("lastShoutout", Date.now());
+  cooldownMsg.textContent = "";
 
-    localStorage.setItem("lastShoutout", Date.now());
-    cooldownMsg.textContent = "";
+  // Push to Firebase
+  db.ref("shoutouts").push({ name });
 
-    // Push to Firebase
-    const shoutoutRef = ref(db, "shoutouts");
-    push(shoutoutRef, { name });
-    userNameInput.value = "";
+  // Clear input
+  userNameInput.value = "";
 
-    // Send to Discord webhook
-    const discordWebhook = "https://discord.com/api/webhooks/1415474812037628005/qPca1ARqtULY44_5dbar6dSSLiMvaKrVRchKjXPULxwJElh-M0U2zeogMrs34jv2OWuB";
-    fetch(discordWebhook, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
-    }).catch(console.error);
+  // Send to Discord webhook
+  fetch("https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+  }).catch(console.error);
+});
+
+// Listen for updates and show the 10 most recent shoutouts
+db.ref("shoutouts").orderByKey().limitToLast(10).on("value", snapshot => {
+  const shoutouts = [];
+  snapshot.forEach(childSnap => {
+    shoutouts.push({ key: childSnap.key, name: childSnap.val().name });
   });
 
-  // 🔹 Live update queue
-  const shoutoutRef = ref(db, "shoutouts");
-  onValue(shoutoutRef, snapshot => {
-    queueList.innerHTML = "";
-    snapshot.forEach(childSnap => {
-      const key = childSnap.key;
-      const { name } = childSnap.val();
+  shoutouts.reverse(); // newest first
 
-      const li = document.createElement("li");
-      li.textContent = name;
+  queueList.innerHTML = "";
+  shoutouts.forEach(entry => {
+    const li = document.createElement("li");
+    li.textContent = entry.name;
 
-      // Admin remove button
-      const removeBtn = document.createElement("button");
-      removeBtn.textContent = "Remove";
-      removeBtn.className = "remove-btn";
-      removeBtn.onclick = () => {
-        const password = prompt("Enter admin password:");
-        if (password === "56") remove(ref(db, `shoutouts/${key}`));
-      };
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => {
+      if (prompt("Enter admin password:") === "56") {
+        db.ref(`shoutouts/${entry.key}`).remove();
+      }
+    };
 
-      li.appendChild(removeBtn);
-      queueList.appendChild(li);
-    });
+    li.appendChild(removeBtn);
+    queueList.appendChild(li);
   });
 });
 </script>
@@ -797,8 +795,8 @@ document.addEventListener('DOMContentLoaded', () => {
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
 <script src="script.js"></script>
   
 </body>
