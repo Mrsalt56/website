@@ -10,44 +10,55 @@
 </head>
 <body>
 
-  <!-- Sidebar toggle button -->
-  <button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
-    <i class="fa-solid fa-bars"></i>
-  </button>
+ <button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
+  <i class="fa-solid fa-bars"></i>
+</button>
 
-  <!-- Sidebar -->
-  <aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
-    <button id="sidebarClose" class="sidebar-close" aria-label="Close sidebar">&times;</button>
+<!-- Sidebar -->
+<aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
+  <button id="sidebarClose" class="sidebar-close" aria-label="Close sidebar">&times;</button>
 
-    <div class="sidebar-section">
-      <h3>Quick Actions</h3>
-      <button id="sbSuggest" class="suggest-btn"><i class="fa-solid fa-lightbulb"></i> Suggest a game</button>
-      <button id="sbReport" class="report-btn"><i class="fa-solid fa-flag"></i> Report a problem</button>
-    </div>
+  <div class="sidebar-section">
+    <h3>Quick Actions</h3>
+    <button id="sbSuggest" class="suggest-btn">
+      <i class="fa-solid fa-lightbulb"></i> Suggest a game
+    </button>
+    <button id="sbReport" class="report-btn">
+      <i class="fa-solid fa-flag"></i> Report a problem
+    </button>
+  </div>
 
-    <div class="sidebar-section">
-      <h3>Community</h3>
-      <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
-        <i class="fa-brands fa-discord"></i> Join Discord
-      </a>
-    </div>
-    
-      <div class="sidebar-section">
+  <div class="sidebar-section">
+    <h3>Community</h3>
+    <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
+      <i class="fa-brands fa-discord"></i> Join Discord
+    </a>
+  </div>
+
+  <div class="sidebar-section">
     <h3>Proxy</h3>
     <ul class="proxy-list">
       <li><a href="https://mrsalt56.com/games/proxy" target="_blank" rel="noopener">Proxy</a></li>
-      
-  <p class="proxy-note">¸⚠️WAIT 30-60 SECONDS FOR LINK TO LOAD¸⚠️ Make sure to use the full link ⚠️ example: <code>discord.com</code></p>
     </ul>
-    </a>
+    <p class="proxy-note">
+      ⚠️ WAIT 30-60 SECONDS FOR LINK TO LOAD ⚠️ Use full link, e.g., <code>discord.com</code>
+    </p>
   </div>
-  </aside>
-  
 
-  <!-- Main content -->
+  <div class="sidebar-section">
+    <h3>Shoutout Queue</h3>
+
+    <div id="shoutoutForm">
+      <input type="text" id="userName" placeholder="Enter your name">
+      <button id="submitBtn">Submit</button>
+      <p id="cooldownMsg" style="color:red; font-size:0.8rem;"></p>
+    </div>
+
+    <ul id="queueList" style="list-style:none; padding-left:0; max-height:200px; overflow-y:auto;"></ul>
+  </div>
+</aside>
   <main>
 
-    <!-- Header -->
     <header class="site-header">
       <div class="logo">
         <img src="images/logo.png" alt="Salty Logo">
@@ -75,8 +86,8 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <h2>Suggest games using the suggest button</h2>
-      <p>Zylaphone is the best</p>
+      <h2>2nd period AVID on top</h2>
+      <p>❤️❤️❤️ Braydihh ❤️❤️❤️</p>
       <div class="search">
         <input type="text" placeholder="Search games...">
         <button><i class="fas fa-search"></i></button>
@@ -692,8 +703,86 @@
     </div>
   </div>
 
-  <!-- JS -->
-  <script src="script.js"></script>
+<script type="module">
+
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+  authDomain: "mrsalt56-e6066.firebaseapp.com",
+  databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+  projectId: "mrsalt56-e6066",
+  storageBucket: "mrsalt56-e6066.appspot.com",
+  messagingSenderId: "716178119141",
+  appId: "1:716178119141:web:2c39c7f79213699a38b70c",
+  measurementId: "G-FZWFSV1K2D"
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database(app);
+
+const submitBtn = document.getElementById("submitBtn");
+const userNameInput = document.getElementById("userName");
+const queueList = document.getElementById("queueList");
+const cooldownMsg = document.getElementById("cooldownMsg");
+const COOLDOWN = 60 * 1000;
+
+// Submit a shoutout
+submitBtn.addEventListener("click", () => {
+  const name = userNameInput.value.trim();
+  if (!name) return alert("Please enter your name.");
+
+  const lastTime = localStorage.getItem("lastShoutout") || 0;
+  if (Date.now() - lastTime < COOLDOWN) {
+    cooldownMsg.textContent = "Please wait before submitting again!";
+    return;
+  }
+
+  localStorage.setItem("lastShoutout", Date.now());
+  cooldownMsg.textContent = "";
+
+  // Push to Firebase
+  db.ref("shoutouts").push({ name });
+
+  // Clear input
+  userNameInput.value = "";
+
+  // Send to Discord webhook
+  fetch("https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
+  }).catch(console.error);
+});
+
+// Listen for updates and show the 10 most recent shoutouts
+db.ref("shoutouts").orderByKey().limitToLast(10).on("value", snapshot => {
+  const shoutouts = [];
+  snapshot.forEach(childSnap => {
+    shoutouts.push({ key: childSnap.key, name: childSnap.val().name });
+  });
+
+  shoutouts.reverse(); // newest first
+
+  queueList.innerHTML = "";
+  shoutouts.forEach(entry => {
+    const li = document.createElement("li");
+    li.textContent = entry.name;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.className = "remove-btn";
+    removeBtn.onclick = () => {
+      if (prompt("Enter admin password:") === "56") {
+        db.ref(`shoutouts/${entry.key}`).remove();
+      }
+    };
+
+    li.appendChild(removeBtn);
+    queueList.appendChild(li);
+  });
+});
+</script>
 
   <!-- Vercel Scripts -->
   <script>
@@ -706,5 +795,9 @@
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
+<script src="script.js"></script>
+  
 </body>
 </html>
