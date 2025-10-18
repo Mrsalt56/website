@@ -89,7 +89,9 @@ const suggestButton =
   // ------------------------
 const reportButton =
   document.getElementById('sbReport') ||
-  document.getElementById('reportButton');
+  document.getElementById('reportButton'); 
+const reportModal = document.getElementById('reportForm');
+const sendReportBtn = document.getElementById('sendReport');
 
   if (reportButton && reportModal) reportButton.addEventListener('click', () => reportModal.style.display='flex');
   if (sendReportBtn) {
