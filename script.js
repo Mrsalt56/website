@@ -87,9 +87,9 @@ const suggestButton =
   // ------------------------
   // Report modal
   // ------------------------
-  const reportButton = document.getElementById('reportButton');
-  const reportModal = document.getElementById('reportForm');
-  const sendReportBtn = document.getElementById('sendReport');
+const reportButton =
+  document.getElementById('sbReport') ||
+  document.getElementById('reportButton');
 
   if (reportButton && reportModal) reportButton.addEventListener('click', () => reportModal.style.display='flex');
   if (sendReportBtn) {
