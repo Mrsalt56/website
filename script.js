@@ -12,6 +12,10 @@ const suggestButton =
   const modal = document.getElementById('suggestionForm');
   const closeBtns = document.querySelectorAll('.modal .close');
   const sendBtn = document.getElementById('sendSuggestion');
+  const reportButton =
+  document.getElementById('sbReport') ||
+  document.getElementById('reportButton');
+const reportModal = document.getElementById('reportForm');
 
   const webhookURL = "https://discord.com/api/webhooks/1415474812037628005/qPca1ARqtULY44_5dbar6dSSLiMvaKrVRchKjXPULxwJElh-M0U2zeogMrs34jv2OWuB";
   const reportWebhookURL = "https://discord.com/api/webhooks/1415474903880171632/FlXBps-LswodW8fRTjkx4VWHAs19CuUR3iuFm63FMa5pLay5uI8jPvxSRVVPRrlQHDAr";
