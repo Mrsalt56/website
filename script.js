@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const gameCards = Array.from(document.querySelectorAll('.game-card'));
   const searchResults = document.getElementById('search-results');
 
-  const suggestButton = document.getElementById('suggestButton');
+const suggestButton =
+  document.getElementById('sbSuggest') ||
+  document.getElementById('suggestButton');
   const modal = document.getElementById('suggestionForm');
   const closeBtns = document.querySelectorAll('.modal .close');
   const sendBtn = document.getElementById('sendSuggestion');
