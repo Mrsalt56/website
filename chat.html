@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Salty — Chat Rooms</title>
+  <link rel="stylesheet" href="main.css"> <!-- optional: uses your site CSS -->
+  <style>
+    /* Minimal chat-specific overrides (dark theme to match your site) */
+    :root{--bg:#0a1a2f;--panel:#0f1723;--muted:#b8c2d3;--accent:#4da6ff}
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#f3f6fb;background:linear-gradient(135deg,#000,#0a1a2f)}
+    .wrap{display:flex;height:100vh;gap:18px;padding:18px;box-sizing:border-box}
+    .left{width:300px;background:rgba(10,12,20,0.94);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .left h2{margin:0;font-size:1.05rem}
+    .user-box{display:flex;align-items:center;gap:10px}
+    .user-name{font-weight:700}
+    .login-panel{display:flex;flex-direction:column;gap:8px}
+    .login-panel input{padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:#071022;color:#fff}
+    .login-panel button{padding:8px;border-radius:6px;border:none;cursor:pointer;background:var(--accent);color:#fff;font-weight:700}
+    .rooms{overflow:auto;flex:1;padding-top:6px}
+    .room{padding:10px;border-radius:6px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
+    .room.active{background:rgba(77,166,255,0.12);border-left:3px solid var(--accent)}
+    .right{flex:1;background:rgba(10,12,20,0.96);border-radius:10px;padding:12px;display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
+    .chat-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .chat-area{flex:1;overflow:auto;padding:10px;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+    .msg{margin-bottom:10px;display:flex;gap:8px;align-items:flex-start}
+    .msg .meta{font-size:0.78rem;color:var(--muted);min-width:110px}
+    .msg .bubble{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);max-width:70%}
+    .input-row{display:flex;gap:8px;margin-top:8px}
+    .input-row input{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:#071022;color:#fff}
+    .input-row button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+    .small{font-size:0.85rem;color:var(--muted)}
+    .top-left-title{position:fixed;left:24px;top:14px;color:#fff;font-weight:700}
+    @media(max-width:900px){ .left{width:220px} }
+  </style>
+</head>
+<body>
+  <div class="top-left-title">Salty Chat</div>
+
+  <div class="wrap">
+    <aside class="left">
+      <div class="user-box" id="userBox">
+        <!-- either login/register form or user info will appear here -->
+      </div>
+
+      <div class="left-section">
+        <h2>Rooms</h2>
+        <div class="rooms" id="roomsList"></div>
+      </div>
+
+      <div class="small">Note: Accounts are simple (name + password). Passwords are hashed client-side with SHA-256 before storing.</div>
+    </aside>
+
+    <section class="right">
+      <div class="chat-header">
+        <div id="currentRoomTitle"><strong>Select a room</strong></div>
+        <div style="flex:1"></div>
+        <div id="loggedInAs" class="small"></div>
+      </div>
+
+      <div class="chat-area" id="chatArea">
+        <div class="small">Pick a room from the left to start chatting.</div>
+      </div>
+
+      <div class="input-row" id="inputRow" style="display:none">
+        <input id="messageInput" type="text" placeholder="Type a message..." autocomplete="off" />
+        <button id="sendBtn">Send</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
+
+  <script>
+  // ---------------------------
+  // Firebase config - use same as your site
+  // ---------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+    authDomain: "mrsalt56-e6066.firebaseapp.com",
+    databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+    projectId: "mrsalt56-e6066",
+    storageBucket: "mrsalt56-e6066.appspot.com",
+    messagingSenderId: "716178119141",
+    appId: "1:716178119141:web:2c39c7f79213699a38b70c",
+    measurementId: "G-FZWFSV1K2D"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // ---------------------------
+  // Rooms list requested by you
+  // ---------------------------
+  const ROOMS = [
+    "Math 7","Math 8","ELA 7","ELA 8","AVID",
+    "Science 7","Science 8","History 7","History 8",
+    "Coding","Life Skills","ASB","Band"
+  ];
+
+  // Utilities
+  const $ = id => document.getElementById(id) || document.querySelector(id);
+
+  // hash a password using SHA-256 (returns hex)
+  async function sha256Hex(str) {
+    const enc = new TextEncoder();
+    const data = enc.encode(str);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+    return hex;
+  }
+
+  // ---------------------------
+  // Simple account system (name + password)
+  // - user record stored in db: /users/<usernameLower> = { displayName, passwordHash, createdAt }
+  // - logged-in user saved to localStorage: salty_chat_user
+  // ---------------------------
+  function saveLocalUser(user) { localStorage.setItem('salty_chat_user', JSON.stringify(user)); }
+  function loadLocalUser(){ try { return JSON.parse(localStorage.getItem('salty_chat_user')||'null'); } catch(e){ return null; } }
+  function clearLocalUser(){ localStorage.removeItem('salty_chat_user'); }
+
+  // Build the left user box: either login/register or profile
+  async function renderUserBox() {
+    const box = $('#userBox');
+    const saved = loadLocalUser();
+
+    if (saved && saved.displayName) {
+      box.innerHTML = `
+        <div style="flex:1">
+          <div class="user-name">${escapeHtml(saved.displayName)}</div>
+          <div class="small">Logged in on this device</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button id="logoutBtn" style="background:#ff4d4d;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer">Logout</button>
+        </div>
+      `;
+      $('#logoutBtn').addEventListener('click', () => {
+        clearLocalUser();
+        renderUserBox();
+        renderLoggedInSmall();
+      });
+      renderLoggedInSmall();
+      return;
+    }
+
+    // login/register form
+    box.innerHTML = `
+      <div style="width:100%">
+        <div class="login-panel">
+          <input id="regName" placeholder="Display name (like: Chris)" />
+          <input id="regPass" type="password" placeholder="Password" />
+          <div style="display:flex;gap:8px">
+            <button id="registerBtn">Create Account</button>
+            <button id="loginBtn" style="background:#2e8b57">Login</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $('#registerBtn').addEventListener('click', async () => {
+      const name = ( $('#regName').value || '' ).trim();
+      const pass = ( $('#regPass').value || '' ).trim();
+      if (!name || !pass) return alert('Please set a name and a password.');
+
+      const uname = name.toLowerCase().replace(/\s+/g,'_');
+      const pwHash = await sha256Hex(pass);
+
+      // create user if not exists
+      const ref = db.ref('users/' + uname);
+      ref.get().then(snapshot => {
+        if (snapshot.exists()) {
+          return alert('That name is already taken. Choose a different display name.');
+        } else {
+          ref.set({ displayName: name, passwordHash: pwHash, createdAt: Date.now() })
+            .then(() => {
+              saveLocalUser({ uid: uname, displayName: name });
+              renderUserBox();
+              alert('Account created and logged in on this device.');
+            })
+            .catch(err => { console.error(err); alert('Failed to create account.'); });
+        }
+      });
+    });
+
+    $('#loginBtn').addEventListener('click', async () => {
+      const name = ( $('#regName').value || '' ).trim();
+      const pass = ( $('#regPass').value || '' ).trim();
+      if (!name || !pass) return alert('Enter name and password.');
+
+      const uname = name.toLowerCase().replace(/\s+/g,'_');
+      const pwHash = await sha256Hex(pass);
+
+      const ref = db.ref('users/' + uname);
+      ref.get().then(snapshot => {
+        if (!snapshot.exists()) return alert('User not found. Create an account first.');
+        const data = snapshot.val();
+        if (data.passwordHash !== pwHash) return alert('Incorrect password.');
+        saveLocalUser({ uid: uname, displayName: data.displayName });
+        renderUserBox();
+        alert('Logged in on this device.');
+      });
+    });
+  }
+
+  function renderLoggedInSmall(){
+    const small = $('#loggedInAs');
+    const saved = loadLocalUser();
+    small.textContent = saved ? `Signed in as ${saved.displayName}` : '';
+  }
+
+  // ---------------------------
+  // Rooms UI
+  // ---------------------------
+  const roomsListEl = $('#roomsList');
+  let currentRoomId = null;
+  let messagesRef = null;
+
+  function buildRooms() {
+    roomsListEl.innerHTML = '';
+    ROOMS.forEach(r => {
+      const id = roomIdFromName(r);
+      const div = document.createElement('div');
+      div.className = 'room';
+      div.id = 'room-'+id;
+      div.innerHTML = `<div>${escapeHtml(r)}</div><div class="small" id="last-${id}"></div>`;
+      div.addEventListener('click', () => openRoom(id, r));
+      roomsListEl.appendChild(div);
+    });
+  }
+
+  function roomIdFromName(name){ return name.replace(/\s+/g,'_').toLowerCase(); }
+
+  // ---------------------------
+  // Chat: open a room, listen for messages
+  // ---------------------------
+  async function openRoom(id, displayName) {
+    if (!loadLocalUser()) return alert('Please create an account or login first.');
+
+    // UI
+    document.querySelectorAll('.room').forEach(el => el.classList.remove('active'));
+    const active = $('#room-'+id); if (active) active.classList.add('active');
+    $('#currentRoomTitle').innerHTML = `<strong>${escapeHtml(displayName)}</strong>`;
+    $('#chatArea').innerHTML = `<div class="small">Loading messages...</div>`;
+    $('#inputRow').style.display = 'flex';
+    currentRoomId = id;
+
+    // detach previous listener
+    if (messagesRef) messagesRef.off();
+
+    // listen last 200 messages
+    messagesRef = db.ref('chats/' + id).limitToLast(200);
+    messagesRef.on('value', snap => {
+      const messages = [];
+      snap.forEach(child => messages.push({ key: child.key, ...child.val() }));
+      renderMessages(messages);
+    });
+  }
+
+  function renderMessages(messages) {
+    const area = $('#chatArea');
+    area.innerHTML = '';
+    if (!messages.length) {
+      area.innerHTML = '<div class="small">No messages yet — say hi 👋</div>';
+      return;
+    }
+    messages.forEach(m => {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg';
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const time = new Date(m.ts||0);
+      meta.innerHTML = `<div style="font-weight:700">${escapeHtml(m.name)}</div><div class="small">${time.toLocaleString()}</div>`;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = m.text;
+
+      wrap.appendChild(meta);
+      wrap.appendChild(bubble);
+      area.appendChild(wrap);
+    });
+    // scroll to bottom
+    area.scrollTop = area.scrollHeight;
+  }
+
+  // Send message
+  $('#sendBtn')?.addEventListener('click', sendMessageFromInput);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.activeElement === $('#messageInput')) sendMessageFromInput();
+  });
+
+  async function sendMessageFromInput() {
+    const input = $('#messageInput');
+    if (!input || !input.value.trim()) return;
+    if (!currentRoomId) return alert('Select a room first.');
+    const user = loadLocalUser();
+    if (!user) return alert('Please login to send messages.');
+
+    const text = input.value.trim().slice(0,1000);
+    input.value = '';
+    const payload = { name: user.displayName, uid: user.uid, text, ts: Date.now() };
+    db.ref('chats/' + currentRoomId).push(payload).catch(err => console.error(err));
+  }
+
+  // small helper to escape text
+  function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+  // show "last message" snippet in rooms (optional)
+  function watchLastMessages() {
+    ROOMS.forEach(r => {
+      const id = roomIdFromName(r);
+      const lastRef = db.ref('chats/' + id).limitToLast(1);
+      lastRef.on('value', snap => {
+        let text = '';
+        snap.forEach(c => { const v = c.val(); text = v ? `${v.name}: ${v.text.substring(0,30)}` : ''; });
+        const el = $('#last-'+id);
+        if (el) el.textContent = text;
+      });
+    });
+  }
+
+  // ---------------------------
+  // Init
+  // ---------------------------
+  (async function init() {
+    buildRooms();
+    renderUserBox();
+
+    // wire send btn after DOM ready
+    document.getElementById('sendBtn').addEventListener('click', sendMessageFromInput);
+
+    watchLastMessages();
+
+    // If a user is stored, show them small
+    renderLoggedInSmall();
+  })();
+  </script>
+</body>
+</html>
