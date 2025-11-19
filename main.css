@@ -420,3 +420,57 @@ body {
   cursor: pointer;
   font-size: 0.75rem;
 }
+
+.chat-area {
+  padding: 15px;
+  height: calc(100vh - 220px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+}
+
+.msg.me {
+  align-self: flex-end;
+}
+
+.msg.them {
+  align-self: flex-start;
+}
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.msg.me .bubble {
+  background: #0078ff;
+  color: white;
+  border-bottom-right-radius: 3px;
+}
+
+.msg.them .bubble {
+  background: rgba(255,255,255,0.12);
+  color: #f0f0f0;
+  border-bottom-left-radius: 3px;
+}
+
+.username {
+  font-size: 0.75rem;
+  color: #9bb7ff;
+  margin-bottom: 3px;
+}
+
+.typing-indicator {
+  font-size: 0.8rem;
+  color: #9bb7ff;
+  opacity: 0.8;
+}
