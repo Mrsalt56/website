@@ -474,3 +474,12 @@ body {
   color: #9bb7ff;
   opacity: 0.8;
 }
+
+
+.chat-area * {
+    color: #ffffff !important;
+}
+
+.bubble {
+    color: #ffffff !important;
+}
