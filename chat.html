@@ -6,7 +6,13 @@
   <title>Salty — Chat Rooms</title>
 
   <style>
-    :root{--bg:#0a1a2f;--panel:#0f1723;--muted:#b8c2d3;--accent:#4da6ff}
+    :root{
+      --bg:#0a1a2f;
+      --panel:#0f1723;
+      --muted:#b8c2d3;
+      --accent:#4da6ff;
+    }
+
     html,body{
       height:100%;
       margin:0;
@@ -14,30 +20,13 @@
       color:#f3f6fb;
       background:linear-gradient(135deg,#000,#0a1a2f);
     }
+
     .wrap{
       display:flex;
       height:100vh;
       gap:18px;
       padding:18px;
-      box-sizing:border-box; 
-    }
-    /* FIX CHAT MESSAGE LAYOUT */
-    .msg {
-      align-items: flex-start !important;
-      flex-wrap: wrap !important;
-    }    
-
-    .msg .meta {
-    min-width: 80px !important;
-    max-width: 120px !important;
-    }
-
-    .msg .bubble {
-      flex: 1 1 auto !important;
-      white-space: normal !important;
-      display: inline-block !important;
-      min-height: 20px !important;
-      line-height: 1.4 !important;
+      box-sizing:border-box;
     }
 
     .left{
@@ -50,10 +39,26 @@
       gap:10px;
       box-shadow:0 6px 18px rgba(0,0,0,0.6);
     }
-    .left h2,.left h3{margin:0;font-size:1.05rem}
-    .user-box{display:flex;align-items:center;gap:10px}
-    .user-name{font-weight:700}
-    .login-panel{display:flex;flex-direction:column;gap:8px}
+
+    .left h2,.left h3{
+      margin:0;
+      font-size:1.05rem;
+    }
+
+    .user-box{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .user-name{font-weight:700;}
+
+    .login-panel{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
     .login-panel input{
       padding:8px;
       border-radius:6px;
@@ -61,6 +66,7 @@
       background:#071022;
       color:#fff;
     }
+
     .login-panel button{
       padding:8px;
       border-radius:6px;
@@ -70,7 +76,13 @@
       color:#fff;
       font-weight:700;
     }
-    .rooms{overflow:auto;flex:1;padding-top:6px}
+
+    .rooms{
+      overflow:auto;
+      flex:1;
+      padding-top:6px;
+    }
+
     .room{
       padding:10px;
       border-radius:6px;
@@ -81,10 +93,12 @@
       justify-content:space-between;
       align-items:center;
     }
+
     .room.active{
       background:rgba(77,166,255,0.12);
       border-left:3px solid var(--accent);
     }
+
     .right{
       flex:1;
       background:rgba(10,12,20,0.96);
@@ -94,12 +108,14 @@
       flex-direction:column;
       box-shadow:0 6px 18px rgba(0,0,0,0.6);
     }
+
     .chat-header{
       display:flex;
       align-items:center;
       gap:10px;
       margin-bottom:8px;
     }
+
     .chat-area{
       flex:1;
       overflow:auto;
@@ -108,42 +124,46 @@
       background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
       display:flex;
       flex-direction:column;
+      min-height:300px;
+      position:relative;
+      z-index:1;
     }
+
+    /* Message layout */
     .msg{
       margin-bottom:10px;
       display:flex;
       gap:8px;
       align-items:flex-start;
+      flex-wrap:wrap; /* allow bubble to wrap under meta on small width */
     }
+
     .msg .meta{
       font-size:0.78rem;
       color:var(--muted);
-      min-width:110px;
+      min-width:80px;
+      max-width:120px;
     }
+
     .msg .bubble{
       padding:8px 10px;
       border-radius:8px;
       background:rgba(255,255,255,0.08);
       max-width:70%;
-      white-space:pre-wrap;
+      white-space:normal;
       color:#fff;
+      flex:1 1 auto;
+      display:inline-block;
+      min-height:20px;
+      line-height:1.4;
     }
 
-    .msg {
-      align-items: flex-start !important;
-    }
-
-    .bubble {
-      display: inline-block !important;
-      min-height: 20px !important;
-      line-height: 1.4 !important;
-    }  
-    
     .input-row{
       display:flex;
       gap:8px;
       margin-top:8px;
     }
+
     .input-row input{
       flex:1;
       padding:10px;
@@ -152,6 +172,7 @@
       background:#071022;
       color:#fff;
     }
+
     .input-row button{
       padding:10px 14px;
       border-radius:8px;
@@ -161,27 +182,17 @@
       font-weight:700;
       cursor:pointer;
     }
-    .small{font-size:0.85rem;color:var(--muted)}
-    .top-left-title{position:fixed;left:24px;top:14px;color:#fff;font-weight:700}
-    .online-dot{width:9px;height:9px;border-radius:50%;background:#27ae60;display:inline-block;margin-right:8px}
-    .typing-indicator{color:var(--muted);font-style:italic;font-size:0.85rem;margin-left:6px}
-    .admin-btn{background:#333;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer}
-    .danger{background:#b71c1c}
-    @media(max-width:900px){ .left{width:220px} }
 
-  .chat-area {
-  min-height: 300px !important;
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  position: relative !important;
-  z-index: 10 !important;
-}
+    .small{font-size:0.85rem;color:var(--muted);}
+    .top-left-title{position:fixed;left:24px;top:14px;color:#fff;font-weight:700;}
+    .online-dot{width:9px;height:9px;border-radius:50%;background:#27ae60;display:inline-block;margin-right:8px;}
+    .typing-indicator{color:var(--muted);font-style:italic;font-size:0.85rem;margin-left:6px;}
+    .admin-btn{background:#333;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer;}
+    .danger{background:#b71c1c;}
 
-.msg .bubble {
-  color: #ffffff !important;
-}
- 
+    @media(max-width:900px){
+      .left{width:220px;}
+    }
   </style>
 </head>
 <body>
@@ -410,12 +421,15 @@
     messagesRef.on('value', snap=>{
       const msgs = [];
       snap.forEach(c=>msgs.push({ key:c.key, ...c.val() }));
+      // ensure newest last
+      msgs.sort((a,b)=> (a.ts||0) - (b.ts||0));
       renderMessages(msgs);
     });
 
     watchTyping(id);
   }
 
+  // ✅ CLEAN, FIXED RENDER FUNCTION
   function renderMessages(messages){
     const area = $id('chatArea');
     area.innerHTML = '';
@@ -423,14 +437,19 @@
       area.innerHTML = '<div class="small">No messages yet — say hi 👋</div>';
       return;
     }
+
     messages.forEach(m=>{
       const wrap = document.createElement('div');
       wrap.className = 'msg';
 
       const meta = document.createElement('div');
       meta.className = 'meta';
-      const t = new Date(m.ts || 0);
-      meta.innerHTML = `<div style="font-weight:700">${escapeHtml(m.name||'Unknown')}</div><div class="small">${t.toLocaleString()}</div>`;
+
+      const t = new Date(m.ts || 0).toLocaleString();
+      meta.innerHTML = `
+        <div style="font-weight:700">${escapeHtml(m.name || 'Unknown')}</div>
+        <div class="small">${t}</div>
+      `;
 
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
@@ -438,7 +457,6 @@
       if(m.deleted){
         bubble.textContent = '[message deleted by admin]';
       } else {
-        // Support BOTH "text" and "message" fields so nothing is blank
         const content = (m.text || m.message || '').toString();
         bubble.textContent = content;
       }
@@ -447,6 +465,7 @@
       wrap.appendChild(bubble);
       area.appendChild(wrap);
     });
+
     area.scrollTop = area.scrollHeight;
   }
 
@@ -782,4 +801,3 @@
   </script>
 </body>
 </html>
-
