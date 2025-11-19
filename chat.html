@@ -1,41 +1,147 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Salty — Chat Rooms</title>
-<link rel="stylesheet" href="main.css">
-<style>
-  :root{--bg:#0a1a2f;--panel:#0f1723;--muted:#b8c2d3;--accent:#4da6ff}
-  html,body{height:100%;margin:0;font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#f3f6fb;background:linear-gradient(135deg,#000,#0a1a2f)}
-  .wrap{display:flex;height:100vh;gap:18px;padding:18px;box-sizing:border-box}
-  .left{width:300px;background:rgba(10,12,20,0.94);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
-  .left h2{margin:0;font-size:1.05rem}
-  .user-box{display:flex;align-items:center;gap:10px}
-  .user-name{font-weight:700}
-  .login-panel{display:flex;flex-direction:column;gap:8px}
-  .login-panel input{padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:#071022;color:#fff}
-  .login-panel button{padding:8px;border-radius:6px;border:none;cursor:pointer;background:var(--accent);color:#fff;font-weight:700}
-  .rooms{overflow:auto;flex:1;padding-top:6px}
-  .room{padding:10px;border-radius:6px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center}
-  .room.active{background:rgba(77,166,255,0.12);border-left:3px solid var(--accent)}
-  .right{flex:1;background:rgba(10,12,20,0.96);border-radius:10px;padding:12px;display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(0,0,0,0.6)}
-  .chat-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  .chat-area{flex:1;overflow:auto;padding:10px;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
-  .msg{margin-bottom:10px;display:flex;gap:8px;align-items:flex-start}
-  .msg .meta{font-size:0.78rem;color:var(--muted);min-width:110px}
-  .msg .bubble{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);max-width:70%;white-space:pre-wrap}
-  .input-row{display:flex;gap:8px;margin-top:8px}
-  .input-row input{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:#071022;color:#fff}
-  .input-row button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
-  .small{font-size:0.85rem;color:var(--muted)}
-  .top-left-title{position:fixed;left:24px;top:14px;color:#fff;font-weight:700}
-  .online-dot{width:9px;height:9px;border-radius:50%;background:#27ae60;display:inline-block;margin-right:8px}
-  .typing-indicator{color:var(--muted);font-style:italic}
-  .admin-btn{background:#333;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer}
-  .danger{background:#b71c1c}
-  @media(max-width:900px){ .left{width:220px} }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Salty — Chat Rooms</title>
+
+  <!-- Optional: use your main site CSS -->
+  <link rel="stylesheet" href="main.css">
+
+  <style>
+    :root{--bg:#0a1a2f;--panel:#0f1723;--muted:#b8c2d3;--accent:#4da6ff}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:Montserrat,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color:#f3f6fb;
+      background:linear-gradient(135deg,#000,#0a1a2f);
+    }
+    .wrap{
+      display:flex;
+      height:100vh;
+      gap:18px;
+      padding:18px;
+      box-sizing:border-box;
+    }
+    .left{
+      width:300px;
+      background:rgba(10,12,20,0.94);
+      border-radius:10px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+    }
+    .left h2,.left h3{margin:0;font-size:1.05rem}
+    .user-box{display:flex;align-items:center;gap:10px}
+    .user-name{font-weight:700}
+    .login-panel{display:flex;flex-direction:column;gap:8px}
+    .login-panel input{
+      padding:8px;
+      border-radius:6px;
+      border:1px solid rgba(255,255,255,0.06);
+      background:#071022;
+      color:#fff;
+    }
+    .login-panel button{
+      padding:8px;
+      border-radius:6px;
+      border:none;
+      cursor:pointer;
+      background:var(--accent);
+      color:#fff;
+      font-weight:700;
+    }
+    .rooms{overflow:auto;flex:1;padding-top:6px}
+    .room{
+      padding:10px;
+      border-radius:6px;
+      margin-bottom:8px;
+      cursor:pointer;
+      background:rgba(255,255,255,0.02);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .room.active{
+      background:rgba(77,166,255,0.12);
+      border-left:3px solid var(--accent);
+    }
+    .right{
+      flex:1;
+      background:rgba(10,12,20,0.96);
+      border-radius:10px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+    }
+    .chat-header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .chat-area{
+      flex:1;
+      overflow:auto;
+      padding:10px;
+      border-radius:6px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
+      display:flex;
+      flex-direction:column;
+    }
+    .msg{
+      margin-bottom:10px;
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
+    .msg .meta{
+      font-size:0.78rem;
+      color:var(--muted);
+      min-width:110px;
+    }
+    .msg .bubble{
+      padding:8px 10px;
+      border-radius:8px;
+      background:rgba(255,255,255,0.08);
+      max-width:70%;
+      white-space:pre-wrap;
+      color:#fff;
+    }
+    .input-row{
+      display:flex;
+      gap:8px;
+      margin-top:8px;
+    }
+    .input-row input{
+      flex:1;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.06);
+      background:#071022;
+      color:#fff;
+    }
+    .input-row button{
+      padding:10px 14px;
+      border-radius:8px;
+      border:none;
+      background:var(--accent);
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .small{font-size:0.85rem;color:var(--muted)}
+    .top-left-title{position:fixed;left:24px;top:14px;color:#fff;font-weight:700}
+    .online-dot{width:9px;height:9px;border-radius:50%;background:#27ae60;display:inline-block;margin-right:8px}
+    .typing-indicator{color:var(--muted);font-style:italic;font-size:0.85rem;margin-left:6px}
+    .admin-btn{background:#333;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer}
+    .danger{background:#b71c1c}
+    @media(max-width:900px){ .left{width:220px} }
+  </style>
 </head>
 <body>
   <div class="top-left-title">Salty Chat</div>
@@ -54,19 +160,23 @@
         <div id="onlineList" class="small"></div>
       </div>
 
-      <div class="small">Note: Accounts = display name + password. Username blocks profanity. Admin panel requires DB admin record. </div>
+      <div class="small">
+        Accounts = name + password (saved on this device).  
+        Username blocks swear words. Admin panel requires KEY= 67614156.
+      </div>
     </aside>
 
     <section class="right">
       <div class="chat-header">
         <div id="currentRoomTitle"><strong>Select a room</strong></div>
+        <div id="typingStatus" class="typing-indicator"></div>
         <div style="flex:1"></div>
         <div id="loggedInAs" class="small"></div>
         <div id="adminArea"></div>
       </div>
 
       <div class="chat-area" id="chatArea">
-        <div class="small">Pick a room from the left to start chatting.</div>
+        <div class="small">Pick a room on the left to start chatting.</div>
       </div>
 
       <div class="input-row" id="inputRow" style="display:none">
@@ -76,525 +186,559 @@
     </section>
   </div>
 
-  <!-- Firebase (compat) -->
+  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
 
-<script>
-/* ============================
-   CONFIG
-   ============================ */
-const firebaseConfig = {
-  apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
-  authDomain: "mrsalt56-e6066.firebaseapp.com",
-  databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
-  projectId: "mrsalt56-e6066",
-  storageBucket: "mrsalt56-e6066.appspot.com",
-  messagingSenderId: "716178119141",
-  appId: "1:716178119141:web:2c39c7f79213699a38b70c",
-  measurementId: "G-FZWFSV1K2D"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+  <script>
+  /* ============================
+     FIREBASE CONFIG
+     ============================ */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
+    authDomain: "mrsalt56-e6066.firebaseapp.com",
+    databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
+    projectId: "mrsalt56-e6066",
+    storageBucket: "mrsalt56-e6066.appspot.com",
+    messagingSenderId: "716178119141",
+    appId: "1:716178119141:web:2c39c7f79213699a38b70c",
+    measurementId: "G-FZWFSV1K2D"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-/* ============================
-   ROOM LIST (from you)
-   ============================ */
-const ROOMS = [
-  "Math 7","Math 8","ELA 7","ELA 8","AVID",
-  "Science 7","Science 8","History 7","History 8",
-  "Coding","Life Skills","ASB","Band"
-];
+  /* ============================
+     ROOMS
+     ============================ */
+  const ROOMS = [
+    "Math 7","Math 8","ELA 7","ELA 8","AVID",
+    "Science 7","Science 8","History 7","History 8",
+    "Coding","Life Skills","ASB","Band"
+  ];
 
-/* ============================
-   UTIL (DOM helpers + hashing)
-   ============================ */
-const $id = id => document.getElementById(id);
-function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-async function sha256Hex(str){
-  const enc = new TextEncoder();
-  const data = enc.encode(str);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-function normalizeUid(name){ return name.toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]/g,'_'); }
-
-/* ============================
-   PROFANITY LIST (short sample; you can extend)
-   ============================ */
-const BAD_WORDS = [
-  "fuck","shit","bitch","asshole","slut","whore","nigger","faggot","cunt","bastard","dick"
-];
-// check name or message for profanity
-function containsProfanity(s){
-  if(!s) return false;
-  const low = s.toLowerCase();
-  for(const w of BAD_WORDS){
-    if (low.includes(w)) return true;
-    // handle simple leets
-    const alt = w.split('').map(ch=> ch==='a'?'@': (ch==='i'?'1':(ch==='o'?'0':ch))).join('');
-    if(low.includes(alt)) return true;
+  /* ============================
+     UTILS
+     ============================ */
+  const $id = id => document.getElementById(id);
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;');
   }
-  return false;
-}
-// sanitize message (replace bad words with ***)
-function sanitizeMessage(s){
-  let out = s;
-  for(const w of BAD_WORDS){
-    const re = new RegExp(w,'gi');
-    out = out.replace(re,'***');
+  async function sha256Hex(str){
+    const enc = new TextEncoder();
+    const data = enc.encode(str);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
-  return out;
-}
+  function normalizeUid(name){
+    return name.toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]/g,'_');
+  }
 
-/* ============================
-   LOCAL ACCOUNT STORAGE
-   (1 account per device)
-   ============================ */
-function saveLocalUser(u){ localStorage.setItem('salty_chat_user', JSON.stringify(u)); }
-function loadLocalUser(){ try { return JSON.parse(localStorage.getItem('salty_chat_user')||'null'); } catch(e){return null;} }
-function clearLocalUser(){ localStorage.removeItem('salty_chat_user'); }
+  /* ============================
+     PROFANITY
+     ============================ */
+  const BAD_WORDS = [
+    "fuck","shit","bitch","asshole","slut","whore","nigger","faggot","cunt","bastard","dick"
+  ];
+  function containsProfanity(s){
+    if(!s) return false;
+    const low = s.toLowerCase();
+    for(const w of BAD_WORDS){
+      if(low.includes(w)) return true;
+      const alt = w.split('').map(ch=>{
+        if(ch==='a') return '@';
+        if(ch==='i') return '1';
+        if(ch==='o') return '0';
+        return ch;
+      }).join('');
+      if(low.includes(alt)) return true;
+    }
+    return false;
+  }
+  function sanitizeMessage(s){
+    let out = s;
+    for(const w of BAD_WORDS){
+      const re = new RegExp(w,'gi');
+      out = out.replace(re,'***');
+    }
+    return out;
+  }
 
-/* ============================
-   PRESENCE (online users)
-   - uses Realtime Database onDisconnect to remove entry
-   ============================ */
-let presenceRef = null;
-async function setPresenceIfLoggedIn(){
-  const u = loadLocalUser();
-  // presence uses uid from client-managed accounts (not secure on its own)
-  if(!u) return;
-  const uid = u.uid;
-  const pRef = db.ref('presence/' + uid);
-  pRef.set({ displayName: u.displayName, lastActive: Date.now() });
-  pRef.onDisconnect().remove();
-  presenceRef = pRef;
-}
-function watchPresence(){
-  const list = $id('onlineList');
-  db.ref('presence').on('value', snap => {
-    const entries = [];
-    snap.forEach(c => entries.push(c.val()));
-    // sort by name
-    entries.sort((a,b)=>(a.displayName||'').localeCompare(b.displayName||''));
-    list.innerHTML = entries.length ? entries.map(e=>`<div><span class="online-dot"></span>${escapeHtml(e.displayName)}</div>`).join('') : '<div class="small">No one online</div>';
-  });
-}
+  /* ============================
+     LOCAL USER STORAGE
+     ============================ */
+  function saveLocalUser(u){ localStorage.setItem('salty_chat_user', JSON.stringify(u)); }
+  function loadLocalUser(){ try { return JSON.parse(localStorage.getItem('salty_chat_user')||'null'); } catch(e){ return null; } }
+  function clearLocalUser(){ localStorage.removeItem('salty_chat_user'); }
 
-/* ============================
-   TYPING INDICATOR
-   typing/{roomId}/{uid} = {displayName:..., ts:...}
-   ============================ */
-let typingTimeouts = {}; // client-side timeouts
-function setTyping(roomId, uid, displayName){
-  if(!roomId || !uid) return;
-  const ref = db.ref(`typing/${roomId}/${uid}`);
-  ref.set({ displayName, ts: Date.now() });
-  // auto-clear after 4 seconds client-side (and the DB entry will also expire via onDisconnect if needed)
-  if(typingTimeouts[uid]) clearTimeout(typingTimeouts[uid]);
-  typingTimeouts[uid] = setTimeout(()=> ref.remove(), 4000);
-}
-function watchTyping(roomId){
-  const indicatorEl = $id('chatArea');
-  const typingRef = db.ref(`typing/${roomId}`);
-  typingRef.on('value', snap => {
-    const names = [];
-    snap.forEach(c => { names.push(c.val().displayName); });
-    const display = names.length ? `<div class="typing-indicator">${escapeHtml(names.join(', '))} is typing...</div>` : '';
-    // we attach indicator below chat header; find an element place
-    const existing = document.querySelector('.typing-indicator');
-    if(existing) existing.remove();
-    if(display) {
-      const node = document.createElement('div');
-      node.className = 'typing-indicator';
-      node.style.marginTop = '6px';
-      node.innerHTML = escapeHtml(names.join(', ')) + (names.length===1? ' is typing...' : ' are typing...');
-      document.getElementById('currentRoomTitle').appendChild(node);
+  /* ============================
+     PRESENCE (ONLINE)
+     ============================ */
+  let presenceRef = null;
+  async function setPresenceIfLoggedIn(){
+    const u = loadLocalUser();
+    if(!u) return;
+    const uid = u.uid;
+    const pRef = db.ref('presence/' + uid);
+    pRef.set({ displayName: u.displayName, lastActive: Date.now() });
+    pRef.onDisconnect().remove();
+    presenceRef = pRef;
+  }
+  function watchPresence(){
+    const list = $id('onlineList');
+    db.ref('presence').on('value', snap=>{
+      const arr = [];
+      snap.forEach(c=>arr.push(c.val()));
+      arr.sort((a,b)=>(a.displayName||'').localeCompare(b.displayName||''));
+      list.innerHTML = arr.length
+        ? arr.map(e=>`<div><span class="online-dot"></span>${escapeHtml(e.displayName||'')}</div>`).join('')
+        : '<div class="small">No one online</div>';
+    });
+  }
+
+  /* ============================
+     TYPING INDICATOR
+     ============================ */
+  let typingTimeouts = {};
+  function setTyping(roomId, uid, displayName){
+    if(!roomId || !uid) return;
+    const ref = db.ref(`typing/${roomId}/${uid}`);
+    ref.set({ displayName, ts: Date.now() });
+    if(typingTimeouts[uid]) clearTimeout(typingTimeouts[uid]);
+    typingTimeouts[uid] = setTimeout(()=>ref.remove(), 4000);
+  }
+  function watchTyping(roomId){
+    const status = $id('typingStatus');
+    const typingRef = db.ref(`typing/${roomId}`);
+    typingRef.on('value', snap=>{
+      const names = [];
+      snap.forEach(c=>names.push(c.val().displayName));
+      if(!names.length){
+        status.textContent = '';
+      } else if(names.length === 1){
+        status.textContent = `${names[0]} is typing...`;
+      } else {
+        status.textContent = `${names.join(', ')} are typing...`;
+      }
+    });
+  }
+
+  /* ============================
+     ROOMS + MESSAGES
+     ============================ */
+  const roomsListEl = $id('roomsList');
+  let currentRoomId = null;
+  let messagesRef = null;
+
+  function buildRooms(){
+    roomsListEl.innerHTML = '';
+    ROOMS.forEach(r=>{
+      const id = normalizeUid(r);
+      const div = document.createElement('div');
+      div.className = 'room';
+      div.id = 'room-' + id;
+      div.innerHTML = `<div>${escapeHtml(r)}</div><div class="small" id="last-${id}"></div>`;
+      div.addEventListener('click', ()=>openRoom(id, r));
+      roomsListEl.appendChild(div);
+    });
+  }
+
+  function openRoom(id, label){
+    const me = loadLocalUser();
+    if(!me){
+      alert('Please login or create an account first.');
+      return;
+    }
+
+    document.querySelectorAll('.room').forEach(el=>el.classList.remove('active'));
+    const roomEl = $id('room-' + id);
+    if(roomEl) roomEl.classList.add('active');
+
+    $id('currentRoomTitle').innerHTML = `<strong>${escapeHtml(label)}</strong>`;
+    $id('chatArea').innerHTML = `<div class="small">Loading messages...</div>`;
+    $id('inputRow').style.display = 'flex';
+    $id('typingStatus').textContent = '';
+
+    currentRoomId = id;
+
+    if(messagesRef) messagesRef.off();
+
+    messagesRef = db.ref('chats/' + id).orderByChild('ts').limitToLast(500);
+    messagesRef.on('value', snap=>{
+      const msgs = [];
+      snap.forEach(c=>msgs.push({ key:c.key, ...c.val() }));
+      renderMessages(msgs);
+    });
+
+    watchTyping(id);
+  }
+
+  function renderMessages(messages){
+    const area = $id('chatArea');
+    area.innerHTML = '';
+    if(!messages.length){
+      area.innerHTML = '<div class="small">No messages yet — say hi 👋</div>';
+      return;
+    }
+    messages.forEach(m=>{
+      const wrap = document.createElement('div');
+      wrap.className = 'msg';
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const t = new Date(m.ts || 0);
+      meta.innerHTML = `<div style="font-weight:700">${escapeHtml(m.name||'Unknown')}</div><div class="small">${t.toLocaleString()}</div>`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+
+      if(m.deleted){
+        bubble.textContent = '[message deleted by admin]';
+      } else {
+        // Support BOTH "text" and "message" fields so nothing is blank
+        const content = (m.text || m.message || '').toString();
+        bubble.textContent = content;
+      }
+
+      wrap.appendChild(meta);
+      wrap.appendChild(bubble);
+      area.appendChild(wrap);
+    });
+    area.scrollTop = area.scrollHeight;
+  }
+
+  function watchLastMessages(){
+    ROOMS.forEach(r=>{
+      const id = normalizeUid(r);
+      const ref = db.ref('chats/' + id).orderByChild('ts').limitToLast(1);
+      ref.on('value', snap=>{
+        let text = '';
+        snap.forEach(c=>{
+          const v = c.val();
+          if(v){
+            const msgText = (v.text || v.message || '').toString();
+            text = `${v.name || 'Unknown'}: ${msgText.substring(0,30)}`;
+          }
+        });
+        const el = $id('last-' + id);
+        if(el) el.textContent = text;
+      });
+    });
+  }
+
+  /* ============================
+     SEND MESSAGE (rate limited)
+     ============================ */
+  let lastMsgTime = 0;
+  const MSG_COOLDOWN = 1200; // ms
+
+  async function sendMessageFromInput(){
+    const input = $id('messageInput');
+    if(!input) return;
+    const raw = input.value.trim();
+    if(!raw) return;
+    if(!currentRoomId){
+      alert('Select a room first.');
+      return;
+    }
+
+    const now = Date.now();
+    if(now - lastMsgTime < MSG_COOLDOWN){
+      alert('Slow down! You are sending messages too fast.');
+      return;
+    }
+    lastMsgTime = now;
+
+    const me = loadLocalUser();
+    if(!me){
+      alert('Please login first.');
+      return;
+    }
+
+    // check bans
+    const banSnap = await db.ref('bans/' + me.uid).get();
+    if(banSnap.exists()){
+      alert('You are banned from chat.');
+      return;
+    }
+
+    // check timeouts
+    const toSnap = await db.ref('timeouts/' + me.uid).get();
+    if(toSnap.exists()){
+      const until = toSnap.val().until || 0;
+      if(Date.now() < until){
+        alert('You are timed out and cannot send messages yet.');
+        return;
+      }
+    }
+
+    let clean = sanitizeMessage(raw).slice(0,1000);
+    input.value = '';
+
+    db.ref('chats/' + currentRoomId).push({
+      name: me.displayName,
+      uid: me.uid,
+      text: clean,
+      ts: Date.now()
+    }).catch(err=>console.error('send error', err));
+  }
+
+  $id('sendBtn').addEventListener('click', sendMessageFromInput);
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Enter' && document.activeElement === $id('messageInput')){
+      sendMessageFromInput();
     }
   });
-}
 
-/* ============================
-   ROOM UI + Chat listener fix (order by ts)
-   ============================ */
-const roomsListEl = $id('roomsList');
-let currentRoomId = null;
-let messagesRef = null;
-
-function buildRooms(){
-  roomsListEl.innerHTML = '';
-  ROOMS.forEach(r=>{
-    const id = normalizeUid(r);
-    const el = document.createElement('div');
-    el.className = 'room';
-    el.id = 'room-'+id;
-    el.innerHTML = `<div>${escapeHtml(r)}</div><div class="small" id="last-${id}"></div>`;
-    el.addEventListener('click', ()=> openRoom(id, r));
-    roomsListEl.appendChild(el);
-  });
-}
-function openRoom(id, displayName){
-  const me = loadLocalUser();
-  if(!me){ return alert('Please create an account or login to join rooms.'); }
-  // UI active
-  document.querySelectorAll('.room').forEach(el=>el.classList.remove('active'));
-  const roomEl = $id('room-'+id); if(roomEl) roomEl.classList.add('active');
-  $id('currentRoomTitle').innerHTML = `<strong>${escapeHtml(displayName)}</strong>`;
-  $id('chatArea').innerHTML = `<div class="small">Loading messages...</div>`;
-  $id('inputRow').style.display = 'flex';
-  currentRoomId = id;
-
-  // detach previous
-  if(messagesRef) messagesRef.off();
-
-  // listen ordered by ts (fixes first message-only problem)
-  messagesRef = db.ref('chats/' + id).orderByChild('ts').limitToLast(500);
-  messagesRef.on('value', snap => {
-    const messages = [];
-    snap.forEach(child => messages.push({ key: child.key, ...child.val() }));
-    renderMessages(messages);
+  document.addEventListener('input', e=>{
+    if(e.target === $id('messageInput') && currentRoomId){
+      const me = loadLocalUser();
+      if(me) setTyping(currentRoomId, me.uid, me.displayName);
+    }
   });
 
-  // watch typing
-  watchTyping(id);
-}
+  /* ============================
+     ADMIN PANEL
+     ============================ */
+  const ADMIN_DISPLAYNAME = "KEY= 67614156";
 
-/* render messages */
-function renderMessages(messages){
-  const area = $id('chatArea');
-  area.innerHTML = '';
-  if(!messages.length){ area.innerHTML = '<div class="small">No messages yet — say hi 👋</div>'; return; }
-  messages.forEach(m=>{
-    const wrap = document.createElement('div'); wrap.className = 'msg';
-    const meta = document.createElement('div'); meta.className = 'meta';
-    meta.innerHTML = `<div style="font-weight:700">${escapeHtml(m.name)}</div><div class="small">${new Date(m.ts||0).toLocaleString()}</div>`;
-    const bubble = document.createElement('div'); bubble.className = 'bubble'; bubble.textContent = m.text;
-    // if message is flagged deleted, show removed
-    if(m.deleted) bubble.textContent = '[message deleted by admin]';
-    wrap.appendChild(meta); wrap.appendChild(bubble);
-    area.appendChild(wrap);
-  });
-  area.scrollTop = area.scrollHeight;
-}
+  async function checkAndRenderAdminUI(){
+    const me = loadLocalUser();
+    if(!me) return;
 
-/* show last message snippet in rooms */
-function watchLastMessages(){
-  ROOMS.forEach(r=>{
-    const id = normalizeUid(r);
-    const lastRef = db.ref('chats/' + id).orderByChild('ts').limitToLast(1);
-    lastRef.on('value', snap=>{
-      let text='';
-      snap.forEach(c=>{ const v=c.val(); if(v) text = `${v.name}: ${v.text.substring(0,30)}`; });
-      const el = $id('last-'+id);
-      if(el) el.textContent = text;
-    });
-  });
-}
+    const adminUid = normalizeUid(ADMIN_DISPLAYNAME); // "key__67614156"
+    if(me.uid !== adminUid) return;
 
-/* ============================
-   SEND MESSAGES
-   - checks ban/timeout before sending
-   - rate limit (1.2s)
-   - profanity sanitized
-   - sets typing indicator when typing
-   ============================ */
-let lastMsgTime = 0;
-const MSG_COOLDOWN = 1200;
+    const adminRef = db.ref('admins/' + adminUid);
+    const snap = await adminRef.get();
+    if(!snap.exists()) return;
 
-$id('sendBtn')?.addEventListener('click', sendMessageFromInput);
-document.addEventListener('keydown', e=>{
-  if(e.key==='Enter' && document.activeElement === $id('messageInput')) sendMessageFromInput();
-});
-
-async function sendMessageFromInput(){
-  const input = $id('messageInput'); if(!input) return;
-  const txt = input.value.trim();
-  if(!txt) return;
-  if(!currentRoomId) return alert('Select a room first.');
-  // rate limit
-  const now = Date.now();
-  if(now - lastMsgTime < MSG_COOLDOWN) { alert("Slow down! You're sending messages too fast."); return; }
-  lastMsgTime = now;
-
-  const me = loadLocalUser();
-  if(!me) return alert('Please login to send messages.');
-
-  // check bans
-  const banSnap = await db.ref('bans/' + me.uid).get();
-  if(banSnap.exists()) return alert('You are banned.');
-
-  // check timeouts (timeout value is timestamp when block ends)
-  const toSnap = await db.ref('timeouts/' + me.uid).get();
-  if(toSnap.exists()){
-    const until = toSnap.val().until || 0;
-    if(Date.now() < until) return alert('You are timed out and cannot send messages yet.');
-  }
-
-  // sanitize & block messages that are only swear words
-  if(containsProfanity(txt) && txt.trim().split(/\s+/).length <= 2){
-    // still allow messages containing profanity but sanitized; additional policy you can change
-  }
-
-  const text = sanitizeMessage(txt).slice(0,1000);
-  input.value = '';
-
-  // push message
-  db.ref('chats/' + currentRoomId).push({ name: me.displayName, uid: me.uid, text, ts: Date.now() })
-    .catch(err => console.error('send error', err));
-}
-
-/* typing: set when user types in the input */
-document.addEventListener('input', e=>{
-  if(e.target === $id('messageInput') && currentRoomId){
-    const me = loadLocalUser(); if(!me) return;
-    setTyping(currentRoomId, me.uid, me.displayName);
-  }
-});
-
-/* ============================
-   ADMIN PANEL (only created when user is verified as admin)
-   - admin record should be in DB at: /admins/<uid> = { displayName, passwordHash }
-   - We do NOT render admin controls until DB confirms admin exists for this uid.
-   ============================ */
-const ADMIN_DISPLAYNAME = "KEY= 67614156"; // user requested exact display name
-async function checkAndRenderAdminUI(){
-  const me = loadLocalUser();
-  if(!me) return;
-  // The admin UID normalization must match how you created the admin DB entry:
-  const adminUid = normalizeUid(ADMIN_DISPLAYNAME);
-  // admin record location: /admins/<adminUid>
-  const adminRef = db.ref('admins/' + adminUid);
-  const snap = await adminRef.get();
-  // If there is an admin node and our current user uid equals that admin uid, then show admin UI
-  // Note: this is a convenience method for basic protection. For true protection use Firebase Auth.
-  if(snap.exists() && me.uid === adminUid){
-    // render admin button
     const area = $id('adminArea');
     area.innerHTML = `<button id="openAdmin" class="admin-btn">Admin</button>`;
-    $id('openAdmin').addEventListener('click', ()=> openAdminPanel(adminUid));
-  } else {
-    // nothing
+    $id('openAdmin').addEventListener('click', ()=>openAdminPanel(adminUid));
   }
-}
 
-/* admin panel implementation (dynamically created DOM) */
-async function openAdminPanel(adminUid){
-  // Build minimal modal/panel DOM
-  const modal = document.createElement('div');
-  modal.style.position='fixed'; modal.style.left='50%'; modal.style.top='50%';
-  modal.style.transform='translate(-50%,-50%)'; modal.style.background='rgba(6,7,10,0.98)';
-  modal.style.padding='18px'; modal.style.zIndex=9999; modal.style.borderRadius='8px';
-  modal.style.minWidth='420px'; modal.style.color='#fff'; modal.id='adminModal';
-  modal.innerHTML = `
-    <h3>Admin Panel</h3>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <button id="closeAdmin" class="admin-btn">Close</button>
-      <button id="reloadUsers" class="admin-btn">Refresh</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Ban user (uid): <input id="banUid" placeholder="user_uid"></label>
-      <button id="banBtn" class="admin-btn danger">Ban</button>
-      <button id="unbanBtn" class="admin-btn">Unban</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Timeout user (uid): <input id="timeoutUid" placeholder="user_uid"></label>
-      <label>Duration (minutes): <input id="timeoutMin" type="number" min="5" max="60" value="5" style="width:80px"></label>
-      <button id="timeoutBtn" class="admin-btn">Timeout</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Delete last N messages from room: <input id="delN" type="number" min="1" value="10" style="width:80px"></label>
-      <select id="delRoom">${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}</select>
-      <button id="delNBtn" class="admin-btn danger">Delete</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Delete messages with more than X words in room:
-        <input id="delWordsCount" type="number" min="1" value="30" style="width:80px">
-      </label>
-      <select id="delWordsRoom">${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}</select>
-      <button id="delWordsBtn" class="admin-btn danger">Delete</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Delete whole room:
-        <select id="delRoomAll">${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}</select>
-      </label>
-      <button id="delRoomBtn" class="admin-btn danger">Delete Room</button>
-    </div>
-
-    <div style="margin-top:12px" id="adminResult" class="small"></div>
-  `;
-  document.body.appendChild(modal);
-
-  document.getElementById('closeAdmin').onclick = ()=> modal.remove();
-  document.getElementById('reloadUsers').onclick = ()=> setPresenceIfLoggedIn();
-
-  // Ban/unban
-  document.getElementById('banBtn').onclick = async ()=>{
-    const uid = document.getElementById('banUid').value.trim();
-    if(!uid) return alert('enter uid');
-    await db.ref('bans/' + uid).set({ by: loadLocalUser().uid, at: Date.now() });
-    document.getElementById('adminResult').textContent = `Banned ${uid}`;
-  };
-  document.getElementById('unbanBtn').onclick = async ()=>{
-    const uid = document.getElementById('banUid').value.trim();
-    if(!uid) return alert('enter uid');
-    await db.ref('bans/' + uid).remove();
-    document.getElementById('adminResult').textContent = `Unbanned ${uid}`;
-  };
-
-  // Timeout (custom 5-60 minutes)
-  document.getElementById('timeoutBtn').onclick = async ()=>{
-    const uid = document.getElementById('timeoutUid').value.trim();
-    let min = parseInt(document.getElementById('timeoutMin').value||'5',10);
-    if(!uid) return alert('enter uid');
-    if(isNaN(min) || min < 5) min = 5;
-    if(min > 60) min = 60;
-    const until = Date.now() + (min*60*1000);
-    await db.ref('timeouts/' + uid).set({ by: loadLocalUser().uid, until, minutes: min });
-    document.getElementById('adminResult').textContent = `Timed out ${uid} for ${min} minute(s)`;
-  };
-
-  // Delete last N messages in a room
-  document.getElementById('delNBtn').onclick = async ()=>{
-    const n = parseInt(document.getElementById('delN').value||'10',10);
-    const room = document.getElementById('delRoom').value;
-    if(!n || n <= 0) return alert('enter N');
-    const ref = db.ref('chats/' + room).orderByChild('ts').limitToLast(n);
-    const snap = await ref.get();
-    const updates = {};
-    snap.forEach(c=>{
-      updates[`chats/${room}/${c.key}`] = null;
-    });
-    await db.ref().update(updates);
-    document.getElementById('adminResult').textContent = `Deleted last ${n} messages from ${room}`;
-  };
-
-  // Delete messages with more than X words
-  document.getElementById('delWordsBtn').onclick = async ()=>{
-    const cnt = parseInt(document.getElementById('delWordsCount').value||'30',10);
-    const room = document.getElementById('delWordsRoom').value;
-    if(!cnt || cnt <= 0) return alert('enter count');
-    const snap = await db.ref('chats/' + room).get();
-    const updates = {};
-    snap.forEach(c=>{
-      const txt = (c.val().text||'').trim();
-      const wc = txt ? txt.split(/\s+/).length : 0;
-      if(wc > cnt) updates[`chats/${room}/${c.key}`] = null;
-    });
-    await db.ref().update(updates);
-    document.getElementById('adminResult').textContent = `Deleted messages with > ${cnt} words in ${room}`;
-  };
-
-  // Delete whole room
-  document.getElementById('delRoomBtn').onclick = async ()=>{
-    const room = document.getElementById('delRoomAll').value;
-    if(!confirm('Are you sure? This deletes entire room chat history.')) return;
-    await db.ref('chats/' + room).remove();
-    document.getElementById('adminResult').textContent = `Deleted all messages in ${room}`;
-  };
-}
-
-/* ============================
-   USER SIGNUP / LOGIN / UI
-   ============================ */
-async function renderUserBox(){
-  const box = $id('userBox');
-  const saved = loadLocalUser();
-  box.innerHTML = '';
-  if(saved && saved.displayName){
-    box.innerHTML = `
-      <div style="flex:1">
-        <div class="user-name">${escapeHtml(saved.displayName)}</div>
-        <div class="small">Logged in on this device</div>
+  async function openAdminPanel(adminUid){
+    const modal = document.createElement('div');
+    modal.style.position='fixed';
+    modal.style.left='50%';
+    modal.style.top='50%';
+    modal.style.transform='translate(-50%,-50%)';
+    modal.style.background='rgba(6,7,10,0.98)';
+    modal.style.padding='18px';
+    modal.style.zIndex=9999;
+    modal.style.borderRadius='8px';
+    modal.style.minWidth='420px';
+    modal.style.color='#fff';
+    modal.id='adminModal';
+    modal.innerHTML = `
+      <h3>Admin Panel</h3>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <button id="closeAdmin" class="admin-btn">Close</button>
+        <button id="reloadUsers" class="admin-btn">Refresh Presence</button>
       </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <button id="logoutBtn" style="background:#ff4d4d;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer">Logout</button>
+
+      <div style="margin-bottom:10px">
+        <label>Ban user (uid): <input id="banUid" placeholder="user_uid"></label>
+        <button id="banBtn" class="admin-btn danger">Ban</button>
+        <button id="unbanBtn" class="admin-btn">Unban</button>
       </div>
+
+      <div style="margin-bottom:10px">
+        <label>Timeout user (uid): <input id="timeoutUid" placeholder="user_uid"></label>
+        <label>Duration (minutes): <input id="timeoutMin" type="number" min="5" max="60" value="5" style="width:80px"></label>
+        <button id="timeoutBtn" class="admin-btn">Timeout</button>
+      </div>
+
+      <div style="margin-bottom:10px">
+        <label>Delete last N messages: <input id="delN" type="number" min="1" value="10" style="width:80px"></label>
+        <select id="delRoom">
+          ${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
+        </select>
+        <button id="delNBtn" class="admin-btn danger">Delete</button>
+      </div>
+
+      <div style="margin-bottom:10px">
+        <label>Delete messages with more than X words:
+          <input id="delWordsCount" type="number" min="1" value="30" style="width:80px">
+        </label>
+        <select id="delWordsRoom">
+          ${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
+        </select>
+        <button id="delWordsBtn" class="admin-btn danger">Delete</button>
+      </div>
+
+      <div style="margin-bottom:10px">
+        <label>Delete whole room:
+          <select id="delRoomAll">
+            ${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
+          </select>
+        </label>
+        <button id="delRoomBtn" class="admin-btn danger">Delete Room</button>
+      </div>
+
+      <div style="margin-top:12px" id="adminResult" class="small"></div>
     `;
-    $id('logoutBtn').addEventListener('click', ()=>{
-      // remove presence then logout
-      if(presenceRef) presenceRef.remove();
-      clearLocalUser();
-      renderUserBox();
-      renderLoggedInSmall();
-    });
-    // check admin privileges and render admin UI if applicable
-    await checkAndRenderAdminUI();
-    renderLoggedInSmall();
-    setPresenceIfLoggedIn();
-    return;
+    document.body.appendChild(modal);
+
+    $id('closeAdmin').onclick = ()=>modal.remove();
+    $id('reloadUsers').onclick = ()=>setPresenceIfLoggedIn();
+
+    $id('banBtn').onclick = async ()=>{
+      const uid = $id('banUid').value.trim();
+      if(!uid) return alert('enter uid');
+      await db.ref('bans/' + uid).set({ by: loadLocalUser().uid, at: Date.now() });
+      $id('adminResult').textContent = `Banned ${uid}`;
+    };
+    $id('unbanBtn').onclick = async ()=>{
+      const uid = $id('banUid').value.trim();
+      if(!uid) return alert('enter uid');
+      await db.ref('bans/' + uid).remove();
+      $id('adminResult').textContent = `Unbanned ${uid}`;
+    };
+
+    $id('timeoutBtn').onclick = async ()=>{
+      const uid = $id('timeoutUid').value.trim();
+      let min = parseInt($id('timeoutMin').value||'5',10);
+      if(!uid) return alert('enter uid');
+      if(isNaN(min) || min < 5) min = 5;
+      if(min > 60) min = 60;
+      const until = Date.now() + (min*60*1000);
+      await db.ref('timeouts/' + uid).set({ by: loadLocalUser().uid, until, minutes: min });
+      $id('adminResult').textContent = `Timed out ${uid} for ${min} minute(s)`;
+    };
+
+    $id('delNBtn').onclick = async ()=>{
+      const n = parseInt($id('delN').value||'10',10);
+      const room = $id('delRoom').value;
+      if(!n || n <= 0) return alert('enter N');
+      const ref = db.ref('chats/' + room).orderByChild('ts').limitToLast(n);
+      const snap = await ref.get();
+      const updates = {};
+      snap.forEach(c=>{ updates[`chats/${room}/${c.key}`] = null; });
+      await db.ref().update(updates);
+      $id('adminResult').textContent = `Deleted last ${n} messages from ${room}`;
+    };
+
+    $id('delWordsBtn').onclick = async ()=>{
+      const cnt = parseInt($id('delWordsCount').value||'30',10);
+      const room = $id('delWordsRoom').value;
+      if(!cnt || cnt <= 0) return alert('enter count');
+      const snap = await db.ref('chats/' + room).get();
+      const updates = {};
+      snap.forEach(c=>{
+        const val = c.val() || {};
+        const txt = (val.text || val.message || '').trim();
+        const wc = txt ? txt.split(/\s+/).length : 0;
+        if(wc > cnt) updates[`chats/${room}/${c.key}`] = null;
+      });
+      await db.ref().update(updates);
+      $id('adminResult').textContent = `Deleted messages with > ${cnt} words in ${room}`;
+    };
+
+    $id('delRoomBtn').onclick = async ()=>{
+      const room = $id('delRoomAll').value;
+      if(!confirm('Are you sure? This deletes entire room chat history.')) return;
+      await db.ref('chats/' + room).remove();
+      $id('adminResult').textContent = `Deleted all messages in ${room}`;
+    };
   }
 
-  // show sign up / login
-  box.innerHTML = `
-    <div style="width:100%">
-      <div class="login-panel">
-        <input id="regName" placeholder="Display name (like: Chris)" />
-        <input id="regPass" type="password" placeholder="Password" />
-        <div style="display:flex;gap:8px">
-          <button id="registerBtn">Create Account</button>
-          <button id="loginBtn" style="background:#2e8b57">Login</button>
+  /* ============================
+     LOGIN / SIGNUP UI
+     ============================ */
+  async function renderUserBox(){
+    const box = $id('userBox');
+    const saved = loadLocalUser();
+    box.innerHTML = '';
+
+    if(saved && saved.displayName){
+      box.innerHTML = `
+        <div style="flex:1">
+          <div class="user-name">${escapeHtml(saved.displayName)}</div>
+          <div class="small">Logged in on this device</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button id="logoutBtn" style="background:#ff4d4d;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer">Logout</button>
+        </div>
+      `;
+      $id('logoutBtn').addEventListener('click', ()=>{
+        if(presenceRef) presenceRef.remove();
+        clearLocalUser();
+        renderUserBox();
+        renderLoggedInSmall();
+      });
+      await checkAndRenderAdminUI();
+      renderLoggedInSmall();
+      setPresenceIfLoggedIn();
+      return;
+    }
+
+    box.innerHTML = `
+      <div style="width:100%">
+        <div class="login-panel">
+          <input id="regName" placeholder="Display name (like: Chris)" />
+          <input id="regPass" type="password" placeholder="Password" />
+          <div style="display:flex;gap:8px">
+            <button id="registerBtn">Create Account</button>
+            <button id="loginBtn" style="background:#2e8b57">Login</button>
+          </div>
         </div>
       </div>
-    </div>
-  `;
+    `;
 
-  document.getElementById('registerBtn').onclick = async ()=>{
-    const name = (document.getElementById('regName').value||'').trim();
-    const pass = (document.getElementById('regPass').value||'').trim();
-    if(!name || !pass) return alert('Please set a name and a password.');
-    // username profanity blocking
-    if(containsProfanity(name)) return alert('That username contains banned words — choose a different name.');
-    if(name.length < 2) return alert('Choose a longer name.');
-    const uid = normalizeUid(name);
-    const pwHash = await sha256Hex(pass);
-    // create DB user: /users/<uid> if not exists
-    const ref = db.ref('users/' + uid);
-    const snap = await ref.get();
-    if(snap.exists()) return alert('That name is already taken. Choose another.');
-    await ref.set({ displayName: name, passwordHash: pwHash, createdAt: Date.now() });
-    saveLocalUser({ uid, displayName: name });
+    $id('registerBtn').onclick = async ()=>{
+      const name = ($id('regName').value||'').trim();
+      const pass = ($id('regPass').value||'').trim();
+      if(!name || !pass) return alert('Please set a name and a password.');
+      if(containsProfanity(name)) return alert('That username contains banned words — choose a different name.');
+      if(name.length < 2) return alert('Choose a longer name.');
+      const uid = normalizeUid(name);
+      const pwHash = await sha256Hex(pass);
+      const ref = db.ref('users/' + uid);
+      const snap = await ref.get();
+      if(snap.exists()) return alert('That name is already taken. Choose another.');
+      await ref.set({ displayName:name, passwordHash:pwHash, createdAt:Date.now() });
+      saveLocalUser({ uid, displayName:name });
+      renderUserBox();
+      alert('Account created and logged in on this device.');
+    };
+
+    $id('loginBtn').onclick = async ()=>{
+      const name = ($id('regName').value||'').trim();
+      const pass = ($id('regPass').value||'').trim();
+      if(!name || !pass) return alert('Enter name and password.');
+      const uid = normalizeUid(name);
+      const pwHash = await sha256Hex(pass);
+      const ref = db.ref('users/' + uid);
+      const snap = await ref.get();
+      if(!snap.exists()) return alert('User not found. Create an account first.');
+      const data = snap.val();
+      if(data.passwordHash !== pwHash) return alert('Incorrect password.');
+      saveLocalUser({ uid, displayName:data.displayName });
+      renderUserBox();
+      alert('Logged in on this device.');
+    };
+  }
+
+  function renderLoggedInSmall(){
+    const small = $id('loggedInAs');
+    const saved = loadLocalUser();
+    small.textContent = saved ? `Signed in as ${saved.displayName}` : '';
+  }
+
+  /* ============================
+     INIT
+     ============================ */
+  (function init(){
+    buildRooms();
     renderUserBox();
-    alert('Account created and logged in on this device.');
-  };
-
-  document.getElementById('loginBtn').onclick = async ()=>{
-    const name = (document.getElementById('regName').value||'').trim();
-    const pass = (document.getElementById('regPass').value||'').trim();
-    if(!name || !pass) return alert('Enter name and password.');
-    const uid = normalizeUid(name);
-    const pwHash = await sha256Hex(pass);
-    const ref = db.ref('users/' + uid);
-    const snap = await ref.get();
-    if(!snap.exists()) return alert('User not found. Create an account first.');
-    const data = snap.val();
-    if(data.passwordHash !== pwHash) return alert('Incorrect password.');
-    saveLocalUser({ uid, displayName: data.displayName });
-    renderUserBox();
-    alert('Logged in on this device.');
-  };
-}
-function renderLoggedInSmall(){
-  const small = $id('loggedInAs');
-  const saved = loadLocalUser();
-  small.textContent = saved ? `Signed in as ${saved.displayName}` : '';
-}
-
-/* ============================
-   Initialization
-   ============================ */
-(function init(){
-  buildRooms();
-  renderUserBox();
-  watchLastMessages();
-  watchPresence();
-  // wire send btn
-  $id('sendBtn').addEventListener('click', sendMessageFromInput);
-})();
-</script>
+    watchLastMessages();
+    watchPresence();
+  })();
+  </script>
 </body>
 </html>
+
