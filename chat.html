@@ -424,6 +424,9 @@
       // ensure newest last
       msgs.sort((a,b)=> (a.ts||0) - (b.ts||0));
       renderMessages(msgs);
+    }, err=>{
+      console.error('Error loading messages', err);
+      $id('chatArea').innerHTML = `<div class="small">Unable to load messages (${escapeHtml(err.message||'error')}).</div>`;
     });
 
     watchTyping(id);
@@ -537,12 +540,17 @@
     let clean = sanitizeMessage(raw).slice(0,1000);
     input.value = '';
 
-    db.ref('chats/' + currentRoomId).push({
-      name: me.displayName,
-      uid: me.uid,
-      text: clean,
-      ts: Date.now()
-    }).catch(err=>console.error('send error', err));
+    try{
+      await db.ref('chats/' + currentRoomId).push({
+        name: me.displayName,
+        uid: me.uid,
+        text: clean,
+        ts: Date.now()
+      });
+    } catch(err){
+      console.error('send error', err);
+      alert(`Message failed to send: ${err && err.message ? err.message : err}`);
+    }
   }
 
   $id('sendBtn').addEventListener('click', sendMessageFromInput);
