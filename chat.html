@@ -30,18 +30,18 @@
     }
 
     .left{
-      width:300px;
+      width:320px;
       background:rgba(10,12,20,0.94);
       border-radius:10px;
       padding:12px;
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:12px;
       box-shadow:0 6px 18px rgba(0,0,0,0.6);
     }
 
     .left h2,.left h3{
-      margin:0;
+      margin:0 0 4px 0;
       font-size:1.05rem;
     }
 
@@ -57,6 +57,7 @@
       display:flex;
       flex-direction:column;
       gap:8px;
+      width:100%;
     }
 
     .login-panel input{
@@ -77,26 +78,45 @@
       font-weight:700;
     }
 
-    .rooms{
+    .rooms, .groups, .dms{
       overflow:auto;
-      flex:1;
-      padding-top:6px;
+      max-height:28vh;
+      padding-top:4px;
     }
 
-    .room{
-      padding:10px;
+    .room, .group, .dm-item{
+      padding:8px;
       border-radius:6px;
-      margin-bottom:8px;
+      margin-bottom:6px;
       cursor:pointer;
       background:rgba(255,255,255,0.02);
       display:flex;
       justify-content:space-between;
       align-items:center;
+      font-size:0.9rem;
     }
 
-    .room.active{
-      background:rgba(77,166,255,0.12);
+    .room.active, .group.active, .dm-item.active{
+      background:rgba(77,166,255,0.16);
       border-left:3px solid var(--accent);
+    }
+
+    .room .preview,
+    .group .preview,
+    .dm-item .preview{
+      font-size:0.78rem;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .btn-small{
+      padding:4px 8px;
+      border-radius:6px;
+      border:none;
+      background:rgba(255,255,255,0.06);
+      color:#fff;
+      font-size:0.8rem;
+      cursor:pointer;
     }
 
     .right{
@@ -113,7 +133,7 @@
       display:flex;
       align-items:center;
       gap:10px;
-      margin-bottom:8px;
+      margin-bottom:6px;
     }
 
     .chat-area{
@@ -124,7 +144,7 @@
       background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
       display:flex;
       flex-direction:column;
-      min-height:300px;
+      min-height:260px;
       position:relative;
       z-index:1;
     }
@@ -135,7 +155,7 @@
       display:flex;
       gap:8px;
       align-items:flex-start;
-      flex-wrap:wrap; /* allow bubble to wrap under meta on small width */
+      flex-wrap:wrap;
     }
 
     .msg .meta{
@@ -156,6 +176,16 @@
       display:inline-block;
       min-height:20px;
       line-height:1.4;
+    }
+
+    .verified-badge{
+      display:inline-block;
+      margin-left:4px;
+      font-size:0.7rem;
+      background:#1abc9c;
+      color:#fff;
+      padding:1px 4px;
+      border-radius:4px;
     }
 
     .input-row{
@@ -186,12 +216,17 @@
     .small{font-size:0.85rem;color:var(--muted);}
     .top-left-title{position:fixed;left:24px;top:14px;color:#fff;font-weight:700;}
     .online-dot{width:9px;height:9px;border-radius:50%;background:#27ae60;display:inline-block;margin-right:8px;}
-    .typing-indicator{color:var(--muted);font-style:italic;font-size:0.85rem;margin-left:6px;}
     .admin-btn{background:#333;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer;}
     .danger{background:#b71c1c;}
 
+    .notif{
+      font-size:0.8rem;
+      color:#ffd479;
+      margin-left:10px;
+    }
+
     @media(max-width:900px){
-      .left{width:220px;}
+      .left{width:240px;}
     }
   </style>
 </head>
@@ -203,8 +238,24 @@
       <div class="user-box" id="userBox"></div>
 
       <div class="left-section">
-        <h2>Rooms</h2>
+        <h2>Subject Rooms</h2>
         <div class="rooms" id="roomsList"></div>
+      </div>
+
+      <div class="left-section">
+        <h3>
+          Groups
+          <button id="createGroupBtn" class="btn-small">+ New Group</button>
+        </h3>
+        <div class="groups" id="groupsList"></div>
+      </div>
+
+      <div class="left-section">
+        <h3>
+          DMs
+          <button id="startDmBtn" class="btn-small">+ DM</button>
+        </h3>
+        <div class="dms" id="dmsList"></div>
       </div>
 
       <div class="left-section">
@@ -221,14 +272,14 @@
     <section class="right">
       <div class="chat-header">
         <div id="currentRoomTitle"><strong>Select a room</strong></div>
-        <div id="typingStatus" class="typing-indicator"></div>
+        <span id="notifArea" class="notif"></span>
         <div style="flex:1"></div>
         <div id="loggedInAs" class="small"></div>
         <div id="adminArea"></div>
       </div>
 
       <div class="chat-area" id="chatArea">
-        <div class="small">Pick a room on the left to start chatting.</div>
+        <div class="small">Pick a room, group, or DM on the left to start chatting.</div>
       </div>
 
       <div class="input-row" id="inputRow" style="display:none">
@@ -243,9 +294,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
 
   <script>
-  /* ============================
-     FIREBASE CONFIG
-     ============================ */
+  // ============================
+  // FIREBASE CONFIG
+  // ============================
   const firebaseConfig = {
     apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
     authDomain: "mrsalt56-e6066.firebaseapp.com",
@@ -259,18 +310,20 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  /* ============================
-     ROOMS
-     ============================ */
-  const ROOMS = [
+  // ============================
+  // CONSTANTS
+  // ============================
+  const SUBJECT_ROOMS = [
     "Math 7","Math 8","ELA 7","ELA 8","AVID",
     "Science 7","Science 8","History 7","History 8",
     "Coding","Life Skills","ASB","Band"
   ];
 
-  /* ============================
-     UTILS
-     ============================ */
+  const ADMIN_DISPLAYNAME = "KEY= 67614156";
+
+  // ============================
+  // UTILS
+  // ============================
   const $id = id => document.getElementById(id);
   function escapeHtml(s){
     return String(s)
@@ -287,10 +340,15 @@
   function normalizeUid(name){
     return name.toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]/g,'_');
   }
+  function makeDmRoomId(uid1, uid2){
+    const a = uid1 < uid2 ? uid1 : uid2;
+    const b = uid1 < uid2 ? uid2 : uid1;
+    return `dm__${a}__${b}`;
+  }
 
-  /* ============================
-     PROFANITY
-     ============================ */
+  // ============================
+  // PROFANITY
+  // ============================
   const BAD_WORDS = [
     "fuck","shit","bitch","asshole","slut","whore","nigger","faggot","cunt","bastard","dick"
   ];
@@ -318,16 +376,16 @@
     return out;
   }
 
-  /* ============================
-     LOCAL USER STORAGE
-     ============================ */
+  // ============================
+  // LOCAL USER STORAGE
+  // ============================
   function saveLocalUser(u){ localStorage.setItem('salty_chat_user', JSON.stringify(u)); }
   function loadLocalUser(){ try { return JSON.parse(localStorage.getItem('salty_chat_user')||'null'); } catch(e){ return null; } }
   function clearLocalUser(){ localStorage.removeItem('salty_chat_user'); }
 
-  /* ============================
-     PRESENCE (ONLINE)
-     ============================ */
+  // ============================
+  // PRESENCE (ONLINE)
+  // ============================
   let presenceRef = null;
   async function setPresenceIfLoggedIn(){
     const u = loadLocalUser();
@@ -350,86 +408,242 @@
     });
   }
 
-  /* ============================
-     TYPING INDICATOR
-     ============================ */
-  let typingTimeouts = {};
-  function setTyping(roomId, uid, displayName){
-    if(!roomId || !uid) return;
-    const ref = db.ref(`typing/${roomId}/${uid}`);
-    ref.set({ displayName, ts: Date.now() });
-    if(typingTimeouts[uid]) clearTimeout(typingTimeouts[uid]);
-    typingTimeouts[uid] = setTimeout(()=>ref.remove(), 4000);
-  }
-  function watchTyping(roomId){
-    const status = $id('typingStatus');
-    const typingRef = db.ref(`typing/${roomId}`);
-    typingRef.on('value', snap=>{
-      const names = [];
-      snap.forEach(c=>names.push(c.val().displayName));
-      if(!names.length){
-        status.textContent = '';
-      } else if(names.length === 1){
-        status.textContent = `${names[0]} is typing...`;
-      } else {
-        status.textContent = `${names.join(', ')} are typing...`;
-      }
+  // ============================
+  // VERIFIED USERS
+  // ============================
+  const verifiedMap = {};
+  function watchVerified(){
+    db.ref('verified').on('value', snap=>{
+      Object.keys(verifiedMap).forEach(k=>delete verifiedMap[k]);
+      snap.forEach(c=>{
+        if(c.val()) verifiedMap[c.key] = true;
+      });
     });
   }
+  function isVerified(uid){
+    return !!verifiedMap[uid];
+  }
 
-  /* ============================
-     ROOMS + MESSAGES
-     ============================ */
+  // ============================
+  // ROOM / GROUP LISTS
+  // ============================
   const roomsListEl = $id('roomsList');
-  let currentRoomId = null;
+  const groupsListEl = $id('groupsList');
+  const dmsListEl = $id('dmsList');
+
+  let currentChat = {
+    type: null,   // 'room' | 'group' | 'dm'
+    id: null,
+    path: null
+  };
   let messagesRef = null;
 
-  function buildRooms(){
+  function buildSubjectRooms(){
     roomsListEl.innerHTML = '';
-    ROOMS.forEach(r=>{
+    SUBJECT_ROOMS.forEach(r=>{
       const id = normalizeUid(r);
       const div = document.createElement('div');
       div.className = 'room';
       div.id = 'room-' + id;
-      div.innerHTML = `<div>${escapeHtml(r)}</div><div class="small" id="last-${id}"></div>`;
-      div.addEventListener('click', ()=>openRoom(id, r));
+      div.innerHTML = `
+        <div>
+          <div>${escapeHtml(r)}</div>
+          <div class="preview small" id="last-room-${id}"></div>
+        </div>
+      `;
+      div.addEventListener('click', ()=>openChat('room', id, r));
       roomsListEl.appendChild(div);
     });
   }
 
-  function openRoom(id, label){
+  function watchGroupList(){
+    groupsListEl.innerHTML = '';
+    db.ref('groups').on('value', snap=>{
+      groupsListEl.innerHTML = '';
+      const me = loadLocalUser();
+      const arr = [];
+      snap.forEach(c=>{
+        const v = c.val();
+        if(!v) return;
+        arr.push({id:c.key, ...v});
+      });
+      if(!arr.length){
+        groupsListEl.innerHTML = '<div class="small">No groups yet.</div>';
+        return;
+      }
+      arr.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+      arr.forEach(g=>{
+        const div = document.createElement('div');
+        div.className = 'group';
+        div.id = 'group-' + g.id;
+        div.innerHTML = `
+          <div>
+            <div>${escapeHtml(g.name||'Group')}</div>
+            <div class="preview small" id="last-group-${g.id}"></div>
+          </div>
+        `;
+        div.addEventListener('click', ()=>openChat('group', g.id, g.name || 'Group'));
+        groupsListEl.appendChild(div);
+      });
+    });
+  }
+
+  function watchLastMessagesFor(pathPrefix, ids, labelPrefix){
+    ids.forEach(id=>{
+      const ref = db.ref(pathPrefix + id).orderByChild('ts').limitToLast(1);
+      ref.on('value', snap=>{
+        let text = '';
+        snap.forEach(c=>{
+          const v = c.val();
+          if(v){
+            const msgText = (v.text || v.message || '').toString();
+            text = `${v.name || 'Unknown'}: ${msgText.substring(0,30)}`;
+          }
+        });
+        const el = $id(`last-${labelPrefix}-${id}`);
+        if(el) el.textContent = text;
+      });
+    });
+  }
+
+  function regenSubjectLastMessages(){
+    const ids = SUBJECT_ROOMS.map(r=>normalizeUid(r));
+    watchLastMessagesFor('chats/', ids, 'room');
+  }
+
+  function watchGroupLastMessagesOnce(){
+    db.ref('groups').on('value', snap=>{
+      const ids = [];
+      snap.forEach(c=>ids.push(c.key));
+      if(ids.length){
+        watchLastMessagesFor('chats/', ids, 'group');
+      }
+    });
+  }
+
+  // ============================
+  // DM LIST & NOTIFICATIONS
+  // ============================
+  let dmListeners = {};
+  let currentNotifTimeout = null;
+
+  function showNotif(msg){
+    const el = $id('notifArea');
+    el.textContent = msg || '';
+    if(currentNotifTimeout) clearTimeout(currentNotifTimeout);
+    if(msg){
+      currentNotifTimeout = setTimeout(()=>{ el.textContent=''; }, 5000);
+    }
+  }
+
+  function watchDmList(){
+    const me = loadLocalUser();
+    if(!me) return;
+    const uid = me.uid;
+    db.ref('dmIndex/' + uid).on('value', snap=>{
+      dmsListEl.innerHTML = '';
+      const arr = [];
+      snap.forEach(c=>{
+        arr.push({roomId:c.key, ...c.val()});
+      });
+      if(!arr.length){
+        dmsListEl.innerHTML = '<div class="small">No DMs yet.</div>';
+        return;
+      }
+      arr.sort((a,b)=> (a.displayName||'').localeCompare(b.displayName||''));
+      arr.forEach(d=>{
+        const div = document.createElement('div');
+        div.className = 'dm-item';
+        div.id = 'dm-' + d.roomId;
+        div.innerHTML = `
+          <div>
+            <div>${escapeHtml(d.displayName||'User')}</div>
+            <div class="preview small" id="last-dm-${d.roomId}"></div>
+          </div>
+        `;
+        div.addEventListener('click', ()=>openChat('dm', d.roomId, d.displayName||'DM'));
+        dmsListEl.appendChild(div);
+      });
+
+      // Attach watchers for last DM message + notifications
+      Object.values(dmListeners).forEach(unsub=>unsub && unsub());
+      dmListeners = {};
+      arr.forEach(d=>{
+        const ref = db.ref('dms/' + d.roomId).orderByChild('ts').limitToLast(1);
+        const cb = ref.on('value', snap2=>{
+          let lastMsg = null;
+          snap2.forEach(c2=> lastMsg = c2.val());
+          const el = $id('last-dm-' + d.roomId);
+          if(lastMsg){
+            const text = (lastMsg.text || lastMsg.message || '').toString().substring(0,30);
+            if(el) el.textContent = `${lastMsg.name || 'Unknown'}: ${text}`;
+            const meNow = loadLocalUser();
+            if(meNow && lastMsg.uid !== meNow.uid){
+              // DM notification if this DM is not currently open
+              if(!(currentChat.type === 'dm' && currentChat.id === d.roomId)){
+                showNotif(`New DM from ${lastMsg.name || 'Unknown'}`);
+              }
+            }
+          }
+        });
+        dmListeners[d.roomId] = ()=>ref.off('value', cb);
+      });
+    });
+  }
+
+  // ============================
+  // OPEN CHAT
+  // ============================
+  function openChat(type, id, label){
     const me = loadLocalUser();
     if(!me){
       alert('Please login or create an account first.');
       return;
     }
 
-    document.querySelectorAll('.room').forEach(el=>el.classList.remove('active'));
-    const roomEl = $id('room-' + id);
-    if(roomEl) roomEl.classList.add('active');
+    // clear active states
+    document.querySelectorAll('.room,.group,.dm-item').forEach(el=>el.classList.remove('active'));
+    if(type === 'room'){
+      const el = $id('room-' + id);
+      if(el) el.classList.add('active');
+    } else if(type === 'group'){
+      const el = $id('group-' + id);
+      if(el) el.classList.add('active');
+    } else if(type === 'dm'){
+      const el = $id('dm-' + id);
+      if(el) el.classList.add('active');
+    }
 
     $id('currentRoomTitle').innerHTML = `<strong>${escapeHtml(label)}</strong>`;
     $id('chatArea').innerHTML = `<div class="small">Loading messages...</div>`;
     $id('inputRow').style.display = 'flex';
-    $id('typingStatus').textContent = '';
-
-    currentRoomId = id;
+    showNotif('');
 
     if(messagesRef) messagesRef.off();
 
-    messagesRef = db.ref('chats/' + id).orderByChild('ts').limitToLast(500);
+    let path;
+    if(type === 'dm'){
+      path = 'dms/' + id;
+    } else {
+      path = 'chats/' + id;
+    }
+
+    currentChat.type = type;
+    currentChat.id = id;
+    currentChat.path = path;
+
+    messagesRef = db.ref(path).orderByChild('ts').limitToLast(500);
     messagesRef.on('value', snap=>{
       const msgs = [];
       snap.forEach(c=>msgs.push({ key:c.key, ...c.val() }));
-      // ensure newest last
       msgs.sort((a,b)=> (a.ts||0) - (b.ts||0));
       renderMessages(msgs);
     });
-
-    watchTyping(id);
   }
 
-  // ✅ CLEAN, FIXED RENDER FUNCTION
+  // ============================
+  // RENDER MESSAGES (FIXED)
+  // ============================
   function renderMessages(messages){
     const area = $id('chatArea');
     area.innerHTML = '';
@@ -446,8 +660,14 @@
       meta.className = 'meta';
 
       const t = new Date(m.ts || 0).toLocaleString();
+      const verifiedLabel = isVerified(m.uid)
+        ? '<span class="verified-badge">✔</span>'
+        : '';
+
       meta.innerHTML = `
-        <div style="font-weight:700">${escapeHtml(m.name || 'Unknown')}</div>
+        <div style="font-weight:700">
+          ${escapeHtml(m.name || 'Unknown')}${verifiedLabel}
+        </div>
         <div class="small">${t}</div>
       `;
 
@@ -469,28 +689,9 @@
     area.scrollTop = area.scrollHeight;
   }
 
-  function watchLastMessages(){
-    ROOMS.forEach(r=>{
-      const id = normalizeUid(r);
-      const ref = db.ref('chats/' + id).orderByChild('ts').limitToLast(1);
-      ref.on('value', snap=>{
-        let text = '';
-        snap.forEach(c=>{
-          const v = c.val();
-          if(v){
-            const msgText = (v.text || v.message || '').toString();
-            text = `${v.name || 'Unknown'}: ${msgText.substring(0,30)}`;
-          }
-        });
-        const el = $id('last-' + id);
-        if(el) el.textContent = text;
-      });
-    });
-  }
-
-  /* ============================
-     SEND MESSAGE (rate limited)
-     ============================ */
+  // ============================
+  // SEND MESSAGE (rate limited)
+  // ============================
   let lastMsgTime = 0;
   const MSG_COOLDOWN = 1200; // ms
 
@@ -499,8 +700,8 @@
     if(!input) return;
     const raw = input.value.trim();
     if(!raw) return;
-    if(!currentRoomId){
-      alert('Select a room first.');
+    if(!currentChat.id || !currentChat.path){
+      alert('Select a room, group, or DM first.');
       return;
     }
 
@@ -517,14 +718,14 @@
       return;
     }
 
-    // check bans
+    // bans
     const banSnap = await db.ref('bans/' + me.uid).get();
     if(banSnap.exists()){
       alert('You are banned from chat.');
       return;
     }
 
-    // check timeouts
+    // timeouts
     const toSnap = await db.ref('timeouts/' + me.uid).get();
     if(toSnap.exists()){
       const until = toSnap.val().until || 0;
@@ -537,12 +738,14 @@
     let clean = sanitizeMessage(raw).slice(0,1000);
     input.value = '';
 
-    db.ref('chats/' + currentRoomId).push({
+    const payload = {
       name: me.displayName,
       uid: me.uid,
       text: clean,
       ts: Date.now()
-    }).catch(err=>console.error('send error', err));
+    };
+
+    db.ref(currentChat.path).push(payload).catch(err=>console.error('send error', err));
   }
 
   $id('sendBtn').addEventListener('click', sendMessageFromInput);
@@ -552,18 +755,58 @@
     }
   });
 
-  document.addEventListener('input', e=>{
-    if(e.target === $id('messageInput') && currentRoomId){
-      const me = loadLocalUser();
-      if(me) setTyping(currentRoomId, me.uid, me.displayName);
-    }
+  // ============================
+  // GROUP CREATION
+  // ============================
+  $id('createGroupBtn').addEventListener('click', async ()=>{
+    const me = loadLocalUser();
+    if(!me) return alert('Login first.');
+    const name = prompt('Group name:');
+    if(!name) return;
+    if(containsProfanity(name)) return alert('Group name has banned words.');
+    const id = 'grp_' + normalizeUid(name) + '_' + Date.now().toString(36);
+    await db.ref('groups/' + id).set({
+      name,
+      ownerUid: me.uid,
+      createdAt: Date.now()
+    });
+    openChat('group', id, name);
   });
 
-  /* ============================
-     ADMIN PANEL
-     ============================ */
-  const ADMIN_DISPLAYNAME = "KEY= 67614156";
+  // ============================
+  // START DM (SEARCH USER)
+  // ============================
+  $id('startDmBtn').addEventListener('click', async ()=>{
+    const me = loadLocalUser();
+    if(!me) return alert('Login first.');
+    const targetName = prompt('Enter exact display name of user to DM:');
+    if(!targetName) return;
+    const targetUid = normalizeUid(targetName);
+    if(targetUid === me.uid) return alert('You cannot DM yourself.');
 
+    const snap = await db.ref('users/' + targetUid).get();
+    if(!snap.exists()){
+      return alert('User not found. Make sure you typed their name exactly.');
+    }
+    const target = snap.val();
+    const roomId = makeDmRoomId(me.uid, targetUid);
+
+    // index both sides
+    await db.ref('dmIndex/' + me.uid + '/' + roomId).set({
+      otherUid: targetUid,
+      displayName: target.displayName
+    });
+    await db.ref('dmIndex/' + targetUid + '/' + roomId).set({
+      otherUid: me.uid,
+      displayName: me.displayName
+    });
+
+    openChat('dm', roomId, target.displayName);
+  });
+
+  // ============================
+  // ADMIN PANEL (with verify)
+  // ============================
   async function checkAndRenderAdminUI(){
     const me = loadLocalUser();
     if(!me) return;
@@ -571,13 +814,18 @@
     const adminUid = normalizeUid(ADMIN_DISPLAYNAME); // "key__67614156"
     if(me.uid !== adminUid) return;
 
-    const adminRef = db.ref('admins/' + adminUid);
-    const snap = await adminRef.get();
-    if(!snap.exists()) return;
-
+    // simple password verify for admin panel
     const area = $id('adminArea');
-    area.innerHTML = `<button id="openAdmin" class="admin-btn">Admin</button>`;
-    $id('openAdmin').addEventListener('click', ()=>openAdminPanel(adminUid));
+    area.innerHTML = `<button id="adminLogin" class="admin-btn">Admin</button>`;
+
+    $id('adminLogin').onclick = async ()=>{
+      const pw = prompt('Enter admin password:');
+      if(pw !== '67614156'){ // you can change this if you want
+        alert('Incorrect admin password.');
+        return;
+      }
+      openAdminPanel(adminUid);
+    };
   }
 
   async function openAdminPanel(adminUid){
@@ -613,9 +861,15 @@
       </div>
 
       <div style="margin-bottom:10px">
+        <label>Verify user (uid): <input id="verifyUid" placeholder="user_uid"></label>
+        <button id="verifyBtn" class="admin-btn">Verify</button>
+        <button id="unverifyBtn" class="admin-btn">Unverify</button>
+      </div>
+
+      <div style="margin-bottom:10px">
         <label>Delete last N messages: <input id="delN" type="number" min="1" value="10" style="width:80px"></label>
         <select id="delRoom">
-          ${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
+          ${SUBJECT_ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
         </select>
         <button id="delNBtn" class="admin-btn danger">Delete</button>
       </div>
@@ -625,7 +879,7 @@
           <input id="delWordsCount" type="number" min="1" value="30" style="width:80px">
         </label>
         <select id="delWordsRoom">
-          ${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
+          ${SUBJECT_ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
         </select>
         <button id="delWordsBtn" class="admin-btn danger">Delete</button>
       </div>
@@ -633,7 +887,7 @@
       <div style="margin-bottom:10px">
         <label>Delete whole room:
           <select id="delRoomAll">
-            ${ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
+            ${SUBJECT_ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
           </select>
         </label>
         <button id="delRoomBtn" class="admin-btn danger">Delete Room</button>
@@ -646,6 +900,7 @@
     $id('closeAdmin').onclick = ()=>modal.remove();
     $id('reloadUsers').onclick = ()=>setPresenceIfLoggedIn();
 
+    // Ban / unban
     $id('banBtn').onclick = async ()=>{
       const uid = $id('banUid').value.trim();
       if(!uid) return alert('enter uid');
@@ -659,6 +914,7 @@
       $id('adminResult').textContent = `Unbanned ${uid}`;
     };
 
+    // Timeout
     $id('timeoutBtn').onclick = async ()=>{
       const uid = $id('timeoutUid').value.trim();
       let min = parseInt($id('timeoutMin').value||'5',10);
@@ -670,6 +926,21 @@
       $id('adminResult').textContent = `Timed out ${uid} for ${min} minute(s)`;
     };
 
+    // Verify / unverify
+    $id('verifyBtn').onclick = async ()=>{
+      const uid = $id('verifyUid').value.trim();
+      if(!uid) return alert('enter uid');
+      await db.ref('verified/' + uid).set(true);
+      $id('adminResult').textContent = `Verified ${uid}`;
+    };
+    $id('unverifyBtn').onclick = async ()=>{
+      const uid = $id('verifyUid').value.trim();
+      if(!uid) return alert('enter uid');
+      await db.ref('verified/' + uid).remove();
+      $id('adminResult').textContent = `Unverified ${uid}`;
+    };
+
+    // Delete last N msgs
     $id('delNBtn').onclick = async ()=>{
       const n = parseInt($id('delN').value||'10',10);
       const room = $id('delRoom').value;
@@ -682,6 +953,7 @@
       $id('adminResult').textContent = `Deleted last ${n} messages from ${room}`;
     };
 
+    // Delete messages with > X words
     $id('delWordsBtn').onclick = async ()=>{
       const cnt = parseInt($id('delWordsCount').value||'30',10);
       const room = $id('delWordsRoom').value;
@@ -698,6 +970,7 @@
       $id('adminResult').textContent = `Deleted messages with > ${cnt} words in ${room}`;
     };
 
+    // Delete whole room
     $id('delRoomBtn').onclick = async ()=>{
       const room = $id('delRoomAll').value;
       if(!confirm('Are you sure? This deletes entire room chat history.')) return;
@@ -706,9 +979,9 @@
     };
   }
 
-  /* ============================
-     LOGIN / SIGNUP UI
-     ============================ */
+  // ============================
+  // LOGIN / SIGNUP UI
+  // ============================
   async function renderUserBox(){
     const box = $id('userBox');
     const saved = loadLocalUser();
@@ -729,10 +1002,13 @@
         clearLocalUser();
         renderUserBox();
         renderLoggedInSmall();
+        $id('chatArea').innerHTML = '<div class="small">Pick a room, group, or DM on the left to start chatting.</div>';
+        $id('inputRow').style.display = 'none';
       });
       await checkAndRenderAdminUI();
       renderLoggedInSmall();
       setPresenceIfLoggedIn();
+      watchDmList();
       return;
     }
 
@@ -789,15 +1065,20 @@
     small.textContent = saved ? `Signed in as ${saved.displayName}` : '';
   }
 
-  /* ============================
-     INIT
-     ============================ */
+  // ============================
+  // INIT
+  // ============================
   (function init(){
-    buildRooms();
+    buildSubjectRooms();
+    watchGroupList();
+    regenSubjectLastMessages();
+    watchGroupLastMessagesOnce();
     renderUserBox();
-    watchLastMessages();
     watchPresence();
+    watchVerified();
   })();
+
   </script>
 </body>
 </html>
+
