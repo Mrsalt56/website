@@ -1,77 +1,139 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Salty — Chat</title>
-
-  <!-- Chat-only CSS (no main.css to avoid conflicts) -->
-  <link rel="stylesheet" href="chat.css">
+  <meta charset="UTF-8" />
+  <title>Salty Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="chat.css" />
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <script src="https://kit.fontawesome.com/a2b1aa3c5b.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="chat-title-fixed">Salty Chat</div>
 
-  <div class="chat-wrap">
-    <aside class="chat-left">
-      <div class="chat-user-box" id="userBox"></div>
+<div class="chat-app">
 
-      <div class="chat-section">
-        <h2>Subject Rooms</h2>
-        <div class="chat-list" id="roomsList"></div>
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div id="displayName">NAME</div>
+      <div class="header-icons">
+        <button id="openAccount"><i class="fa-solid fa-user"></i></button>
+        <button id="openAdmin"><i class="fa-solid fa-shield"></i></button>
       </div>
+    </div>
 
-      <div class="chat-section">
-        <h2>
-          Groups
-          <button id="createGroupBtn" class="chat-btn-small">+ New Group</button>
-        </h2>
-        <div class="chat-list" id="groupsList"></div>
-      </div>
+    <div class="sidebar-section">
+      <div class="section-title">Chats</div>
+      <ul id="roomList" class="list"></ul>
+    </div>
 
-      <div class="chat-section">
-        <h2>
-          DMs
-          <button id="startDmBtn" class="chat-btn-small">+ DM</button>
-        </h2>
-        <div class="chat-list" id="dmsList"></div>
-      </div>
+    <div class="sidebar-section">
+      <div class="section-title">DMs</div>
+      <ul id="dmList" class="list"></ul>
+    </div>
 
-      <div class="chat-section">
-        <h2>Online</h2>
-        <div id="onlineList" class="chat-small"></div>
-      </div>
+    <div class="sidebar-section">
+      <div class="section-title">Groups</div>
+      <ul id="groupList" class="list"></ul>
+      <button id="createGroupBtn" class="small-btn">+ New group</button>
+    </div>
 
-      <div class="chat-small">
-        Accounts = name + password (saved on this device).  
-        Username blocks swear words. Admin panel requires KEY= 67614156.
-      </div>
-    </aside>
+    <div class="sidebar-section">
+      <div class="section-title">Online</div>
+      <ul id="onlineList" class="list small"></ul>
+    </div>
 
-    <section class="chat-right">
-      <div class="chat-header">
-        <div id="currentRoomTitle"><strong>Select a room, group, or DM</strong></div>
-        <span id="notifArea" class="chat-notif"></span>
-        <div style="flex:1"></div>
-        <div id="loggedInAs" class="chat-small"></div>
-        <div id="adminArea"></div>
-      </div>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </aside>
 
-      <div class="chat-area" id="chatArea">
-        <div class="chat-small">Pick a room, group, or DM on the left to start chatting.</div>
-      </div>
+  <!-- MAIN CHAT AREA -->
+  <main class="main">
 
-      <div class="chat-input-row" id="inputRow" style="display:none">
-        <input id="messageInput" type="text" placeholder="Type a message..." autocomplete="off" />
-        <button id="sendBtn">Send</button>
+    <header class="room-header">
+      <div>
+        <div id="roomName">Select a room</div>
+        <div id="roomSubtitle" class="room-subtitle"></div>
       </div>
-    </section>
+      <div id="typingIndicator" class="typing-indicator"></div>
+    </header>
+
+    <section id="chatArea" class="chat-area"></section>
+
+    <footer class="input-bar">
+      <input id="messageInput" type="text" placeholder="Type..." autocomplete="off" />
+      <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+    </footer>
+
+  </main>
+</div>
+
+<!-- ACCOUNT MODAL -->
+<div id="accountModal" class="modal">
+  <div class="modal-content">
+    <h2>Account</h2>
+    <div id="accountView">
+      <p><strong>Username:</strong> <span id="accUsername"></span></p>
+      <p><strong>UID:</strong> <span id="accUid"></span></p>
+      <p><strong>Status:</strong> <span id="accStatus"></span></p>
+    </div>
+
+    <div id="signupView">
+      <p>Create your chat account (saved on this device only).</p>
+      <input id="signupUsername" placeholder="Username" />
+      <input id="signupPassword" type="password" placeholder="Password" />
+      <button id="signupBtn">Create account</button>
+    </div>
   </div>
+</div>
 
-  <!-- Firebase compat -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
+<!-- ADMIN PANEL MODAL -->
+<div id="adminModal" class="modal">
+  <div class="modal-content admin">
+    <h2>Admin Panel</h2>
 
-  <!-- Chat logic -->
-  <script src="chat.js"></script>
+    <div id="adminLoginView">
+      <p>Enter admin key:</p>
+      <input id="adminKeyInput" type="password" />
+      <button id="adminLoginBtn">Login</button>
+    </div>
+
+    <div id="adminPanelView">
+      <p>You are logged in as admin.</p>
+
+      <div class="admin-section">
+        <h3>Ban / Timeout / Verify</h3>
+        <input id="targetUsername" placeholder="Target username" />
+        <button data-action="ban-5" class="admin-btn">Ban 5m</button>
+        <button data-action="ban-60" class="admin-btn">Ban 1h</button>
+        <button data-action="unban" class="admin-btn">Unban</button>
+        <button data-action="timeout-5" class="admin-btn">Timeout 5m</button>
+        <button data-action="timeout-60" class="admin-btn">Timeout 1h</button>
+        <button data-action="verify" class="admin-btn">Verify</button>
+      </div>
+
+      <div class="admin-section">
+        <h3>Messages in current room</h3>
+        <input id="deleteCount" type="number" placeholder="Delete last N" />
+        <button id="deleteLastBtn" class="admin-btn">Delete last</button>
+
+        <input id="deleteOverWords" type="number" placeholder="Delete > X words" />
+        <button id="deleteLongBtn" class="admin-btn">Delete long</button>
+
+        <button id="deleteRoomBtn" class="admin-btn danger">Delete **entire room**</button>
+      </div>
+
+      <div class="admin-section">
+        <h3>Online users</h3>
+        <ul id="adminOnlineList" class="list small"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
+
+<script src="chat.js"></script>
 </body>
 </html>
