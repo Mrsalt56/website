@@ -1,6 +1,6 @@
-// ============================
-// FIREBASE CONFIG
-// ============================
+// -------------------------
+// Firebase setup
+// -------------------------
 const firebaseConfig = {
   apiKey: "AIzaSyDyk5FAyCRyAn6ll5_nfSV5e16mvi1l-n4",
   authDomain: "mrsalt56-e6066.firebaseapp.com",
@@ -15,775 +15,717 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ============================
-// CONSTANTS
-// ============================
+// -------------------------
+// DOM helpers
+// -------------------------
+const $ = sel => document.querySelector(sel);
+const roomListEl = $('#roomList');
+const dmListEl = $('#dmList');
+const groupListEl = $('#groupList');
+const onlineListEl = $('#onlineList');
+const adminOnlineListEl = $('#adminOnlineList');
+
+const roomNameEl = $('#roomName');
+const roomSubtitleEl = $('#roomSubtitle');
+const chatAreaEl = $('#chatArea');
+const typingIndicatorEl = $('#typingIndicator');
+const msgInputEl = $('#messageInput');
+const sendBtnEl = $('#sendBtn');
+const displayNameEl = $('#displayName');
+
+const accountModal = $('#accountModal');
+const signupView = $('#signupView');
+const accountView = $('#accountView');
+const accUsernameEl = $('#accUsername');
+const accUidEl = $('#accUid');
+const accStatusEl = $('#accStatus');
+
+const adminModal = $('#adminModal');
+const adminLoginView = $('#adminLoginView');
+const adminPanelView = $('#adminPanelView');
+
+// -------------------------
+// State
+// -------------------------
 const SUBJECT_ROOMS = [
-  "Math 7","Math 8","ELA 7","ELA 8","AVID",
-  "Science 7","Science 8","History 7","History 8",
-  "Coding","Life Skills","ASB","Band"
+  'Math 7', 'Math 8',
+  'ELA 7', 'ELA 8',
+  'Science', 'Social Studies', 'Random'
 ];
 
-const ADMIN_DISPLAYNAME = "KEY= 67614156";
+const PROFANITY = ['badword1','badword2','fuck','shit']; // add more
 
-// ============================
-// UTILS
-// ============================
-const $id = id => document.getElementById(id);
+const ADMIN_KEY = '67614156';
+let currentUser = null;
+let isAdmin = false;
 
-function escapeHtml(s){
-  return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;');
+let currentRoom = null; // { type: 'room'|'group'|'dm', id, label, otherUid? }
+let currentMessagesRef = null;
+let currentTypingRef = null;
+let typingTimeoutId = null;
+
+// rate limiting
+let lastMsgTime = 0;
+let messagesThisWindow = 0;
+
+// -------------------------
+// Utility
+// -------------------------
+function uid() {
+  return 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
-async function sha256Hex(str){
-  const enc = new TextEncoder();
-  const data = enc.encode(str);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+function now() {
+  return Date.now();
 }
 
-function normalizeUid(name){
-  return name.toLowerCase().replace(/\s+/g,'_').replace(/[^\w\-]/g,'_');
-}
-
-function makeDmRoomId(uid1, uid2){
-  const a = uid1 < uid2 ? uid1 : uid2;
-  const b = uid1 < uid2 ? uid2 : uid1;
-  return `dm__${a}__${b}`;
-}
-
-// ============================
-// PROFANITY
-// ============================
-const BAD_WORDS = [
-  "fuck","shit","bitch","asshole","slut","whore","nigger","faggot","cunt","bastard","dick"
-];
-
-function containsProfanity(s){
-  if(!s) return false;
-  const low = s.toLowerCase();
-  for(const w of BAD_WORDS){
-    if(low.includes(w)) return true;
-    const alt = w.split('').map(ch=>{
-      if(ch === 'a') return '@';
-      if(ch === 'i') return '1';
-      if(ch === 'o') return '0';
-      return ch;
-    }).join('');
-    if(low.includes(alt)) return true;
-  }
-  return false;
-}
-
-function sanitizeMessage(s){
-  let out = s;
-  for(const w of BAD_WORDS){
-    const re = new RegExp(w,'gi');
-    out = out.replace(re,'***');
-  }
+function sanitizeText(text) {
+  let out = text;
+  PROFANITY.forEach(w => {
+    const re = new RegExp(w, 'ig');
+    out = out.replace(re, '***');
+  });
   return out;
 }
 
-// ============================
-// LOCAL USER STORAGE
-// ============================
-function saveLocalUser(u){ localStorage.setItem('salty_chat_user', JSON.stringify(u)); }
-function loadLocalUser(){ try { return JSON.parse(localStorage.getItem('salty_chat_user')||'null'); } catch(e){ return null; } }
-function clearLocalUser(){ localStorage.removeItem('salty_chat_user'); }
-
-// ============================
-// PRESENCE (ONLINE)
-// ============================
-let presenceRef = null;
-
-async function setPresenceIfLoggedIn(){
-  const u = loadLocalUser();
-  if(!u) return;
-  const uid = u.uid;
-  const pRef = db.ref('presence/' + uid);
-  pRef.set({ displayName: u.displayName, lastActive: Date.now() });
-  pRef.onDisconnect().remove();
-  presenceRef = pRef;
+function showModal(modal) {
+  modal.style.display = 'flex';
 }
 
-function watchPresence(){
-  const list = $id('onlineList');
-  db.ref('presence').on('value', snap=>{
-    const arr = [];
-    snap.forEach(c=>arr.push(c.val()));
-    arr.sort((a,b)=>(a.displayName||'').localeCompare(b.displayName||''));
-    list.innerHTML = arr.length
-      ? arr.map(e=>`<div><span class="chat-online-dot"></span>${escapeHtml(e.displayName||'')}</div>`).join('')
-      : '<div class="chat-small">No one online</div>';
+function hideModal(modal) {
+  modal.style.display = 'none';
+}
+
+function scrollToBottom() {
+  chatAreaEl.scrollTop = chatAreaEl.scrollHeight;
+}
+
+// -------------------------
+// ACCOUNT SYSTEM
+// -------------------------
+function loadUserFromStorage() {
+  const raw = localStorage.getItem('chatUser');
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+function saveUserToStorage(user) {
+  localStorage.setItem('chatUser', JSON.stringify(user));
+}
+
+function ensureAccount() {
+  currentUser = loadUserFromStorage();
+
+  if (!currentUser) {
+    // show signup
+    signupView.style.display = 'block';
+    accountView.style.display = 'none';
+    showModal(accountModal);
+  } else {
+    onLoggedIn();
+  }
+}
+
+function createAccount() {
+  const username = $('#signupUsername').value.trim();
+  const password = $('#signupPassword').value.trim();
+
+  if (!username || !password) {
+    alert('Enter username and password.');
+    return;
+  }
+
+  if (PROFANITY.some(w => username.toLowerCase().includes(w))) {
+    alert('No profanity in usernames.');
+    return;
+  }
+
+  const user = {
+    uid: uid(),
+    username,
+    password, // stored ONLY on device
+    createdAt: now()
+  };
+
+  currentUser = user;
+  saveUserToStorage(user);
+
+  // write to /users
+  db.ref('users/' + user.uid).set({
+    username,
+    createdAt: user.createdAt,
+    verified: false,
+    bannedUntil: 0,
+    timeoutUntil: 0,
+    role: 'user'
   });
+
+  hideModal(accountModal);
+  onLoggedIn();
 }
 
-// ============================
-// VERIFIED USERS
-// ============================
-const verifiedMap = {};
-function watchVerified(){
-  db.ref('verified').on('value', snap=>{
-    Object.keys(verifiedMap).forEach(k=>delete verifiedMap[k]);
-    snap.forEach(c=>{
-      if(c.val()) verifiedMap[c.key] = true;
+function onLoggedIn() {
+  displayNameEl.textContent = currentUser.username;
+  accUsernameEl.textContent = currentUser.username;
+  accUidEl.textContent = currentUser.uid;
+  accStatusEl.textContent = 'Normal';
+
+  signupView.style.display = 'none';
+  accountView.style.display = 'block';
+
+  setupPresence();
+  loadSidebarRooms();
+}
+
+function logout() {
+  localStorage.removeItem('chatUser');
+  location.reload();
+}
+
+// -------------------------
+// PRESENCE + ONLINE USERS
+// -------------------------
+function setupPresence() {
+  const presRef = db.ref('presence/' + currentUser.uid);
+  presRef.set({
+    username: currentUser.username,
+    online: true,
+    lastSeen: now()
+  });
+  presRef.onDisconnect().set({
+    username: currentUser.username,
+    online: false,
+    lastSeen: now()
+  });
+
+  db.ref('presence').on('value', snap => {
+    const onlineUsers = [];
+    snap.forEach(child => {
+      onlineUsers.push({ uid: child.key, ...child.val() });
     });
-  });
-}
-function isVerified(uid){
-  return !!verifiedMap[uid];
-}
-
-// ============================
-// DOM references
-// ============================
-const roomsListEl  = $id('roomsList');
-const groupsListEl = $id('groupsList');
-const dmsListEl    = $id('dmsList');
-
-let currentChat = {
-  type: null,   // 'room' | 'group' | 'dm'
-  id: null,
-  path: null
-};
-let messagesRef = null;
-
-// ============================
-// SUBJECT ROOMS
-// ============================
-function buildSubjectRooms(){
-  roomsListEl.innerHTML = '';
-  SUBJECT_ROOMS.forEach(r=>{
-    const id = normalizeUid(r);
-    const div = document.createElement('div');
-    div.className = 'chat-list-item';
-    div.id = 'room-' + id;
-    div.innerHTML = `
-      <div>
-        <div>${escapeHtml(r)}</div>
-        <div class="chat-preview" id="last-room-${id}"></div>
-      </div>
-    `;
-    div.addEventListener('click', ()=>openChat('room', id, r));
-    roomsListEl.appendChild(div);
+    renderOnlineLists(onlineUsers);
   });
 }
 
-// Watch last message previews for subject rooms
-function watchSubjectLastMessages(){
-  SUBJECT_ROOMS.forEach(r=>{
-    const id = normalizeUid(r);
-    const ref = db.ref('chats/' + id).limitToLast(1);
-    ref.on('value', snap=>{
-      let text = '';
-      snap.forEach(c=>{
-        const v = c.val();
-        if(v){
-          const msgText = (v.text || v.message || '').toString();
-          text = `${v.name || 'Unknown'}: ${msgText.substring(0,30)}`;
-        }
-      });
-      const el = $id('last-room-' + id);
-      if(el) el.textContent = text;
-    });
-  });
-}
+function renderOnlineLists(users) {
+  onlineListEl.innerHTML = '';
+  adminOnlineListEl.innerHTML = '';
 
-// ============================
-// GROUPS
-// ============================
-function watchGroupList(){
-  groupsListEl.innerHTML = '';
-  db.ref('groups').on('value', snap=>{
-    groupsListEl.innerHTML = '';
-    const arr = [];
-    snap.forEach(c=>{
-      const v = c.val();
-      if(!v) return;
-      arr.push({id:c.key, ...v});
-    });
-    if(!arr.length){
-      groupsListEl.innerHTML = '<div class="chat-small">No groups yet.</div>';
-      return;
+  users.forEach(u => {
+    const li = document.createElement('li');
+    li.textContent = u.username;
+    if (u.online) {
+      const dot = document.createElement('span');
+      dot.className = 'status-dot';
+      li.appendChild(dot);
     }
-    arr.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-    arr.forEach(g=>{
-      const div = document.createElement('div');
-      div.className = 'chat-list-item';
-      div.id = 'group-' + g.id;
-      div.innerHTML = `
-        <div>
-          <div>${escapeHtml(g.name||'Group')}</div>
-          <div class="chat-preview" id="last-group-${g.id}"></div>
-        </div>
-      `;
-      div.addEventListener('click', ()=>openChat('group', g.id, g.name || 'Group'));
-      groupsListEl.appendChild(div);
-    });
+    onlineListEl.appendChild(li);
 
-    // watch last group messages
-    arr.forEach(g=>{
-      const ref = db.ref('chats/' + g.id).limitToLast(1);
-      ref.on('value', snap2=>{
-        let text = '';
-        snap2.forEach(c2=>{
-          const v = c2.val();
-          if(v){
-            const msgText = (v.text || v.message || '').toString();
-            text = `${v.name || 'Unknown'}: ${msgText.substring(0,30)}`;
-          }
-        });
-        const el = $id('last-group-' + g.id);
-        if(el) el.textContent = text;
+    const li2 = li.cloneNode(true);
+    adminOnlineListEl.appendChild(li2);
+  });
+}
+
+// -------------------------
+// SIDEBAR: SUBJECT ROOMS / GROUPS / DMS
+// -------------------------
+function loadSidebarRooms() {
+  // subject rooms static
+  roomListEl.innerHTML = '';
+  SUBJECT_ROOMS.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    li.dataset.roomId = name.replace(/\s+/g, '_').toLowerCase();
+    li.addEventListener('click', () =>
+      openRoom({ type: 'room', id: li.dataset.roomId, label: name })
+    );
+    roomListEl.appendChild(li);
+  });
+
+  // groups where user is member
+  const groupsRef = db.ref('groups');
+  groupsRef.on('value', snap => {
+    groupListEl.innerHTML = '';
+    snap.forEach(child => {
+      const g = child.val();
+      if (!g.members || !g.members[currentUser.uid]) return;
+      const li = document.createElement('li');
+      li.textContent = g.meta.name || 'Group';
+      li.dataset.groupId = child.key;
+      li.addEventListener('click', () =>
+        openRoom({ type: 'group', id: child.key, label: g.meta.name })
+      );
+      groupListEl.appendChild(li);
+    });
+  });
+
+  // DMs: list of other uids under /dms/{me}
+  const dmsRef = db.ref('dms/' + currentUser.uid);
+  dmsRef.on('value', snap => {
+    dmListEl.innerHTML = '';
+    snap.forEach(child => {
+      const otherUid = child.key;
+      // get username
+      db.ref('users/' + otherUid + '/username').once('value').then(ss => {
+        const username = ss.val() || otherUid;
+        const li = document.createElement('li');
+        li.textContent = username;
+        li.dataset.otherUid = otherUid;
+        li.addEventListener('click', () =>
+          openRoom({
+            type: 'dm',
+            id: otherUid,
+            label: 'DM: ' + username,
+            otherUid
+          })
+        );
+        dmListEl.appendChild(li);
       });
     });
   });
 }
 
 // Create group
-$id('createGroupBtn').addEventListener('click', async ()=>{
-  const me = loadLocalUser();
-  if(!me) return alert('Login first.');
-  const name = prompt('Group name:');
-  if(!name) return;
-  if(containsProfanity(name)) return alert('Group name has banned words.');
-  const id = 'grp_' + normalizeUid(name) + '_' + Date.now().toString(36);
-  await db.ref('groups/' + id).set({
-    name,
-    ownerUid: me.uid,
-    createdAt: Date.now()
-  });
-  openChat('group', id, name);
-});
-
-// ============================
-// DM LIST & NOTIFICATIONS
-// ============================
-let dmListeners = {};
-let currentNotifTimeout = null;
-
-function showNotif(msg){
-  const el = $id('notifArea');
-  el.textContent = msg || '';
-  if(currentNotifTimeout) clearTimeout(currentNotifTimeout);
-  if(msg){
-    currentNotifTimeout = setTimeout(()=>{ el.textContent=''; }, 5000);
-  }
-}
-
-function watchDmList(){
-  const me = loadLocalUser();
-  if(!me) return;
-  const uid = me.uid;
-  db.ref('dmIndex/' + uid).on('value', snap=>{
-    dmsListEl.innerHTML = '';
-    const arr = [];
-    snap.forEach(c=>{
-      arr.push({roomId:c.key, ...c.val()});
-    });
-    if(!arr.length){
-      dmsListEl.innerHTML = '<div class="chat-small">No DMs yet.</div>';
-      return;
+$('#createGroupBtn').addEventListener('click', () => {
+  const name = prompt('Group name?');
+  if (!name) return;
+  const ref = db.ref('groups').push();
+  const groupId = ref.key;
+  ref.set({
+    meta: {
+      name,
+      owner: currentUser.uid,
+      createdAt: now()
+    },
+    members: {
+      [currentUser.uid]: true
     }
-    arr.sort((a,b)=>(a.displayName||'').localeCompare(b.displayName||''));
-    arr.forEach(d=>{
-      const div = document.createElement('div');
-      div.className = 'chat-list-item';
-      div.id = 'dm-' + d.roomId;
-      div.innerHTML = `
-        <div>
-          <div>${escapeHtml(d.displayName||'User')}</div>
-          <div class="chat-preview" id="last-dm-${d.roomId}"></div>
-        </div>
-      `;
-      div.addEventListener('click', ()=>openChat('dm', d.roomId, d.displayName||'DM'));
-      dmsListEl.appendChild(div);
-    });
-
-    // attach watchers for last DM message + notifications
-    Object.values(dmListeners).forEach(unsub=>unsub && unsub());
-    dmListeners = {};
-    arr.forEach(d=>{
-      const ref = db.ref('dms/' + d.roomId).limitToLast(1);
-      const cb = ref.on('value', snap2=>{
-        let lastMsg = null;
-        snap2.forEach(c2=> lastMsg = c2.val());
-        const el = $id('last-dm-' + d.roomId);
-        if(lastMsg){
-          const text = (lastMsg.text || lastMsg.message || '').toString().substring(0,30);
-          if(el) el.textContent = `${lastMsg.name || 'Unknown'}: ${text}`;
-          const meNow = loadLocalUser();
-          if(meNow && lastMsg.uid !== meNow.uid){
-            if(!(currentChat.type === 'dm' && currentChat.id === d.roomId)){
-              showNotif(`New DM from ${lastMsg.name || 'Unknown'}`);
-            }
-          }
-        }
-      });
-      dmListeners[d.roomId] = ()=>ref.off('value', cb);
-    });
   });
-}
-
-// Start DM (search user)
-$id('startDmBtn').addEventListener('click', async ()=>{
-  const me = loadLocalUser();
-  if(!me) return alert('Login first.');
-  const targetName = prompt('Enter exact display name of user to DM:');
-  if(!targetName) return;
-  const targetUid = normalizeUid(targetName);
-  if(targetUid === me.uid) return alert('You cannot DM yourself.');
-
-  const snap = await db.ref('users/' + targetUid).get();
-  if(!snap.exists()){
-    return alert('User not found. Make sure you typed their name exactly.');
-  }
-  const target = snap.val();
-  const roomId = makeDmRoomId(me.uid, targetUid);
-
-  await db.ref('dmIndex/' + me.uid + '/' + roomId).set({
-    otherUid: targetUid,
-    displayName: target.displayName
-  });
-  await db.ref('dmIndex/' + targetUid + '/' + roomId).set({
-    otherUid: me.uid,
-    displayName: me.displayName
-  });
-
-  openChat('dm', roomId, target.displayName);
+  openRoom({ type: 'group', id: groupId, label: name });
 });
 
-// ============================
-// OPEN CHAT
-// ============================
-function clearActiveChatItems(){
-  document.querySelectorAll('.chat-list-item').forEach(el=>el.classList.remove('active'));
+// -------------------------
+// OPEN ROOM
+// -------------------------
+function detachRoomListeners() {
+  if (currentMessagesRef) currentMessagesRef.off();
+  if (currentTypingRef) currentTypingRef.off();
+  typingIndicatorEl.textContent = '';
 }
 
-function openChat(type, id, label){
-  const me = loadLocalUser();
-  if(!me){
-    alert('Please login or create an account first.');
-    return;
+function roomKey(room) {
+  if (!room) return '';
+  if (room.type === 'room') return 'room_' + room.id;
+  if (room.type === 'group') return 'group_' + room.id;
+  if (room.type === 'dm') {
+    const ids = [currentUser.uid, room.otherUid].sort().join('_');
+    return 'dm_' + ids;
   }
+  return '';
+}
 
-  clearActiveChatItems();
-  if(type === 'room'){
-    const el = $id('room-' + id);
-    if(el) el.classList.add('active');
-  } else if(type === 'group'){
-    const el = $id('group-' + id);
-    if(el) el.classList.add('active');
-  } else if(type === 'dm'){
-    const el = $id('dm-' + id);
-    if(el) el.classList.add('active');
+function openRoom(room) {
+  detachRoomListeners();
+  currentRoom = room;
+  roomNameEl.textContent = room.label;
+  roomSubtitleEl.textContent =
+    room.type === 'room'
+      ? 'Subject room'
+      : room.type === 'group'
+        ? 'Group chat'
+        : 'Private DM';
+
+  chatAreaEl.innerHTML = '';
+
+  // highlight active
+  document.querySelectorAll('.list li').forEach(li =>
+    li.classList.remove('active')
+  );
+  if (room.type === 'room') {
+    const li = [...roomListEl.children].find(
+      li => li.dataset.roomId === room.id
+    );
+    if (li) li.classList.add('active');
+  } else if (room.type === 'group') {
+    const li = [...groupListEl.children].find(
+      li => li.dataset.groupId === room.id
+    );
+    if (li) li.classList.add('active');
+  } else if (room.type === 'dm') {
+    const li = [...dmListEl.children].find(
+      li => li.dataset.otherUid === room.otherUid
+    );
+    if (li) li.classList.add('active');
   }
-
-  $id('currentRoomTitle').innerHTML = `<strong>${escapeHtml(label)}</strong>`;
-  $id('chatArea').innerHTML = `<div class="chat-small">Loading messages...</div>`;
-  $id('inputRow').style.display = 'flex';
-  showNotif('');
-
-  if(messagesRef) messagesRef.off();
 
   let path;
-  if(type === 'dm'){
-    path = 'dms/' + id;
-  } else {
-    path = 'chats/' + id;
-  }
+  if (room.type === 'room') path = 'chats/' + room.id;
+  if (room.type === 'group') path = 'groups/' + room.id + '/messages';
+  if (room.type === 'dm')
+    path = 'dms/' + currentUser.uid + '/' + room.otherUid;
 
-  currentChat.type = type;
-  currentChat.id = id;
-  currentChat.path = path;
+  currentMessagesRef = db.ref(path);
+  currentMessagesRef
+    .orderByChild('createdAt')
+    .limitToLast(200)
+    .on('child_added', snap => addMessageToUI(snap.key, snap.val()));
 
-  // Use limitToLast without orderByChild to avoid index issues
-  messagesRef = db.ref(path).limitToLast(500);
-  messagesRef.on('value', snap=>{
-    const msgs = [];
-    snap.forEach(c=>msgs.push({ key:c.key, ...c.val() }));
-    renderMessages(msgs);
-  });
-}
-
-// ============================
-// RENDER MESSAGES
-// ============================
-function renderMessages(messages){
-  const area = $id('chatArea');
-  area.innerHTML = '';
-  if(!messages.length){
-    area.innerHTML = '<div class="chat-small">No messages yet — say hi 👋</div>';
-    return;
-  }
-
-  messages.forEach(m=>{
-    const wrap = document.createElement('div');
-    wrap.className = 'chat-msg';
-
-    const meta = document.createElement('div');
-    meta.className = 'chat-msg-meta';
-
-    const t = new Date(m.ts || 0).toLocaleString();
-    const verifiedLabel = isVerified(m.uid)
-      ? '<span class="chat-verified-badge">✔</span>'
-      : '';
-
-    meta.innerHTML = `
-      <div style="font-weight:700">
-        ${escapeHtml(m.name || 'Unknown')}${verifiedLabel}
-      </div>
-      <div class="chat-small">${t}</div>
-    `;
-
-    const bubble = document.createElement('div');
-    bubble.className = 'chat-msg-bubble';
-
-    if(m.deleted){
-      bubble.textContent = '[message deleted by admin]';
+  // typing
+  const tKey = roomKey(room);
+  currentTypingRef = db.ref('typing/' + tKey);
+  currentTypingRef.on('value', snap => {
+    const typers = [];
+    snap.forEach(child => {
+      if (child.key === currentUser.uid) return;
+      if (child.val()) typers.push(child.key);
+    });
+    if (!typers.length) {
+      typingIndicatorEl.textContent = '';
     } else {
-      const content = (m.text || m.message || '').toString();
-      bubble.textContent = content;
+      typingIndicatorEl.textContent =
+        typers.length === 1 ? 'Someone is typing…' : 'Several people are typing…';
     }
-
-    wrap.appendChild(meta);
-    wrap.appendChild(bubble);
-    area.appendChild(wrap);
   });
-
-  area.scrollTop = area.scrollHeight;
 }
 
-// ============================
-// SEND MESSAGE (rate limited)
-// ============================
-let lastMsgTime = 0;
-const MSG_COOLDOWN = 1200; // ms
+// -------------------------
+// RENDER MESSAGE
+// -------------------------
+function addMessageToUI(key, msg) {
+  const div = document.createElement('div');
+  const mine = msg.uid === currentUser.uid;
+  div.className = 'msg ' + (mine ? 'me' : 'them');
 
-async function sendMessageFromInput(){
-  const input = $id('messageInput');
-  if(!input) return;
-  const raw = input.value.trim();
-  if(!raw) return;
-  if(!currentChat.id || !currentChat.path){
-    alert('Select a room, group, or DM first.');
+  const userSpan = document.createElement('div');
+  userSpan.className = 'username';
+  userSpan.textContent = msg.username;
+  div.appendChild(userSpan);
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = msg.deleted ? 'Message removed by admin' : msg.text;
+  if (msg.deleted) bubble.classList.add('deleted');
+  div.appendChild(bubble);
+
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  const date = new Date(msg.createdAt);
+  meta.textContent = date.toLocaleTimeString();
+  div.appendChild(meta);
+
+  // admin per-message actions
+  if (isAdmin && !msg.deleted) {
+    bubble.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      if (confirm('Delete this message?')) {
+        markMessageDeleted(key, msg);
+      }
+    });
+  }
+
+  chatAreaEl.appendChild(div);
+  scrollToBottom();
+}
+
+function markMessageDeleted(key, msg) {
+  if (!currentRoom) return;
+  let path;
+  if (currentRoom.type === 'room')
+    path = 'chats/' + currentRoom.id + '/' + key;
+  if (currentRoom.type === 'group')
+    path = 'groups/' + currentRoom.id + '/messages/' + key;
+  if (currentRoom.type === 'dm')
+    path =
+      'dms/' + currentUser.uid + '/' + currentRoom.otherUid + '/' + key;
+
+  db.ref(path).update({
+    deleted: true,
+    deletedBy: 'admin'
+  });
+
+  logAdminAction('deleteMessage', msg.uid);
+}
+
+// -------------------------
+// SEND MESSAGE
+// -------------------------
+function sendMessage() {
+  if (!currentRoom) return;
+  let text = msgInputEl.value.trim();
+  if (!text) return;
+
+  const nowTime = now();
+  if (nowTime - lastMsgTime > 5000) {
+    messagesThisWindow = 0;
+    lastMsgTime = nowTime;
+  }
+  messagesThisWindow++;
+  if (messagesThisWindow > 5) {
+    alert('Slow down a bit (rate limit).');
     return;
   }
 
-  const now = Date.now();
-  if(now - lastMsgTime < MSG_COOLDOWN){
-    alert('Slow down! You are sending messages too fast.');
-    return;
-  }
-  lastMsgTime = now;
+  text = sanitizeText(text);
 
-  const me = loadLocalUser();
-  if(!me){
-    alert('Please login first.');
-    return;
-  }
-
-  // bans
-  const banSnap = await db.ref('bans/' + me.uid).get();
-  if(banSnap.exists()){
-    alert('You are banned from chat.');
-    return;
-  }
-
-  // timeouts
-  const toSnap = await db.ref('timeouts/' + me.uid).get();
-  if(toSnap.exists()){
-    const until = toSnap.val().until || 0;
-    if(Date.now() < until){
-      alert('You are timed out and cannot send messages yet.');
+  // check bans / timeouts
+  db.ref('users/' + currentUser.uid).once('value').then(snap => {
+    const u = snap.val() || {};
+    if (u.bannedUntil && u.bannedUntil > now()) {
+      alert('You are banned from chatting right now.');
       return;
     }
-  }
+    if (u.timeoutUntil && u.timeoutUntil > now()) {
+      alert('You are timed out.');
+      return;
+    }
 
-  let clean = sanitizeMessage(raw).slice(0,1000);
-  input.value = '';
+    let path;
+    const msgData = {
+      uid: currentUser.uid,
+      username: currentUser.username,
+      text,
+      createdAt: now()
+    };
 
-  const payload = {
-    name: me.displayName,
-    uid: me.uid,
-    text: clean,
-    ts: Date.now()
-  };
+    if (currentRoom.type === 'room')
+      path = 'chats/' + currentRoom.id;
+    if (currentRoom.type === 'group')
+      path = 'groups/' + currentRoom.id + '/messages';
+    if (currentRoom.type === 'dm') {
+      const path1 =
+        'dms/' + currentUser.uid + '/' + currentRoom.otherUid;
+      const path2 =
+        'dms/' + currentRoom.otherUid + '/' + currentUser.uid;
+      const newRef = db.ref(path1).push();
+      const key = newRef.key;
+      const updates = {};
+      updates[path1 + '/' + key] = {
+        from: currentUser.uid,
+        to: currentRoom.otherUid,
+        text,
+        createdAt: msgData.createdAt,
+        uid: currentUser.uid,
+        username: currentUser.username
+      };
+      updates[path2 + '/' + key] = updates[path1 + '/' + key];
+      db.ref().update(updates);
+      msgInputEl.value = '';
+      return;
+    }
 
-  db.ref(currentChat.path).push(payload).catch(err=>console.error('send error', err));
+    db.ref(path).push(msgData);
+    msgInputEl.value = '';
+  });
 }
 
-$id('sendBtn').addEventListener('click', sendMessageFromInput);
-document.addEventListener('keydown', e=>{
-  if(e.key === 'Enter' && document.activeElement === $id('messageInput')){
-    sendMessageFromInput();
+// typing indicator
+function handleTyping() {
+  if (!currentRoom) return;
+  const key = roomKey(currentRoom);
+  const tRef = db.ref('typing/' + key + '/' + currentUser.uid);
+  tRef.set(true);
+  if (typingTimeoutId) clearTimeout(typingTimeoutId);
+  typingTimeoutId = setTimeout(() => tRef.set(false), 3000);
+}
+
+// -------------------------
+// ADMIN SYSTEM
+// -------------------------
+function logAdminAction(type, target, roomIdOverride) {
+  const ref = db.ref('adminActions').push();
+  ref.set({
+    adminUid: currentUser.uid,
+    type,
+    target: target || '',
+    roomId: roomIdOverride || (currentRoom ? roomKey(currentRoom) : ''),
+    createdAt: now()
+  });
+}
+
+function adminLogin() {
+  const key = $('#adminKeyInput').value.trim();
+  if (key !== ADMIN_KEY) {
+    alert('Wrong admin key.');
+    return;
   }
+
+  // mark admin in DB
+  db.ref('admins/' + currentUser.uid).set(true);
+  db.ref('users/' + currentUser.uid + '/role').set('admin');
+
+  isAdmin = true;
+  adminLoginView.style.display = 'none';
+  adminPanelView.style.display = 'block';
+}
+
+function performUserAction(action, username) {
+  // find user by username
+  db.ref('users')
+    .orderByChild('username')
+    .equalTo(username)
+    .once('value')
+    .then(snap => {
+      if (!snap.exists()) {
+        alert('User not found.');
+        return;
+      }
+      const uid = Object.keys(snap.val())[0];
+      const userRef = db.ref('users/' + uid);
+
+      const updates = {};
+      const fiveMin = 5 * 60 * 1000;
+      const oneHour = 60 * 60 * 1000;
+
+      if (action === 'ban-5')
+        updates.bannedUntil = now() + fiveMin;
+      if (action === 'ban-60')
+        updates.bannedUntil = now() + oneHour;
+      if (action === 'unban') updates.bannedUntil = 0;
+      if (action === 'timeout-5')
+        updates.timeoutUntil = now() + fiveMin;
+      if (action === 'timeout-60')
+        updates.timeoutUntil = now() + oneHour;
+      if (action === 'verify') updates.verified = true;
+
+      userRef.update(updates);
+      logAdminAction(action, uid);
+      alert('Done: ' + action);
+    });
+}
+
+function deleteLastNMessages(n) {
+  if (!currentRoom || !n) return;
+  let path;
+  if (currentRoom.type === 'room')
+    path = 'chats/' + currentRoom.id;
+  if (currentRoom.type === 'group')
+    path = 'groups/' + currentRoom.id + '/messages';
+  if (currentRoom.type === 'dm')
+    path =
+      'dms/' + currentUser.uid + '/' + currentRoom.otherUid;
+
+  const ref = db.ref(path);
+  ref
+    .orderByChild('createdAt')
+    .limitToLast(Number(n))
+    .once('value')
+    .then(snap => {
+      const updates = {};
+      snap.forEach(child => {
+        updates[child.key + '/deleted'] = true;
+        updates[child.key + '/deletedBy'] = 'admin';
+      });
+      ref.update(updates);
+      logAdminAction('deleteLastN', '' + n);
+    });
+}
+
+function deleteMessagesOverXWords(x) {
+  if (!currentRoom || !x) return;
+  let path;
+  if (currentRoom.type === 'room')
+    path = 'chats/' + currentRoom.id;
+  if (currentRoom.type === 'group')
+    path = 'groups/' + currentRoom.id + '/messages';
+  if (currentRoom.type === 'dm')
+    path =
+      'dms/' + currentUser.uid + '/' + currentRoom.otherUid;
+
+  const ref = db.ref(path);
+  ref.once('value').then(snap => {
+    const updates = {};
+    snap.forEach(child => {
+      const msg = child.val();
+      if (!msg.text) return;
+      const words = msg.text.split(/\s+/).length;
+      if (words > x) {
+        updates[child.key + '/deleted'] = true;
+        updates[child.key + '/deletedBy'] = 'admin';
+      }
+    });
+    ref.update(updates);
+    logAdminAction('deleteOverX', '' + x);
+  });
+}
+
+function deleteEntireRoom() {
+  if (!currentRoom) return;
+  if (!confirm('Delete ENTIRE room? This cannot be undone.')) return;
+  let path;
+  if (currentRoom.type === 'room')
+    path = 'chats/' + currentRoom.id;
+  if (currentRoom.type === 'group')
+    path = 'groups/' + currentRoom.id + '/messages';
+  if (currentRoom.type === 'dm')
+    path =
+      'dms/' + currentUser.uid + '/' + currentRoom.otherUid;
+
+  db.ref(path).remove();
+  logAdminAction('deleteRoom', '');
+  chatAreaEl.innerHTML = '';
+}
+
+// -------------------------
+// EVENTS
+// -------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  ensureAccount();
 });
 
-// ============================
-// ADMIN PANEL WITH VERIFY
-// ============================
-function checkAndRenderAdminUI(){
-  const me = loadLocalUser();
-  if(!me) return;
-  const adminUid = normalizeUid(ADMIN_DISPLAYNAME); // "key__67614156"
-  if(me.uid !== adminUid) return;
+$('#openAccount').addEventListener('click', () => {
+  if (!currentUser) return ensureAccount();
+  showModal(accountModal);
+});
 
-  const area = $id('adminArea');
-  area.innerHTML = `<button id="adminLogin" class="chat-admin-btn">Admin</button>`;
+$('#openAdmin').addEventListener('click', () => {
+  showModal(adminModal);
+});
 
-  $id('adminLogin').onclick = ()=>{
-    const pw = prompt('Enter admin password:');
-    if(pw !== '67614156'){
-      alert('Incorrect admin password.');
-      return;
+$('#signupBtn').addEventListener('click', createAccount);
+$('#logoutBtn').addEventListener('click', logout);
+
+window.addEventListener('click', e => {
+  if (e.target === accountModal) hideModal(accountModal);
+  if (e.target === adminModal) hideModal(adminModal);
+});
+
+// admin
+$('#adminLoginBtn').addEventListener('click', adminLogin);
+adminPanelView.style.display = 'none';
+
+document.querySelectorAll('.admin-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const action = btn.dataset.action;
+    const targetName = $('#targetUsername').value.trim();
+    if (
+      ['ban-5', 'ban-60', 'unban', 'timeout-5', 'timeout-60', 'verify'].includes(
+        action
+      )
+    ) {
+      if (!targetName) return alert('Enter target username first.');
+      performUserAction(action, targetName);
     }
-    openAdminPanel(adminUid);
-  };
-}
+  });
+});
 
-function openAdminPanel(adminUid){
-  const modal = document.createElement('div');
-  modal.style.position='fixed';
-  modal.style.left='50%';
-  modal.style.top='50%';
-  modal.style.transform='translate(-50%,-50%)';
-  modal.style.background='rgba(6,7,10,0.98)';
-  modal.style.padding='18px';
-  modal.style.zIndex=9999;
-  modal.style.borderRadius='8px';
-  modal.style.minWidth='420px';
-  modal.style.color='#fff';
-  modal.id='adminModal';
-  modal.innerHTML = `
-    <h3>Admin Panel</h3>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <button id="closeAdmin" class="chat-admin-btn">Close</button>
-      <button id="reloadUsers" class="chat-admin-btn">Refresh Presence</button>
-    </div>
+$('#deleteLastBtn').addEventListener('click', () => {
+  const n = Number($('#deleteCount').value);
+  if (!n) return;
+  deleteLastNMessages(n);
+});
 
-    <div style="margin-bottom:10px">
-      <label>Ban user (uid): <input id="banUid" placeholder="user_uid"></label>
-      <button id="banBtn" class="chat-admin-btn chat-admin-btn-danger">Ban</button>
-      <button id="unbanBtn" class="chat-admin-btn">Unban</button>
-    </div>
+$('#deleteLongBtn').addEventListener('click', () => {
+  const x = Number($('#deleteOverWords').value);
+  if (!x) return;
+  deleteMessagesOverXWords(x);
+});
 
-    <div style="margin-bottom:10px">
-      <label>Timeout user (uid): <input id="timeoutUid" placeholder="user_uid"></label>
-      <label>Duration (minutes): <input id="timeoutMin" type="number" min="5" max="60" value="5" style="width:80px"></label>
-      <button id="timeoutBtn" class="chat-admin-btn">Timeout</button>
-    </div>
+$('#deleteRoomBtn').addEventListener('click', deleteEntireRoom);
 
-    <div style="margin-bottom:10px">
-      <label>Verify user (uid): <input id="verifyUid" placeholder="user_uid"></label>
-      <button id="verifyBtn" class="chat-admin-btn">Verify</button>
-      <button id="unverifyBtn" class="chat-admin-btn">Unverify</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Delete last N messages: <input id="delN" type="number" min="1" value="10" style="width:80px"></label>
-      <select id="delRoom">
-        ${SUBJECT_ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
-      </select>
-      <button id="delNBtn" class="chat-admin-btn chat-admin-btn-danger">Delete</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Delete messages with more than X words:
-        <input id="delWordsCount" type="number" min="1" value="30" style="width:80px">
-      </label>
-      <select id="delWordsRoom">
-        ${SUBJECT_ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
-      </select>
-      <button id="delWordsBtn" class="chat-admin-btn chat-admin-btn-danger">Delete</button>
-    </div>
-
-    <div style="margin-bottom:10px">
-      <label>Delete whole room:
-        <select id="delRoomAll">
-          ${SUBJECT_ROOMS.map(r=>`<option value="${normalizeUid(r)}">${escapeHtml(r)}</option>`).join('')}
-        </select>
-      </label>
-      <button id="delRoomBtn" class="chat-admin-btn chat-admin-btn-danger">Delete Room</button>
-    </div>
-
-    <div style="margin-top:12px" id="adminResult" class="chat-small"></div>
-  `;
-  document.body.appendChild(modal);
-
-  $id('closeAdmin').onclick = ()=>modal.remove();
-  $id('reloadUsers').onclick = ()=>setPresenceIfLoggedIn();
-
-  $id('banBtn').onclick = async ()=>{
-    const uid = $id('banUid').value.trim();
-    if(!uid) return alert('enter uid');
-    await db.ref('bans/' + uid).set({ by: loadLocalUser().uid, at: Date.now() });
-    $id('adminResult').textContent = `Banned ${uid}`;
-  };
-  $id('unbanBtn').onclick = async ()=>{
-    const uid = $id('banUid').value.trim();
-    if(!uid) return alert('enter uid');
-    await db.ref('bans/' + uid).remove();
-    $id('adminResult').textContent = `Unbanned ${uid}`;
-  };
-
-  $id('timeoutBtn').onclick = async ()=>{
-    const uid = $id('timeoutUid').value.trim();
-    let min = parseInt($id('timeoutMin').value||'5',10);
-    if(!uid) return alert('enter uid');
-    if(isNaN(min) || min < 5) min = 5;
-    if(min > 60) min = 60;
-    const until = Date.now() + (min*60*1000);
-    await db.ref('timeouts/' + uid).set({ by: loadLocalUser().uid, until, minutes: min });
-    $id('adminResult').textContent = `Timed out ${uid} for ${min} minute(s)`;
-  };
-
-  $id('verifyBtn').onclick = async ()=>{
-    const uid = $id('verifyUid').value.trim();
-    if(!uid) return alert('enter uid');
-    await db.ref('verified/' + uid).set(true);
-    $id('adminResult').textContent = `Verified ${uid}`;
-  };
-  $id('unverifyBtn').onclick = async ()=>{
-    const uid = $id('verifyUid').value.trim();
-    if(!uid) return alert('enter uid');
-    await db.ref('verified/' + uid).remove();
-    $id('adminResult').textContent = `Unverified ${uid}`;
-  };
-
-  $id('delNBtn').onclick = async ()=>{
-    const n = parseInt($id('delN').value||'10',10);
-    const room = $id('delRoom').value;
-    if(!n || n <= 0) return alert('enter N');
-    const ref = db.ref('chats/' + room).limitToLast(n);
-    const snap = await ref.get();
-    const updates = {};
-    snap.forEach(c=>{ updates[`chats/${room}/${c.key}`] = null; });
-    await db.ref().update(updates);
-    $id('adminResult').textContent = `Deleted last ${n} messages from ${room}`;
-  };
-
-  $id('delWordsBtn').onclick = async ()=>{
-    const cnt = parseInt($id('delWordsCount').value||'30',10);
-    const room = $id('delWordsRoom').value;
-    if(!cnt || cnt <= 0) return alert('enter count');
-    const snap = await db.ref('chats/' + room).get();
-    const updates = {};
-    snap.forEach(c=>{
-      const val = c.val() || {};
-      const txt = (val.text || val.message || '').trim();
-      const wc = txt ? txt.split(/\s+/).length : 0;
-      if(wc > cnt) updates[`chats/${room}/${c.key}`] = null;
-    });
-    await db.ref().update(updates);
-    $id('adminResult').textContent = `Deleted messages with > ${cnt} words in ${room}`;
-  };
-
-  $id('delRoomBtn').onclick = async ()=>{
-    const room = $id('delRoomAll').value;
-    if(!confirm('Are you sure? This deletes entire room chat history.')) return;
-    await db.ref('chats/' + room).remove();
-    $id('adminResult').textContent = `Deleted all messages in ${room}`;
-  };
-}
-
-// ============================
-// LOGIN / SIGNUP UI
-// ============================
-async function renderUserBox(){
-  const box = $id('userBox');
-  const saved = loadLocalUser();
-  box.innerHTML = '';
-
-  if(saved && saved.displayName){
-    box.innerHTML = `
-      <div style="flex:1">
-        <div class="chat-user-name">${escapeHtml(saved.displayName)}</div>
-        <div class="chat-small">Logged in on this device</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <button id="logoutBtn" style="background:#ff4d4d;padding:6px 8px;border-radius:6px;border:none;color:#fff;cursor:pointer">Logout</button>
-      </div>
-    `;
-    $id('logoutBtn').addEventListener('click', ()=>{
-      if(presenceRef) presenceRef.remove();
-      clearLocalUser();
-      renderUserBox();
-      renderLoggedInSmall();
-      $id('chatArea').innerHTML = '<div class="chat-small">Pick a room, group, or DM on the left to start chatting.</div>';
-      $id('inputRow').style.display = 'none';
-    });
-    renderLoggedInSmall();
-    setPresenceIfLoggedIn();
-    checkAndRenderAdminUI();
-    watchDmList();
-    return;
-  }
-
-  box.innerHTML = `
-    <div style="width:100%">
-      <div class="chat-login-panel">
-        <input id="regName" placeholder="Display name (like: Chris)" />
-        <input id="regPass" type="password" placeholder="Password" />
-        <div style="display:flex;gap:8px">
-          <button id="registerBtn">Create Account</button>
-          <button id="loginBtn" style="background:#2e8b57">Login</button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  $id('registerBtn').onclick = async ()=>{
-    const name = ($id('regName').value||'').trim();
-    const pass = ($id('regPass').value||'').trim();
-    if(!name || !pass) return alert('Please set a name and a password.');
-    if(containsProfanity(name)) return alert('That username contains banned words — choose a different name.');
-    if(name.length < 2) return alert('Choose a longer name.');
-    const uid = normalizeUid(name);
-    const pwHash = await sha256Hex(pass);
-    const ref = db.ref('users/' + uid);
-    const snap = await ref.get();
-    if(snap.exists()) return alert('That name is already taken. Choose another.');
-    await ref.set({ displayName:name, passwordHash:pwHash, createdAt:Date.now() });
-    saveLocalUser({ uid, displayName:name });
-    renderUserBox();
-    alert('Account created and logged in on this device.');
-  };
-
-  $id('loginBtn').onclick = async ()=>{
-    const name = ($id('regName').value||'').trim();
-    const pass = ($id('regPass').value||'').trim();
-    if(!name || !pass) return alert('Enter name and password.');
-    const uid = normalizeUid(name);
-    const pwHash = await sha256Hex(pass);
-    const ref = db.ref('users/' + uid);
-    const snap = await ref.get();
-    if(!snap.exists()) return alert('User not found. Create an account first.');
-    const data = snap.val();
-    if(data.passwordHash !== pwHash) return alert('Incorrect password.');
-    saveLocalUser({ uid, displayName:data.displayName });
-    renderUserBox();
-    alert('Logged in on this device.');
-  };
-}
-
-function renderLoggedInSmall(){
-  const small = $id('loggedInAs');
-  const saved = loadLocalUser();
-  small.textContent = saved ? `Signed in as ${saved.displayName}` : '';
-}
-
-// ============================
-// INIT
-// ============================
-(function init(){
-  buildSubjectRooms();
-  watchSubjectLastMessages();
-  watchGroupList();
-  renderUserBox();
-  watchPresence();
-  watchVerified();
-})();
+// sending + typing
+sendBtnEl.addEventListener('click', sendMessage);
+msgInputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMessage();
+  else handleTyping();
+});
+msgInputEl.addEventListener('input', handleTyping);
