@@ -183,6 +183,20 @@
   </div>
 </div>
 
+<!-- USER PROFILE POPUP -->
+<div id="userPopup" class="modal">
+  <div class="modal-content" style="width:300px;text-align:center;">
+    <img id="popupPfp" class="pfp" style="width:70px;height:70px;margin:auto;">
+    <h2 id="popupDisplayName"></h2>
+    <p id="popupRealName" style="color:#9ca3af;"></p>
+
+    <button id="popupDmBtn" class="small-btn">Message</button>
+    <button id="popupInviteBtn" class="small-btn">Invite to Group</button>
+    <button onclick="hideModal(userPopup)" class="small-btn" style="margin-top:8px;">Close</button>
+  </div>
+</div>
+
+
 <script src="chat.js"></script>
 </body>
 </html>
