@@ -495,21 +495,33 @@ function handleTyping() {
    Render Messages (text + images + videos)
 ----------------------------------------- */
 function addMessage(key, msg) {
-  const div = document.createElement("div");
-  const me = msg.uid === currentUser.uid;
-  div.className = "msg " + (me ? "me" : "them");
+  const isMe = msg.uid === currentUser.uid;
+
+  const row = document.createElement("div");
+  row.className = "msg-row " + (isMe ? "me" : "them");
+
+  const pfp = document.createElement("img");
+  pfp.className = "msg-pfp";
+  pfp.src = msg.pfpUrl || 
+    "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
+    encodeURIComponent(msg.displayName || msg.username);
+
+  pfp.onclick = () => openUserPopup(msg.uid);
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "msg " + (isMe ? "me" : "them");
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
 
-  // Attachments first
+  // Image or video attachments
   if (msg.fileUrl) {
     if (msg.fileType === "image") {
       const img = document.createElement("img");
       img.src = msg.fileUrl;
-      img.alt = msg.originalName || "image";
       bubble.appendChild(img);
-    } else if (msg.fileType === "video") {
+    }
+    if (msg.fileType === "video") {
       const vid = document.createElement("video");
       vid.src = msg.fileUrl;
       vid.controls = true;
@@ -517,28 +529,27 @@ function addMessage(key, msg) {
     }
   }
 
-  // Text
-  if (msg.text && msg.text.trim() !== "") {
-    const textNode = document.createElement("div");
-    textNode.textContent = msg.deleted ? "Message removed" : msg.text;
-    if (msg.deleted) {
-      textNode.style.opacity = "0.6";
-      textNode.style.fontStyle = "italic";
-    }
-    bubble.appendChild(textNode);
-  } else if (msg.deleted) {
-    bubble.textContent = "Message removed";
+  // Text message
+  if (msg.text) {
+    const t = document.createElement("div");
+    t.textContent = msg.deleted ? "Message removed" : msg.text;
+    bubble.appendChild(t);
   }
 
   const meta = document.createElement("div");
   meta.className = "meta";
   meta.textContent = new Date(msg.createdAt).toLocaleTimeString();
 
-  div.appendChild(bubble);
-  div.appendChild(meta);
-  chatAreaEl.appendChild(div);
+  wrapper.appendChild(bubble);
+  wrapper.appendChild(meta);
+
+  row.appendChild(pfp);
+  row.appendChild(wrapper);
+
+  chatAreaEl.appendChild(row);
   scrollBottom();
 }
+
 
 /* -----------------------------------------
    Sending: text & uploading files
@@ -862,3 +873,32 @@ window.addEventListener("click", e => {
    Start
 ----------------------------------------- */
 document.addEventListener("DOMContentLoaded", ensureAccount);
+
+function openUserPopup(uid) {
+  db.ref("users/" + uid).once("value").then(snap => {
+    const u = snap.val();
+    if (!u) return;
+
+    $("#popupDisplayName").textContent = u.displayName || u.username;
+    $("#popupRealName").textContent = "@" + u.username;
+
+    $("#popupPfp").src = u.pfpUrl ||
+      "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
+      encodeURIComponent(u.displayName || u.username);
+
+    $("#popupDmBtn").onclick = () => {
+      sendDMRequest(uid);
+      hideModal(userPopup);
+    };
+
+    $("#popupInviteBtn").onclick = () => {
+      const group = prompt("Group ID to invite?");
+      if (!group) return;
+      sendGroupInvite(uid, group, "Group");
+      hideModal(userPopup);
+    };
+
+    showModal(userPopup);
+  });
+}
+
