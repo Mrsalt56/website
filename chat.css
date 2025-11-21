@@ -434,3 +434,22 @@ body {
     flex: 1;
   }
 }
+
+.msg-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.msg-row.me {
+  flex-direction: row-reverse;
+}
+
+.msg-pfp {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 2px solid rgba(96,165,250,0.7);
+  object-fit: cover;
+}
