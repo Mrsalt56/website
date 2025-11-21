@@ -4,27 +4,31 @@
   <meta charset="UTF-8">
   <title>Salty Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <link rel="stylesheet" href="chat.css">
   <script src="https://kit.fontawesome.com/a2b1aa3c5b.js" crossorigin="anonymous"></script>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-storage-compat.js"></script>
 </head>
 
 <body>
-
 <div class="chat-app">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <div id="displayName">NAME</div>
+      <div class="user-info">
+        <img id="pfpPreview" class="pfp" src="" alt="PFP">
+        <div id="displayName">NAME</div>
+      </div>
 
       <div class="header-icons">
         <button id="openSettings"><i class="fa-solid fa-gear"></i></button>
 
-        <button id="openNotifications" style="position:relative;">
+        <button id="openNotifications" class="notif-btn">
           <i class="fa-solid fa-bell"></i>
           <span id="notifDot"></span>
         </button>
@@ -68,8 +72,14 @@
     <section id="chatArea" class="chat-area"></section>
 
     <footer class="input-bar">
-      <input id="messageInput" type="text" placeholder="Type..." autocomplete="off">
-      <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      <button id="uploadBtn" class="icon-btn" title="Upload image/video">
+        <i class="fa-solid fa-paperclip"></i>
+      </button>
+      <input id="fileInput" type="file" accept="image/*,video/*" style="display:none;">
+      <input id="messageInput" type="text" placeholder="Type a message..." autocomplete="off">
+      <button id="sendBtn" class="send-btn">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
     </footer>
   </main>
 
@@ -94,21 +104,44 @@
   </div>
 </div>
 
-<!-- NOTIFICATIONS -->
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="modal">
+  <div class="modal-content settings">
+    <h2>Settings</h2>
+
+    <label for="settingsDisplayName">Display Name</label>
+    <input id="settingsDisplayName" type="text" placeholder="How you appear in chat">
+
+    <label for="settingsPfpFile">Profile Picture</label>
+    <input id="settingsPfpFile" type="file" accept="image/*">
+
+    <button id="settingsSaveBtn">Save Settings</button>
+
+    <hr>
+
+    <h3>Admin Access</h3>
+    <p class="hint">Enter admin key to unlock the admin panel.</p>
+    <input id="settingsAdminKey" type="password" placeholder="Admin key">
+    <button id="settingsAdminBtn">Unlock Admin Panel</button>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS MODAL -->
 <div id="notificationsModal" class="modal">
   <div class="modal-content">
     <h2>Notifications</h2>
     <ul id="notificationsList" class="list"></ul>
-    <button onclick="hideModal(notificationsModal)">Close</button>
+    <button id="closeNotificationsBtn">Close</button>
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
+<!-- ADMIN PANEL MODAL -->
 <div id="adminModal" class="modal">
   <div class="modal-content admin">
     <h2>Admin Panel</h2>
 
     <div id="adminLoginView">
+      <!-- We still keep this but usually unlocked via Settings -->
       <input id="adminKeyInput" type="password" placeholder="Admin Key">
       <button id="adminLoginBtn">Login</button>
     </div>
@@ -119,29 +152,34 @@
       <div class="admin-section">
         <h3>User Moderation</h3>
         <input id="targetUsername" placeholder="Username">
-        <button data-action="ban-5" class="admin-btn">Ban 5m</button>
-        <button data-action="ban-60" class="admin-btn">Ban 1h</button>
-        <button data-action="unban" class="admin-btn">Unban</button>
-        <button data-action="timeout-5" class="admin-btn">Timeout 5m</button>
-        <button data-action="timeout-60" class="admin-btn">Timeout 1h</button>
-        <button data-action="verify" class="admin-btn">Verify</button>
+        <div class="admin-row">
+          <button data-action="ban-5" class="admin-btn">Ban 5m</button>
+          <button data-action="ban-60" class="admin-btn">Ban 1h</button>
+          <button data-action="unban" class="admin-btn">Unban</button>
+        </div>
+        <div class="admin-row">
+          <button data-action="timeout-5" class="admin-btn">Timeout 5m</button>
+          <button data-action="timeout-60" class="admin-btn">Timeout 1h</button>
+          <button data-action="verify" class="admin-btn">Verify</button>
+        </div>
       </div>
 
       <div class="admin-section">
         <h3>Messages</h3>
-        <input id="deleteCount" type="number" placeholder="Delete last N">
+        <input id="deleteCount" type="number" placeholder="Delete last N messages">
         <button id="deleteLastBtn" class="admin-btn">Delete</button>
 
-        <input id="deleteOverWords" type="number" placeholder="Delete > X words">
+        <input id="deleteOverWords" type="number" placeholder="Delete messages over X words">
         <button id="deleteLongBtn" class="admin-btn">Clean</button>
 
         <button id="deleteRoomBtn" class="admin-btn danger">Delete Entire Room</button>
       </div>
 
-      <h3>Online Users</h3>
-      <ul id="adminOnlineList" class="list small"></ul>
+      <div class="admin-section">
+        <h3>Online Users</h3>
+        <ul id="adminOnlineList" class="list small"></ul>
+      </div>
     </div>
-
   </div>
 </div>
 
