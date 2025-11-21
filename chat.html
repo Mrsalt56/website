@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Salty Chat</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="chat.css" />
-  <link rel="icon" type="image/png" href="images/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="chat.css">
   <script src="https://kit.fontawesome.com/a2b1aa3c5b.js" crossorigin="anonymous"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
 </head>
+
 <body>
 
 <div class="chat-app">
 
-  <!-- LEFT SIDEBAR -->
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <div id="displayName">NAME</div>
+
       <div class="header-icons">
-        <button id="openAccount"><i class="fa-solid fa-user"></i></button>
-        <button id="openAdmin"><i class="fa-solid fa-shield"></i></button>
+        <button id="openSettings"><i class="fa-solid fa-gear"></i></button>
+
+        <button id="openNotifications" style="position:relative;">
+          <i class="fa-solid fa-bell"></i>
+          <span id="notifDot"></span>
+        </button>
       </div>
     </div>
 
@@ -48,7 +57,6 @@
 
   <!-- MAIN CHAT AREA -->
   <main class="main">
-
     <header class="room-header">
       <div>
         <div id="roomName">Select a room</div>
@@ -60,17 +68,18 @@
     <section id="chatArea" class="chat-area"></section>
 
     <footer class="input-bar">
-      <input id="messageInput" type="text" placeholder="Type..." autocomplete="off" />
+      <input id="messageInput" type="text" placeholder="Type..." autocomplete="off">
       <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
     </footer>
-
   </main>
+
 </div>
 
 <!-- ACCOUNT MODAL -->
 <div id="accountModal" class="modal">
   <div class="modal-content">
     <h2>Account</h2>
+
     <div id="accountView">
       <p><strong>Username:</strong> <span id="accUsername"></span></p>
       <p><strong>UID:</strong> <span id="accUid"></span></p>
@@ -78,22 +87,29 @@
     </div>
 
     <div id="signupView">
-      <p>Create your chat account (saved on this device only).</p>
-      <input id="signupUsername" placeholder="Username" />
-      <input id="signupPassword" type="password" placeholder="Password" />
-      <button id="signupBtn">Create account</button>
+      <input id="signupUsername" placeholder="Username">
+      <input id="signupPassword" placeholder="Password" type="password">
+      <button id="signupBtn">Create Account</button>
     </div>
   </div>
 </div>
 
-<!-- ADMIN PANEL MODAL -->
+<!-- NOTIFICATIONS -->
+<div id="notificationsModal" class="modal">
+  <div class="modal-content">
+    <h2>Notifications</h2>
+    <ul id="notificationsList" class="list"></ul>
+    <button onclick="hideModal(notificationsModal)">Close</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
 <div id="adminModal" class="modal">
   <div class="modal-content admin">
     <h2>Admin Panel</h2>
 
     <div id="adminLoginView">
-      <p>Enter admin key:</p>
-      <input id="adminKeyInput" type="password" />
+      <input id="adminKeyInput" type="password" placeholder="Admin Key">
       <button id="adminLoginBtn">Login</button>
     </div>
 
@@ -101,8 +117,8 @@
       <p>You are logged in as admin.</p>
 
       <div class="admin-section">
-        <h3>Ban / Timeout / Verify</h3>
-        <input id="targetUsername" placeholder="Target username" />
+        <h3>User Moderation</h3>
+        <input id="targetUsername" placeholder="Username">
         <button data-action="ban-5" class="admin-btn">Ban 5m</button>
         <button data-action="ban-60" class="admin-btn">Ban 1h</button>
         <button data-action="unban" class="admin-btn">Unban</button>
@@ -112,27 +128,22 @@
       </div>
 
       <div class="admin-section">
-        <h3>Messages in current room</h3>
-        <input id="deleteCount" type="number" placeholder="Delete last N" />
-        <button id="deleteLastBtn" class="admin-btn">Delete last</button>
+        <h3>Messages</h3>
+        <input id="deleteCount" type="number" placeholder="Delete last N">
+        <button id="deleteLastBtn" class="admin-btn">Delete</button>
 
-        <input id="deleteOverWords" type="number" placeholder="Delete > X words" />
-        <button id="deleteLongBtn" class="admin-btn">Delete long</button>
+        <input id="deleteOverWords" type="number" placeholder="Delete > X words">
+        <button id="deleteLongBtn" class="admin-btn">Clean</button>
 
-        <button id="deleteRoomBtn" class="admin-btn danger">Delete **entire room**</button>
+        <button id="deleteRoomBtn" class="admin-btn danger">Delete Entire Room</button>
       </div>
 
-      <div class="admin-section">
-        <h3>Online users</h3>
-        <ul id="adminOnlineList" class="list small"></ul>
-      </div>
+      <h3>Online Users</h3>
+      <ul id="adminOnlineList" class="list small"></ul>
     </div>
+
   </div>
 </div>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
 
 <script src="chat.js"></script>
 </body>
