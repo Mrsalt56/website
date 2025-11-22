@@ -377,13 +377,15 @@ function loadDMs() {
     dmListEl.innerHTML = "";
     snap.forEach(child => {
       const otherUid = child.key;
-      db.ref("users/" + otherUid + "/displayName").once("value").then(ns => {
+
       db.ref("users/" + otherUid).once("value").then(uSnap => {
         const u = uSnap.val() || {};
         let name = u.displayName || u.username || otherUid;
         if (u.verified) name += " ✔";
+
         const li = document.createElement("li");
         li.textContent = name;
+
         li.addEventListener("click", () => {
           openRoom({
             type: "dm",
@@ -392,10 +394,12 @@ function loadDMs() {
             label: "DM: " + name
           });
         });
+
         dmListEl.appendChild(li);
       });
     });
   });
+}
 /* Groups */
 function loadGroups() {
   db.ref("groups").on("value", snap => {
