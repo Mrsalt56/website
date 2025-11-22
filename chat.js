@@ -588,88 +588,77 @@ function handleTyping() {
 function addMessage(key, msg) {
   const isMe = msg.uid === myUid();
 
-  // Outer row
+  // ROW
   const row = document.createElement("div");
   row.className = "msg-row";
   row.style.display = "flex";
-  row.style.marginBottom = "10px";    
-  row.style.position = "relative";
+  row.style.marginBottom = "14px";
+  row.style.position = "relative";  // required for pfp overlap
 
-
-// Position PFP behind bubble
-if (isMe) {
-    pfp.style.right = "-18px";    
-    bubble.style.marginRight = "20px";
-} else {
-    pfp.style.left = "-18px"; 
-    bubble.style.marginLeft = "20px";
-}
-wrapper.appendChild(name);
-wrapper.appendChild(bubble);
-wrapper.appendChild(meta);
-
-row.appendChild(wrapper);
-row.appendChild(pfp);
-
-  // PFP
+  // --- CREATE PFP FIRST (important) ---
   const pfp = document.createElement("img");
-   pfp.style.width = "34px";
-   pfp.style.height = "34px";
-   pfp.style.borderRadius = "50%";
-   pfp.style.position = "absolute";
-   pfp.style.bottom = "0";
-   pfp.style.zIndex = "1";
   pfp.src =
     msg.pfpUrl ||
     "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-    encodeURIComponent(msg.displayName || msg.username || "User");
+      encodeURIComponent(msg.displayName || msg.username);
 
+  pfp.style.width = "34px";
+  pfp.style.height = "34px";
+  pfp.style.borderRadius = "50%";
+  pfp.style.position = "absolute";
+  pfp.style.bottom = "0";
+  pfp.style.zIndex = "1";
   pfp.onclick = () => openUserPopup(msg.uid);
 
-  // Message container
+  // --- MESSAGE WRAPPER ---
   const wrapper = document.createElement("div");
   wrapper.style.display = "flex";
   wrapper.style.flexDirection = "column";
-  wrapper.style.maxWidth = "75%";
+  wrapper.style.maxWidth = "70%";
 
-  // USERNAME ABOVE TEXT
+  if (isMe) wrapper.style.marginLeft = "auto";
+
+  // --- USERNAME ---
   const name = document.createElement("div");
-  let display = msg.displayName || msg.username;
-  if (msg.verified) display += " ✔";
+  let dn = msg.displayName || msg.username;
+  if (msg.verified) dn += " ✔";
 
-  name.textContent = display;
-  name.style.fontSize = "0.80rem";
-  name.style.marginBottom = "3px";
+  name.textContent = dn;
+  name.style.fontSize = "0.78rem";
   name.style.fontWeight = "600";
+  name.style.marginBottom = "4px";
   name.style.opacity = "0.85";
   name.style.textAlign = isMe ? "right" : "left";
 
-  // TEXT BUBBLE
+  // --- BUBBLE ---
   const bubble = document.createElement("div");
   bubble.className = "bubble";
 
   if (isMe) {
     bubble.style.background = "linear-gradient(135deg, #2563eb, #4f46e5)";
-    bubble.style.borderColor = "rgba(129, 140, 248, 0.9)";
+    bubble.style.borderColor = "rgba(129,140,248,0.8)";
     bubble.style.alignSelf = "flex-end";
   }
 
+  // IMAGE / VIDEO
   if (msg.fileUrl) {
     if (msg.fileType === "image") {
       const img = document.createElement("img");
       img.src = msg.fileUrl;
       img.style.maxWidth = "250px";
+      img.style.borderRadius = "8px";
       bubble.appendChild(img);
     } else if (msg.fileType === "video") {
       const vid = document.createElement("video");
       vid.src = msg.fileUrl;
       vid.controls = true;
       vid.style.maxWidth = "250px";
+      vid.style.borderRadius = "8px";
       bubble.appendChild(vid);
     }
   }
 
-  // TEXT or DELETED
+  // TEXT
   const text = document.createElement("div");
   if (msg.deleted) {
     text.textContent = "Message removed";
@@ -678,43 +667,31 @@ row.appendChild(pfp);
   } else {
     text.textContent = msg.text || "";
   }
-
   bubble.appendChild(text);
 
   // TIME
   const meta = document.createElement("div");
-  meta.className = "meta";
+  meta.textContent = new Date(msg.createdAt).toLocaleTimeString();
   meta.style.fontSize = "0.70rem";
   meta.style.marginTop = "3px";
   meta.style.opacity = "0.6";
-  meta.textContent = new Date(msg.createdAt).toLocaleTimeString();
   meta.style.textAlign = isMe ? "right" : "left";
 
-  // Assemble
+  // --- ASSEMBLE ---
   wrapper.appendChild(name);
   wrapper.appendChild(bubble);
   wrapper.appendChild(meta);
-
-if (isMe) {
-  pfp.style.order = "2";
-  wrapper.style.order = "1";
-
-  pfp.style.marginLeft = "-22px";
-  pfp.style.zIndex = "2";
-
   row.appendChild(wrapper);
   row.appendChild(pfp);
 
-} else {
-  pfp.style.order = "1";
-  wrapper.style.order = "2";
-
-  pfp.style.marginRight = "-22px";
-  pfp.style.zIndex = "2";
-
-  row.appendChild(pfp);
-  row.appendChild(wrapper);
-}
+  // --- PFP BEHIND BUBBLE ---
+  if (isMe) {
+    pfp.style.right = "-18px";  // overlap amount
+    bubble.style.marginRight = "24px";
+  } else {
+    pfp.style.left = "-18px";
+    bubble.style.marginLeft = "24px";
+  }
 
   chatAreaEl.appendChild(row);
   scrollBottom();
