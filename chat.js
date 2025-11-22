@@ -111,8 +111,7 @@ let typingTimeout = null;
 const ADMIN_KEY = "616756";
 
 /* Profanity list */
-const PROFANITY = 
-   [
+const PROFANITY = [
 "fuck","fuk","f*ck","f**k","fuxk","fusk","fock","phuck","phuk",
 "f#ck","f@ck","f£ck","fück","fucc","fukk","fukc","f u c k",
 "f-u-c-k","f.u.c.k","f—ck","f🖕ck","fʊck","fck","fk","fquk",
