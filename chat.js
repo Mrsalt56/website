@@ -4,15 +4,15 @@
 =                (chat.js)                 =
 ============================================
 Dark UI +:
-✔ Accounts
+✔ Accounts (localStorage)
 ✔ Display name + PFP in settings
-✔ Admin key in settings (KEY = 616756)
-✔ Notifications
-✔ Group invites + DM requests
+✔ Admin key (KEY = 616756)
+✔ Notifications (DM requests + group invites)
 ✔ Image & video uploads (Firebase Storage)
 ✔ Rooms, Groups, DMs
 ✔ Presence & typing
 ✔ Moderation tools
+✔ User popup (PFP click → profile)
 ============================================
 */
 
@@ -38,14 +38,14 @@ const storage = firebase.storage();
 ----------------------------------------- */
 const $ = (sel) => document.querySelector(sel);
 
-/* Sidebar elements */
+/* Sidebar / lists */
 const roomListEl = $("#roomList");
 const dmListEl = $("#dmList");
 const groupListEl = $("#groupList");
 const onlineListEl = $("#onlineList");
 const adminOnlineListEl = $("#adminOnlineList");
 
-/* UI refs */
+/* Main UI */
 const displayNameEl = $("#displayName");
 const pfpPreviewEl = $("#pfpPreview");
 const chatAreaEl = $("#chatArea");
@@ -70,7 +70,7 @@ const userPopup = $("#userPopup");
 const signupView = $("#signupView");
 const accountView = $("#accountView");
 
-/* Account UI */
+/* Account info */
 const accUsernameEl = $("#accUsername");
 const accUidEl = $("#accUid");
 const accStatusEl = $("#accStatus");
@@ -90,16 +90,16 @@ const popupDmBtn = $("#popupDmBtn");
 const popupInviteBtn = $("#popupInviteBtn");
 const popupCloseBtn = $("#popupCloseBtn");
 
-/* Admin panel */
+/* Admin views */
 const adminLoginView = $("#adminLoginView");
 const adminPanelView = $("#adminPanelView");
 
 /* -----------------------------------------
    STATE
 ----------------------------------------- */
-let currentUser = null;       // { uid, username, password, displayName, pfpUrl, createdAt }
+let currentUser = null;   // { uid, username, password, displayName, pfpUrl, createdAt }
 let isAdmin = false;
-let currentRoom = null;       // { type: 'room'|'group'|'dm', id, label, otherUid? }
+let currentRoom = null;   // { type: 'room'|'group'|'dm', id, label, otherUid? }
 let currentMessagesRef = null;
 let currentTypingRef = null;
 
@@ -110,60 +110,22 @@ let typingTimeout = null;
 /* Admin key */
 const ADMIN_KEY = "616756";
 
-/* Profanity list */
+/* Profanity list (you can add more) */
 const PROFANITY = [
-"fuck","fuk","fck","fk","fuxk","fusk","fock","phuck","phuk",
-"f#ck","f@ck","f£ck","fück","fucc","fukk","fukc","f u c k",
-"f-u-c-k","f.u.c.k","f—ck","f🖕ck","fʊck","fck","fk","fquk",
-
-"shit","sh1t","sh!t","sh¡t","shiit","shyt","shyte","s#it","s@it",
-"shlt","sh.it","s h i t","sнit","§hit",
-"sh1†","sh!+","shït","shlt","sh!t.","s#1t",
-
-"bitch","b1tch","b!tch","b*tch","b!+ch","btch","bich",
-"b!ch","b¡tch","b*t¢h","b1+ch","b1t¢h","b i t c h",
-"bïtch","b1tc#","bxtch","b17ch","b!7ch","b|tch",
-
-"hoe","h0e","h03","h0ee","h0r","h0re","ho3",
-"whore","wh0re","wh0r3","w h o r e","whørë",
-"whor3","w#ore","w@ore","whoar","wh0ar","wh0rr","h0ar","h/oe","høe",
-
-"slut","slutt","sluut","slvt","sl@t","slvtt","s/ut",
-"5lut","§lut","slüt","slut.","s l u t","sl+","s!ut",
-"slvt","slvt.","slv+","sl℮t","sIut",
-
-"cunt","c@nt","kunt","k@nt","cu nt","cuntt",
-"cün†","c#nt","c/nt","c u n t","¢unt","cun+",
-"kun7","kʊnt","cunt.","c*nt.","c nt","c🅤nt",
-
-"ass","a$$","@ss","azz","4ss","a55","a.ss","a s s",
-"assh0le","asshole","a$$hole","@sshole","azzhole",
-"ashole","assh0l3","4sshole","a$s","ass·","a55hole",
-
-"dick","dik","d1ck","d!ck","d!k","d1k","d¡ck","dïck",
-"d¡k","dix","dxck","d!ck.","d|ck","d1¢k","d1©k",
-"d!©k","d1ck.","d1ckk","d1c|<",
-
-"pussy","pussi","pusy","p@ssy","p0ssy","pussy.",
-"pus5y","pu55y","p u s s y","püssy","pússy","p$ssy",
-"pssy","p_ssy","puśsy","puss¥","pʊssy","púss¥","pøssy",
-
-"fag","f@g","f4g","fa6","f4gg","fag.","f@g.","fa9",
-"f@ggot","faggot","f*ggot","fa99ot","f4gg0t","fΛggot",
-"fΔggot","f4g9t","fag9t","f a g","f—g","f\\ag",
-
-"nigger","n1gger","n¡gger","n!gger","nigg3r","ni99er",
-"nlgg3r","n¡gg3r","n¡gger","n!gg3r","nlgger","nigga",
-"n1gga","ni99a","n¡gga","n¡9ga","n1gg4","nlgg4",
-"n1g9a","nigg@",
-
-"retard","r3tard","ret@rd","reetard","retarded",
-"r3tarded","r3t@rd","r3t@rd3d","retard.","r€tard",
-"retardd","retard3d","r e t a r d","ret@rded",
-"ret@rddd","re+tard","re-tard","r-tard","rtard"
+  "fuck",
+  "f*ck",
+  "shit",
+  "sh*t",
+  "bitch",
+  "b!tch",
+  "whore",
+  "cunt",
+  "slut",
+  "nigger",
+  "fag"
 ];
 
-/* Subject Rooms (fixed IDs) */
+/* Subject rooms */
 const SUBJECT_ROOMS = [
   {name:"Math 7", id:"math_7"},
   {name:"Math 8", id:"math_8"},
@@ -183,6 +145,11 @@ const SUBJECT_ROOMS = [
 /* -----------------------------------------
    Utility
 ----------------------------------------- */
+const now = () => Date.now();
+const myUid = () => currentUser?.uid || "";
+const uuid = () => "u_" + Math.random().toString(36).slice(2) + Date.now();
+
+/* Safe profanity filter – escapes regex chars so no crashes */
 function sanitize(text) {
   let clean = text;
 
@@ -195,21 +162,12 @@ function sanitize(text) {
   return clean;
 }
 
-const now = () => Date.now();
-const myUid = () => currentUser?.uid || "";
-const uuid = () => "m_" + Math.random().toString(36).slice(2) + Date.now();
-
-function sanitize(text) {
-  let t = text;
-  PROFANITY.forEach(p => {
-    const r = new RegExp(p, "ig");
-    t = t.replace(r, "***");
-  });
-  return t;
+function showModal(modal) {
+  if (modal) modal.style.display = "flex";
 }
-
-function showModal(modal) { modal.style.display = "flex"; }
-function hideModal(modal) { modal.style.display = "none"; }
+function hideModal(modal) {
+  if (modal) modal.style.display = "none";
+}
 
 function scrollBottom() {
   chatAreaEl.scrollTop = chatAreaEl.scrollHeight;
@@ -247,15 +205,15 @@ function ensureAccount() {
   afterLogin();
 }
 
-/* Sign up */
+/* Signup */
 $("#signupBtn").addEventListener("click", () => {
   const username = $("#signupUsername").value.trim();
   const password = $("#signupPassword").value.trim();
 
   if (!username || !password) return alert("Enter username and password.");
 
-  if (PROFANITY.some(p => username.toLowerCase().includes(p))) {
-    return alert("No profanity in usernames.");
+  if (PROFANITY.some(p => username.toLowerCase().includes(p.replace(/\*/g, "")))) {
+    return alert("Username has profanity.");
   }
 
   const uid = uuid();
@@ -286,9 +244,9 @@ $("#signupBtn").addEventListener("click", () => {
   afterLogin();
 });
 
-/* After login: sync with DB and start everything */
+/* After login: sync + init systems */
 function afterLogin() {
-  const uid = currentUser.uid;
+  const uid = myUid();
   db.ref("users/" + uid).once("value").then(snap => {
     const data = snap.val() || {};
     currentUser.displayName = data.displayName || currentUser.username;
@@ -319,7 +277,7 @@ function afterLogin() {
    Presence
 ----------------------------------------- */
 function setupPresence() {
-  const uid = currentUser.uid;
+  const uid = myUid();
   const presRef = db.ref("presence/" + uid);
 
   presRef.set({
@@ -336,7 +294,7 @@ function setupPresence() {
 
   db.ref("presence").on("value", snap => {
     onlineListEl.innerHTML = "";
-    adminOnlineListEl && (adminOnlineListEl.innerHTML = "");
+    if (adminOnlineListEl) adminOnlineListEl.innerHTML = "";
 
     snap.forEach(child => {
       const val = child.val();
@@ -371,9 +329,9 @@ function loadRooms() {
   loadGroups();
 }
 
+/* DMs */
 function loadDMs() {
-  const ref = db.ref("dms/" + myUid());
-  ref.on("value", snap => {
+  db.ref("dms/" + myUid()).on("value", snap => {
     dmListEl.innerHTML = "";
     snap.forEach(child => {
       const otherUid = child.key;
@@ -395,6 +353,7 @@ function loadDMs() {
   });
 }
 
+/* Groups */
 function loadGroups() {
   db.ref("groups").on("value", snap => {
     groupListEl.innerHTML = "";
@@ -402,12 +361,12 @@ function loadGroups() {
       const group = child.val();
       if (!group.members || !group.members[myUid()]) return;
       const li = document.createElement("li");
-      li.textContent = group.meta.name || "Group";
+      li.textContent = group.meta?.name || "Group";
       li.addEventListener("click", () => {
         openRoom({
           type: "group",
           id: child.key,
-          label: group.meta.name || "Group"
+          label: group.meta?.name || "Group"
         });
       });
       groupListEl.appendChild(li);
@@ -418,7 +377,6 @@ function loadGroups() {
 $("#createGroupBtn").addEventListener("click", () => {
   const name = prompt("Group name?");
   if (!name) return;
-
   const ref = db.ref("groups").push();
   ref.set({
     meta: {
@@ -493,7 +451,7 @@ function acceptNotification(id, type) {
   });
 }
 
-/* Helpers to send invites/requests (used by popup) */
+/* Helpers for popup */
 function sendGroupInvite(targetUid, groupId, groupName) {
   db.ref("notifications/" + targetUid).push({
     type: "group_invite",
@@ -514,9 +472,10 @@ function sendDMRequest(targetUid) {
 }
 
 /* -----------------------------------------
-   Open Room + Typing
+   Room / Typing
 ----------------------------------------- */
 function roomKey(room) {
+  if (!room) return "";
   if (room.type === "room") return "room_" + room.id;
   if (room.type === "group") return "group_" + room.id;
   if (room.type === "dm") {
@@ -558,7 +517,6 @@ function openRoom(room) {
     snap.forEach(c => {
       if (c.key !== myUid() && c.val()) typers.push(c.key);
     });
-
     if (typers.length === 0) typingIndicatorEl.textContent = "";
     else if (typers.length === 1) typingIndicatorEl.textContent = "Someone is typing...";
     else typingIndicatorEl.textContent = "Multiple people are typing...";
@@ -567,7 +525,7 @@ function openRoom(room) {
   document.querySelectorAll(".list li").forEach(li => li.classList.remove("active"));
 }
 
-/* Typing indicator */
+/* Typing */
 function handleTyping() {
   if (!currentRoom) return;
   const tKey = roomKey(currentRoom);
@@ -588,9 +546,10 @@ function addMessage(key, msg) {
 
   const pfp = document.createElement("img");
   pfp.className = "msg-pfp";
-  pfp.src = msg.pfpUrl ||
+  pfp.src =
+    msg.pfpUrl ||
     "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-    encodeURIComponent(msg.displayName || msg.username || "User");
+      encodeURIComponent(msg.displayName || msg.username || "User");
   pfp.onclick = () => openUserPopup(msg.uid);
 
   const wrapper = document.createElement("div");
@@ -646,7 +605,7 @@ function addMessage(key, msg) {
 }
 
 /* -----------------------------------------
-   Send Message (text only)
+   Send Message (text)
 ----------------------------------------- */
 sendBtn.addEventListener("click", sendMessage);
 msgInput.addEventListener("keydown", e => {
@@ -707,7 +666,7 @@ function sendMessage() {
 }
 
 /* -----------------------------------------
-   File Upload (image / video)
+   File Upload (image + video)
 ----------------------------------------- */
 uploadBtn.addEventListener("click", () => {
   if (!currentRoom) return alert("Select a room first.");
@@ -734,7 +693,7 @@ function uploadFileAndSend(file) {
     const path = `uploads/${myUid()}/${Date.now()}_${file.name}`;
     const fileRef = storage.ref().child(path);
 
-    fileRef.put(file).then(snap => snap.ref.getDownloadURL()).then(url => {
+    fileRef.put(file).then(s => s.ref.getDownloadURL()).then(url => {
       const fileType = file.type.startsWith("image/")
         ? "image"
         : file.type.startsWith("video/")
@@ -771,7 +730,7 @@ function uploadFileAndSend(file) {
 }
 
 /* -----------------------------------------
-   User Popup (click PFP)
+   User Popup (PFP click)
 ----------------------------------------- */
 function openUserPopup(uid) {
   if (!uid) return;
@@ -784,7 +743,7 @@ function openUserPopup(uid) {
     popupPfp.src =
       u.pfpUrl ||
       "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-      encodeURIComponent(u.displayName || u.username);
+        encodeURIComponent(u.displayName || u.username);
 
     popupDmBtn.onclick = () => {
       sendDMRequest(uid);
@@ -814,7 +773,7 @@ popupCloseBtn.addEventListener("click", () => hideModal(userPopup));
 ----------------------------------------- */
 $("#openSettings").addEventListener("click", () => {
   settingsDisplayNameInput.value =
-    currentUser.displayName || currentUser.username;
+    currentUser?.displayName || currentUser?.username || "";
   settingsPfpFileInput.value = "";
   showModal(settingsModal);
 });
@@ -850,7 +809,7 @@ settingsSaveBtn.addEventListener("click", () => {
   if (pfpFile) {
     const path = `pfp/${myUid()}/${Date.now()}_${pfpFile.name}`;
     const pfpRef = storage.ref().child(path);
-    pfpRef.put(pfpFile).then(snap => snap.ref.getDownloadURL()).then(url => {
+    pfpRef.put(pfpFile).then(s => s.ref.getDownloadURL()).then(url => {
       finishUpdate(url);
     });
   } else {
@@ -858,7 +817,7 @@ settingsSaveBtn.addEventListener("click", () => {
   }
 });
 
-/* Admin unlock from settings */
+/* Admin unlock (from settings) */
 settingsAdminBtn.addEventListener("click", () => {
   const key = settingsAdminKeyInput.value.trim();
   if (key !== ADMIN_KEY) {
@@ -883,8 +842,10 @@ function enableAdmin() {
   isAdmin = true;
   db.ref("admins/" + myUid()).set(true);
   db.ref("users/" + myUid() + "/role").set("admin");
-  adminLoginView.style.display = "none";
-  adminPanelView.style.display = "block";
+  if (adminLoginView && adminPanelView) {
+    adminLoginView.style.display = "none";
+    adminPanelView.style.display = "block";
+  }
   showModal(adminModal);
 }
 
@@ -985,7 +946,7 @@ $("#deleteRoomBtn").addEventListener("click", () => {
 });
 
 /* -----------------------------------------
-   Misc UI events
+   Misc UI
 ----------------------------------------- */
 $("#openNotifications").addEventListener("click", () => {
   notifDot.style.display = "none";
@@ -1009,4 +970,4 @@ window.addEventListener("click", e => {
 /* -----------------------------------------
    Start
 ----------------------------------------- */
-document.addEventListener("DOMContentLoaded", ensureAccount)
+document.addEventListener("DOMContentLoaded", ensureAccount);
