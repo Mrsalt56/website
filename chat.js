@@ -937,11 +937,9 @@ $("#deleteLastBtn").addEventListener("click", () => {
   if (currentRoom.type === "group") path = "groups/" + currentRoom.id + "/messages";
   if (currentRoom.type === "dm") path = "dms/" + myUid() + "/" + currentRoom.otherUid;
 
-  const ref = db.ref(path);
-  ref.orderByChild("createdAt").limitToLast(n).once("value").then(snap => {
-    snap.forEach(child => {
-      ref.child(child.key).update({ deleted: true });
-    });
+ref.orderByChild("createdAt").limitToLast(n).once("value").then(snap => {
+  snap.forEach(child => {
+    ref.child(child.key).remove();
   });
 });
 
@@ -963,7 +961,7 @@ $("#deleteLongBtn").addEventListener("click", () => {
       if (!msg.text) return;
       const count = msg.text.split(/\s+/).length;
       if (count > x) {
-        ref.child(child.key).update({ deleted: true });
+        ref.child(child.key).remove();
       }
     });
   });
