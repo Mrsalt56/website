@@ -962,7 +962,6 @@ $("#deleteLongBtn").addEventListener("click", () => {
       const count = msg.text.split(/\s+/).length;
       if (count > x) {
         ref.child(child.key).remove();
-      }
     });
   });
 });
