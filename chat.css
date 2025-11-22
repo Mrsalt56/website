@@ -100,6 +100,8 @@ body {
   box-shadow: 0 0 8px rgba(249, 115, 22, 0.8);
 }
 
+/* SIDEBAR SECTIONS */
+
 .section-title {
   margin-bottom: 4px;
   font-size: 0.9rem;
@@ -172,7 +174,7 @@ body {
   margin-top: auto;
 }
 
-/* MAIN */
+/* MAIN CHAT */
 
 .main {
   flex: 1;
@@ -217,21 +219,34 @@ body {
   gap: 10px;
 }
 
-/* MESSAGE BUBBLES */
+/* MESSAGE ROW (Option A: PFP left, bubble right) */
+
+.msg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.msg-row.me {
+  justify-content: flex-end;
+}
+
+.msg-pfp {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid rgba(96, 165, 250, 0.7);
+  cursor: pointer;
+}
+
+/* MESSAGE BUBBLE */
 
 .msg {
   max-width: 70%;
   display: flex;
   flex-direction: column;
   gap: 3px;
-}
-
-.msg.me {
-  align-self: flex-end;
-}
-
-.msg.them {
-  align-self: flex-start;
 }
 
 .bubble {
@@ -433,23 +448,4 @@ body {
   .main {
     flex: 1;
   }
-}
-
-.msg-row {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-}
-
-.msg-row.me {
-  flex-direction: row-reverse;
-}
-
-.msg-pfp {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  cursor: pointer;
-  border: 2px solid rgba(96,165,250,0.7);
-  object-fit: cover;
 }
