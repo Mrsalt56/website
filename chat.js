@@ -588,80 +588,115 @@ function handleTyping() {
 function addMessage(key, msg) {
   const isMe = msg.uid === myUid();
 
+  // Outer row
   const row = document.createElement("div");
-  row.className = "msg-row " + (isMe ? "me" : "them");
+  row.className = "msg-row";
+  row.style.display = "flex";
+  row.style.marginBottom = "10px";
 
+  if (isMe) {
+    row.style.justifyContent = "flex-end";
+  } else {
+    row.style.justifyContent = "flex-start";
+  }
+
+  // PFP
   const pfp = document.createElement("img");
   pfp.className = "msg-pfp";
+  pfp.style.width = "34px";
+  pfp.style.height = "34px";
+  pfp.style.borderRadius = "50%";
+  pfp.style.marginLeft = isMe ? "10px" : "0px";
+  pfp.style.marginRight = isMe ? "0px" : "10px";
   pfp.src =
     msg.pfpUrl ||
     "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-      encodeURIComponent(msg.displayName || msg.username || "User");
+    encodeURIComponent(msg.displayName || msg.username || "User");
+
   pfp.onclick = () => openUserPopup(msg.uid);
 
+  // Message container
   const wrapper = document.createElement("div");
-  wrapper.className = "msg " + (isMe ? "me" : "them");
+  wrapper.style.display = "flex";
+  wrapper.style.flexDirection = "column";
+  wrapper.style.maxWidth = "75%";
 
+  // USERNAME ABOVE TEXT
+  const name = document.createElement("div");
+  let display = msg.displayName || msg.username;
+  if (msg.verified) display += " ✔";
+
+  name.textContent = display;
+  name.style.fontSize = "0.80rem";
+  name.style.marginBottom = "3px";
+  name.style.fontWeight = "600";
+  name.style.opacity = "0.85";
+  name.style.textAlign = isMe ? "right" : "left";
+
+  // TEXT BUBBLE
   const bubble = document.createElement("div");
   bubble.className = "bubble";
 
-  // Attachments
+  if (isMe) {
+    bubble.style.background = "linear-gradient(135deg, #2563eb, #4f46e5)";
+    bubble.style.borderColor = "rgba(129, 140, 248, 0.9)";
+    bubble.style.alignSelf = "flex-end";
+  }
+
   if (msg.fileUrl) {
     if (msg.fileType === "image") {
       const img = document.createElement("img");
       img.src = msg.fileUrl;
-      img.alt = msg.originalName || "image";
+      img.style.maxWidth = "250px";
       bubble.appendChild(img);
     } else if (msg.fileType === "video") {
       const vid = document.createElement("video");
       vid.src = msg.fileUrl;
       vid.controls = true;
+      vid.style.maxWidth = "250px";
       bubble.appendChild(vid);
     }
   }
 
-  // Text
-if (msg.text && msg.text.trim() !== "") {
-
-  let name = msg.displayName || msg.username;
-  if (msg.verified) name += " ✔";
-
-  // Create message line
-  const line = document.createElement("div");
-
+  // TEXT or DELETED
+  const text = document.createElement("div");
   if (msg.deleted) {
-    line.textContent = "Message removed";
-    line.style.opacity = "0.6";
-    line.style.fontStyle = "italic";
+    text.textContent = "Message removed";
+    text.style.opacity = "0.6";
+    text.style.fontStyle = "italic";
   } else {
-    line.textContent = name + ": " + msg.text;
+    text.textContent = msg.text || "";
   }
 
-  bubble.appendChild(line);
+  bubble.appendChild(text);
 
-} else if (msg.deleted) {
-
-  const line = document.createElement("div");
-  line.textContent = "Message removed";
-  line.style.opacity = "0.6";
-  line.style.fontStyle = "italic";
-
-  bubble.appendChild(line);
-}
-
+  // TIME
   const meta = document.createElement("div");
   meta.className = "meta";
+  meta.style.fontSize = "0.70rem";
+  meta.style.marginTop = "3px";
+  meta.style.opacity = "0.6";
   meta.textContent = new Date(msg.createdAt).toLocaleTimeString();
+  meta.style.textAlign = isMe ? "right" : "left";
 
+  // Assemble
+  wrapper.appendChild(name);
   wrapper.appendChild(bubble);
   wrapper.appendChild(meta);
 
-  row.appendChild(pfp);
-  row.appendChild(wrapper);
+  // Add pfp on correct side
+  if (isMe) {
+    row.appendChild(wrapper);
+    row.appendChild(pfp);
+  } else {
+    row.appendChild(pfp);
+    row.appendChild(wrapper);
+  }
 
   chatAreaEl.appendChild(row);
   scrollBottom();
 }
+
 
 /* -----------------------------------------
    Send Message (text)
