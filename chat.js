@@ -617,27 +617,33 @@ function addMessage(key, msg) {
   }
 
   // Text
-  if (msg.text && msg.text.trim() !== "") {
-    const t = document.createElement("div");
-   let name = msg.displayName || msg.username;
-   if (msg.verified) name += " ✔";
+if (msg.text && msg.text.trim() !== "") {
 
-   const t = document.createElement("div");
-   t.textContent = msg.deleted ? "Message removed" : msg.text;
-   bubble.prepend(name + ": ");
+  let name = msg.displayName || msg.username;
+  if (msg.verified) name += " ✔";
 
-    if (msg.deleted) {
-      t.style.opacity = "0.6";
-      t.style.fontStyle = "italic";
-    }
-    bubble.appendChild(t);
-  } else if (msg.deleted) {
-    const t = document.createElement("div");
-    t.textContent = "Message removed";
-    t.style.opacity = "0.6";
-    t.style.fontStyle = "italic";
-    bubble.appendChild(t);
+  // Create message line
+  const line = document.createElement("div");
+
+  if (msg.deleted) {
+    line.textContent = "Message removed";
+    line.style.opacity = "0.6";
+    line.style.fontStyle = "italic";
+  } else {
+    line.textContent = name + ": " + msg.text;
   }
+
+  bubble.appendChild(line);
+
+} else if (msg.deleted) {
+
+  const line = document.createElement("div");
+  line.textContent = "Message removed";
+  line.style.opacity = "0.6";
+  line.style.fontStyle = "italic";
+
+  bubble.appendChild(line);
+}
 
   const meta = document.createElement("div");
   meta.className = "meta";
