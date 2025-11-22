@@ -937,12 +937,17 @@ $("#deleteLastBtn").addEventListener("click", () => {
   if (currentRoom.type === "group") path = "groups/" + currentRoom.id + "/messages";
   if (currentRoom.type === "dm") path = "dms/" + myUid() + "/" + currentRoom.otherUid;
 
-ref.orderByChild("createdAt").limitToLast(n).once("value").then(snap => {
-  snap.forEach(child => {
-    ref.child(child.key).remove();
-  });
-});
+  const ref = db.ref(path);
 
+  ref.orderByChild("createdAt")
+    .limitToLast(n)
+    .once("value")
+    .then(snap => {
+      snap.forEach(child => {
+        ref.child(child.key).remove();
+      });
+    });
+});
 /* Delete messages over X words */
 $("#deleteLongBtn").addEventListener("click", () => {
   if (!currentRoom) return;
