@@ -955,6 +955,7 @@ $("#deleteLongBtn").addEventListener("click", () => {
   if (currentRoom.type === "dm") path = "dms/" + myUid() + "/" + currentRoom.otherUid;
 
   const ref = db.ref(path);
+
   ref.once("value").then(snap => {
     snap.forEach(child => {
       const msg = child.val();
@@ -962,11 +963,11 @@ $("#deleteLongBtn").addEventListener("click", () => {
       const count = msg.text.split(/\s+/).length;
       if (count > x) {
         ref.child(child.key).remove();
+      }
     });
   });
 });
-
-
+   
 /* Delete entire room */
 $("#deleteRoomBtn").addEventListener("click", () => {
   if (!currentRoom) return;
