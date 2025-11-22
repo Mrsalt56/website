@@ -967,6 +967,7 @@ $("#deleteLongBtn").addEventListener("click", () => {
   });
 });
 
+
 /* Delete entire room */
 $("#deleteRoomBtn").addEventListener("click", () => {
   if (!currentRoom) return;
