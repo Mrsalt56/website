@@ -24,7 +24,7 @@ const firebaseConfig = {
   authDomain: "mrsalt56-e6066.firebaseapp.com",
   databaseURL: "https://mrsalt56-e6066-default-rtdb.firebaseio.com",
   projectId: "mrsalt56-e6066",
-  storageBucket: "mrsalt56-e6066.appspot.com",
+  storageBucket: "mrsalt56-e6066.firebasestorage.app",
   messagingSenderId: "716178119141",
   appId: "1:716178119141:web:2c39c7f79213699a38b70c"
 };
