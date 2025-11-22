@@ -684,19 +684,30 @@ function addMessage(key, msg) {
   wrapper.appendChild(bubble);
   wrapper.appendChild(meta);
 
-  // Add pfp on correct side
-  if (isMe) {
-    row.appendChild(wrapper);
-    row.appendChild(pfp);
-  } else {
-    row.appendChild(pfp);
-    row.appendChild(wrapper);
-  }
+if (isMe) {
+  pfp.style.order = "2";
+  wrapper.style.order = "1";
+
+  pfp.style.marginLeft = "-22px";
+  pfp.style.zIndex = "2";
+
+  row.appendChild(wrapper);
+  row.appendChild(pfp);
+
+} else {
+  pfp.style.order = "1";
+  wrapper.style.order = "2";
+
+  pfp.style.marginRight = "-22px";
+  pfp.style.zIndex = "2";
+
+  row.appendChild(pfp);
+  row.appendChild(wrapper);
+}
 
   chatAreaEl.appendChild(row);
   scrollBottom();
 }
-
 
 /* -----------------------------------------
    Send Message (text)
