@@ -38,12 +38,14 @@ const storage = firebase.storage();
 ----------------------------------------- */
 const $ = (sel) => document.querySelector(sel);
 
+/* Sidebar elements */
 const roomListEl = $("#roomList");
 const dmListEl = $("#dmList");
 const groupListEl = $("#groupList");
 const onlineListEl = $("#onlineList");
 const adminOnlineListEl = $("#adminOnlineList");
 
+/* UI refs */
 const displayNameEl = $("#displayName");
 const pfpPreviewEl = $("#pfpPreview");
 const chatAreaEl = $("#chatArea");
@@ -53,6 +55,7 @@ const typingIndicatorEl = $("#typingIndicator");
 const notifDot = $("#notifDot");
 const notificationsListEl = $("#notificationsList");
 
+/* Inputs */
 const msgInput = $("#messageInput");
 const sendBtn = $("#sendBtn");
 const uploadBtn = $("#uploadBtn");
@@ -63,20 +66,38 @@ const accountModal = $("#accountModal");
 const settingsModal = $("#settingsModal");
 const notificationsModal = $("#notificationsModal");
 const adminModal = $("#adminModal");
+const userPopup = $("#userPopup");
 const signupView = $("#signupView");
 const accountView = $("#accountView");
+
+/* Account UI */
+const accUsernameEl = $("#accUsername");
+const accUidEl = $("#accUid");
+const accStatusEl = $("#accStatus");
 
 /* Settings inputs */
 const settingsDisplayNameInput = $("#settingsDisplayName");
 const settingsPfpFileInput = $("#settingsPfpFile");
-const settingsSaveBtn = $("#settingsSaveBtn");
 const settingsAdminKeyInput = $("#settingsAdminKey");
 const settingsAdminBtn = $("#settingsAdminBtn");
+const settingsSaveBtn = $("#settingsSaveBtn");
+
+/* User popup */
+const popupPfp = $("#popupPfp");
+const popupDisplayName = $("#popupDisplayName");
+const popupRealName = $("#popupRealName");
+const popupDmBtn = $("#popupDmBtn");
+const popupInviteBtn = $("#popupInviteBtn");
+const popupCloseBtn = $("#popupCloseBtn");
+
+/* Admin panel */
+const adminLoginView = $("#adminLoginView");
+const adminPanelView = $("#adminPanelView");
 
 /* -----------------------------------------
    STATE
 ----------------------------------------- */
-let currentUser = null;       // { uid, username, password, createdAt, displayName?, pfpUrl? }
+let currentUser = null;       // { uid, username, password, displayName, pfpUrl, createdAt }
 let isAdmin = false;
 let currentRoom = null;       // { type: 'room'|'group'|'dm', id, label, otherUid? }
 let currentMessagesRef = null;
@@ -86,12 +107,11 @@ let lastMsgTime = 0;
 let msgCount = 0;
 let typingTimeout = null;
 
-/* New admin key */
+/* Admin key */
 const ADMIN_KEY = "616756";
 
 /* Profanity list */
 const PROFANITY = ["fuck","fuk","f*ck","f**k","fuxk","fusk","fock","phuck","phuk","f#ck","f@ck","f£ck","fück","fucc","fukk","fukc","f u c k","f-u-c-k","f.u.c.k","f—ck","f🖕ck","fʊck","fck","fk","fquk","shit","sh1t","sh!t","sh¡t","shiit","shyt","shyte","s#it","s@it","shlt","sh*t","sh**","sh.it","s h i t","sнit","§hit","sh1†","sh!+","shït","shlt","sh!t.","s#1t","bitch","b1tch","b!tch","b*tch","b!+ch","btch","bich","b!ch","b¡tch","b*t¢h","b1+ch","b1t¢h","b i t c h","bïtch","b1tc#","bxtch","b17ch","b!7ch","b|tch","hoe","h0e","h03","h0ee","h0r","h0re","ho3","whore","wh0re","wh0r3","w h o r e","whørë","whor3","w#ore","w@ore","whoar","wh0ar","wh0rr","h0ar","h/oe","høe","slut","slutt","sluut","slvt","sl*t","sl@t","slvtt","s/ut","5lut","§lut","slüt","slut.","s l u t","sl+","s!ut","slvt","slvt.","slv+","sl℮t","sIut","cunt","c*nt","c@nt","kunt","k@nt","cu nt","cuntt","cün†","c#nt","c/nt","c u n t","¢unt","cun+","kun7","kʊnt","cunt.","c*nt.","c nt","c🅤nt","ass","a$$","@ss","azz","4ss","a55","a.ss","a s s","assh0le","asshole","a$$hole","@sshole","azzhole","ashole","assh0l3","4sshole","a$s","ass·","a55hole","dick","dik","d1ck","d!ck","d!k","d1k","d¡ck","dïck","d¡k","dix","dxck","d!ck.","d|ck","d1¢k","d1©k","d!©k","d1ck.","d1ckk","d1c|<","pussy","pussi","pusy","p*ssy","p@ssy","p0ssy","pussy.","pus5y","pu55y","p u s s y","püssy","pússy","p$ssy","pssy","p_ssy","puśsy","puss¥","pʊssy","púss¥","pøssy","fag","f@g","f4g","fa6","f4gg","fag.","f@g.","fa9","f@ggot","faggot","f*ggot","fa99ot","f4gg0t","fΛggot","fΔggot","f4g9t","fag9t","f a g","f—g","f\\ag","nigger","n1gger","n¡gger","n!gger","nigg3r","ni99er","nlgg3r","n¡gg3r","n¡gger","n!gg3r","nlgger","nigga","n1gga","ni99a","n¡gga","n¡9ga","n1gg4","nlgg4","n1g9a","nigg@","retard","r3tard","ret@rd","r*tard","reetard","retarded","r3tarded","r3t@rd","r3t@rd3d","retard.","r€tard","retardd","retard3d","r e t a r d","ret@rded","ret@rddd","re+tard","re-tard","r-tard","rtard"];
-
 
 /* Subject Rooms (fixed IDs) */
 const SUBJECT_ROOMS = [
@@ -114,7 +134,8 @@ const SUBJECT_ROOMS = [
    Utility
 ----------------------------------------- */
 const now = () => Date.now();
-const uid = () => "u_" + Math.random().toString(36).slice(2) + Date.now();
+const myUid = () => currentUser?.uid || "";
+const uuid = () => "m_" + Math.random().toString(36).slice(2) + Date.now();
 
 function sanitize(text) {
   let t = text;
@@ -133,7 +154,7 @@ function scrollBottom() {
 }
 
 /* -----------------------------------------
-   Account Storage
+   Account (localStorage)
 ----------------------------------------- */
 function loadUser() {
   try {
@@ -152,7 +173,6 @@ function logout() {
   location.reload();
 }
 
-/* Ensure logged in or ask to create */
 function ensureAccount() {
   const stored = loadUser();
   if (!stored) {
@@ -170,25 +190,26 @@ $("#signupBtn").addEventListener("click", () => {
   const username = $("#signupUsername").value.trim();
   const password = $("#signupPassword").value.trim();
 
-  if (!username || !password) return alert("Enter username & password.");
+  if (!username || !password) return alert("Enter username and password.");
 
   if (PROFANITY.some(p => username.toLowerCase().includes(p))) {
     return alert("No profanity in usernames.");
   }
 
+  const uid = uuid();
   const user = {
-    uid: uid(),
+    uid,
     username,
     password,
-    createdAt: now(),
     displayName: username,
-    pfpUrl: ""
+    pfpUrl: "",
+    createdAt: now()
   };
 
   currentUser = user;
   saveUser(user);
 
-  db.ref("users/" + user.uid).set({
+  db.ref("users/" + uid).set({
     username,
     displayName: user.displayName,
     createdAt: user.createdAt,
@@ -203,10 +224,10 @@ $("#signupBtn").addEventListener("click", () => {
   afterLogin();
 });
 
-/* After login: fetch profile and start everything */
+/* After login: sync with DB and start everything */
 function afterLogin() {
-  // Sync with DB in case profile updated
-  db.ref("users/" + currentUser.uid).once("value").then(snap => {
+  const uid = currentUser.uid;
+  db.ref("users/" + uid).once("value").then(snap => {
     const data = snap.val() || {};
     currentUser.displayName = data.displayName || currentUser.username;
     currentUser.pfpUrl = data.pfpUrl || "";
@@ -214,12 +235,16 @@ function afterLogin() {
     saveUser(currentUser);
 
     displayNameEl.textContent = currentUser.displayName;
+    accUsernameEl.textContent = currentUser.username;
+    accUidEl.textContent = currentUser.uid;
+    accStatusEl.textContent = data.role === "admin" ? "Admin" : "User";
+
     if (currentUser.pfpUrl) {
       pfpPreviewEl.src = currentUser.pfpUrl;
     } else {
       pfpPreviewEl.src =
         "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-        encodeURIComponent(currentUser.displayName || currentUser.username);
+        encodeURIComponent(currentUser.displayName);
     }
 
     setupPresence();
@@ -232,7 +257,8 @@ function afterLogin() {
    Presence
 ----------------------------------------- */
 function setupPresence() {
-  const presRef = db.ref("presence/" + currentUser.uid);
+  const uid = currentUser.uid;
+  const presRef = db.ref("presence/" + uid);
 
   presRef.set({
     username: currentUser.displayName || currentUser.username,
@@ -248,7 +274,7 @@ function setupPresence() {
 
   db.ref("presence").on("value", snap => {
     onlineListEl.innerHTML = "";
-    adminOnlineListEl.innerHTML = "";
+    adminOnlineListEl && (adminOnlineListEl.innerHTML = "");
 
     snap.forEach(child => {
       const val = child.val();
@@ -256,8 +282,10 @@ function setupPresence() {
       li.textContent = val.username + (val.online ? " ●" : " ○");
       onlineListEl.appendChild(li);
 
-      const li2 = li.cloneNode(true);
-      adminOnlineListEl.appendChild(li2);
+      if (adminOnlineListEl) {
+        const li2 = li.cloneNode(true);
+        adminOnlineListEl.appendChild(li2);
+      }
     });
   });
 }
@@ -282,7 +310,7 @@ function loadRooms() {
 }
 
 function loadDMs() {
-  const ref = db.ref("dms/" + currentUser.uid);
+  const ref = db.ref("dms/" + myUid());
   ref.on("value", snap => {
     dmListEl.innerHTML = "";
     snap.forEach(child => {
@@ -310,8 +338,7 @@ function loadGroups() {
     groupListEl.innerHTML = "";
     snap.forEach(child => {
       const group = child.val();
-      if (!group.members || !group.members[currentUser.uid]) return;
-
+      if (!group.members || !group.members[myUid()]) return;
       const li = document.createElement("li");
       li.textContent = group.meta.name || "Group";
       li.addEventListener("click", () => {
@@ -334,11 +361,11 @@ $("#createGroupBtn").addEventListener("click", () => {
   ref.set({
     meta: {
       name,
-      owner: currentUser.uid,
+      owner: myUid(),
       createdAt: now()
     },
     members: {
-      [currentUser.uid]: true
+      [myUid()]: true
     }
   });
 });
@@ -347,7 +374,7 @@ $("#createGroupBtn").addEventListener("click", () => {
    Notifications
 ----------------------------------------- */
 function listenForNotifications() {
-  const ref = db.ref("notifications/" + currentUser.uid);
+  const ref = db.ref("notifications/" + myUid());
   ref.on("value", snap => {
     notificationsListEl.innerHTML = "";
     let has = false;
@@ -362,9 +389,7 @@ function listenForNotifications() {
           <span><strong>${data.from}</strong> invited you to <b>${data.groupName}</b></span>
           <button class="accept" data-id="${child.key}" data-type="group_invite">Accept</button>
         `;
-      }
-
-      if (data.type === "dm_request") {
+      } else if (data.type === "dm_request") {
         li.innerHTML = `
           <span><strong>${data.from}</strong> wants to DM you</span>
           <button class="accept" data-id="${child.key}" data-type="dm_request">Accept</button>
@@ -385,27 +410,28 @@ function listenForNotifications() {
 }
 
 function acceptNotification(id, type) {
-  const ref = db.ref("notifications/" + currentUser.uid + "/" + id);
+  const ref = db.ref("notifications/" + myUid() + "/" + id);
   ref.once("value").then(snap => {
     const data = snap.val();
     if (!data) return;
 
     if (type === "group_invite") {
-      db.ref("groups/" + data.groupId + "/members/" + currentUser.uid).set(true);
+      db.ref("groups/" + data.groupId + "/members/" + myUid()).set(true);
     }
 
     if (type === "dm_request") {
-      const me = currentUser.uid;
+      const me = myUid();
       const other = data.dmUid;
-      db.ref("dms/" + me + "/" + other).set({ placeholder: true });
-      db.ref("dms/" + other + "/" + me).set({ placeholder: true });
+      const base = { placeholder: true };
+      db.ref("dms/" + me + "/" + other).set(base);
+      db.ref("dms/" + other + "/" + me).set(base);
     }
 
     ref.remove();
   });
 }
 
-/* Example functions you could call when inviting:
+/* Helpers to send invites/requests (used by popup) */
 function sendGroupInvite(targetUid, groupId, groupName) {
   db.ref("notifications/" + targetUid).push({
     type: "group_invite",
@@ -420,11 +446,10 @@ function sendDMRequest(targetUid) {
   db.ref("notifications/" + targetUid).push({
     type: "dm_request",
     from: currentUser.displayName || currentUser.username,
-    dmUid: currentUser.uid,
+    dmUid: myUid(),
     createdAt: now()
   });
 }
-*/
 
 /* -----------------------------------------
    Open Room + Typing
@@ -433,7 +458,7 @@ function roomKey(room) {
   if (room.type === "room") return "room_" + room.id;
   if (room.type === "group") return "group_" + room.id;
   if (room.type === "dm") {
-    const ids = [currentUser.uid, room.otherUid].sort().join("_");
+    const ids = [myUid(), room.otherUid].sort().join("_");
     return "dm_" + ids;
   }
   return "";
@@ -457,7 +482,7 @@ function openRoom(room) {
   let path;
   if (room.type === "room") path = "chats/" + room.id;
   if (room.type === "group") path = "groups/" + room.id + "/messages";
-  if (room.type === "dm") path = "dms/" + currentUser.uid + "/" + room.otherUid;
+  if (room.type === "dm") path = "dms/" + myUid() + "/" + room.otherUid;
 
   currentMessagesRef = db.ref(path);
   currentMessagesRef.orderByChild("createdAt").on("child_added", snap => {
@@ -469,7 +494,7 @@ function openRoom(room) {
   currentTypingRef.on("value", snap => {
     const typers = [];
     snap.forEach(c => {
-      if (c.key !== currentUser.uid && c.val()) typers.push(c.key);
+      if (c.key !== myUid() && c.val()) typers.push(c.key);
     });
 
     if (typers.length === 0) typingIndicatorEl.textContent = "";
@@ -477,36 +502,33 @@ function openRoom(room) {
     else typingIndicatorEl.textContent = "Multiple people are typing...";
   });
 
-  // Highlight active
   document.querySelectorAll(".list li").forEach(li => li.classList.remove("active"));
 }
 
-/* Typing */
-
+/* Typing indicator */
 function handleTyping() {
   if (!currentRoom) return;
   const tKey = roomKey(currentRoom);
-  const ref = db.ref("typing/" + tKey + "/" + currentUser.uid);
+  const ref = db.ref("typing/" + tKey + "/" + myUid());
   ref.set(true);
   if (typingTimeout) clearTimeout(typingTimeout);
   typingTimeout = setTimeout(() => ref.set(false), 3000);
 }
 
 /* -----------------------------------------
-   Render Messages (text + images + videos)
+   Render Messages (Option A layout)
 ----------------------------------------- */
 function addMessage(key, msg) {
-  const isMe = msg.uid === currentUser.uid;
+  const isMe = msg.uid === myUid();
 
   const row = document.createElement("div");
   row.className = "msg-row " + (isMe ? "me" : "them");
 
   const pfp = document.createElement("img");
   pfp.className = "msg-pfp";
-  pfp.src = msg.pfpUrl || 
+  pfp.src = msg.pfpUrl ||
     "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-    encodeURIComponent(msg.displayName || msg.username);
-
+    encodeURIComponent(msg.displayName || msg.username || "User");
   pfp.onclick = () => openUserPopup(msg.uid);
 
   const wrapper = document.createElement("div");
@@ -515,14 +537,14 @@ function addMessage(key, msg) {
   const bubble = document.createElement("div");
   bubble.className = "bubble";
 
-  // Image or video attachments
+  // Attachments
   if (msg.fileUrl) {
     if (msg.fileType === "image") {
       const img = document.createElement("img");
       img.src = msg.fileUrl;
+      img.alt = msg.originalName || "image";
       bubble.appendChild(img);
-    }
-    if (msg.fileType === "video") {
+    } else if (msg.fileType === "video") {
       const vid = document.createElement("video");
       vid.src = msg.fileUrl;
       vid.controls = true;
@@ -530,10 +552,20 @@ function addMessage(key, msg) {
     }
   }
 
-  // Text message
-  if (msg.text) {
+  // Text
+  if (msg.text && msg.text.trim() !== "") {
     const t = document.createElement("div");
     t.textContent = msg.deleted ? "Message removed" : msg.text;
+    if (msg.deleted) {
+      t.style.opacity = "0.6";
+      t.style.fontStyle = "italic";
+    }
+    bubble.appendChild(t);
+  } else if (msg.deleted) {
+    const t = document.createElement("div");
+    t.textContent = "Message removed";
+    t.style.opacity = "0.6";
+    t.style.fontStyle = "italic";
     bubble.appendChild(t);
   }
 
@@ -551,9 +583,8 @@ function addMessage(key, msg) {
   scrollBottom();
 }
 
-
 /* -----------------------------------------
-   Sending: text & uploading files
+   Send Message (text only)
 ----------------------------------------- */
 sendBtn.addEventListener("click", sendMessage);
 msgInput.addEventListener("keydown", e => {
@@ -561,24 +592,11 @@ msgInput.addEventListener("keydown", e => {
   else handleTyping();
 });
 
-uploadBtn.addEventListener("click", () => {
-  if (!currentRoom) return alert("Select a room first.");
-  fileInput.click();
-});
-
-fileInput.addEventListener("change", () => {
-  const file = fileInput.files[0];
-  if (!file) return;
-  uploadFileAndSend(file);
-  fileInput.value = "";
-});
-
 function sendMessage() {
   if (!currentRoom) return;
   let text = msgInput.value.trim();
   if (!text) return;
 
-  // Rate limit
   const nowTime = now();
   if (nowTime - lastMsgTime > 5000) {
     msgCount = 0;
@@ -592,30 +610,30 @@ function sendMessage() {
 
   text = sanitize(text);
 
-  db.ref("users/" + currentUser.uid).once("value").then(snap => {
+  db.ref("users/" + myUid()).once("value").then(snap => {
     const u = snap.val() || {};
     if (u.bannedUntil && u.bannedUntil > now()) {
-      return alert("You are banned right now.");
+      return alert("You are banned.");
     }
     if (u.timeoutUntil && u.timeoutUntil > now()) {
       return alert("You are timed out.");
     }
 
     const baseMsg = {
-      uid: currentUser.uid,
+      uid: myUid(),
       username: currentUser.username,
       displayName: currentUser.displayName || currentUser.username,
+      pfpUrl: currentUser.pfpUrl || "",
       text,
       createdAt: now()
     };
 
     if (currentRoom.type === "dm") {
-      const me = currentUser.uid;
+      const me = myUid();
       const other = currentRoom.otherUid;
-      const key = db.ref().push().key;
-
-      db.ref("dms/" + me + "/" + other + "/" + key).set(baseMsg);
-      db.ref("dms/" + other + "/" + me + "/" + key).set(baseMsg);
+      const k = db.ref().push().key;
+      db.ref("dms/" + me + "/" + other + "/" + k).set(baseMsg);
+      db.ref("dms/" + other + "/" + me + "/" + k).set(baseMsg);
     } else if (currentRoom.type === "room") {
       db.ref("chats/" + currentRoom.id).push(baseMsg);
     } else if (currentRoom.type === "group") {
@@ -626,9 +644,23 @@ function sendMessage() {
   });
 }
 
-/* Upload file => Storage => send msg with fileUrl */
+/* -----------------------------------------
+   File Upload (image / video)
+----------------------------------------- */
+uploadBtn.addEventListener("click", () => {
+  if (!currentRoom) return alert("Select a room first.");
+  fileInput.click();
+});
+
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  uploadFileAndSend(file);
+  fileInput.value = "";
+});
+
 function uploadFileAndSend(file) {
-  db.ref("users/" + currentUser.uid).once("value").then(snap => {
+  db.ref("users/" + myUid()).once("value").then(snap => {
     const u = snap.val() || {};
     if (u.bannedUntil && u.bannedUntil > now()) {
       return alert("You are banned right now.");
@@ -637,11 +669,10 @@ function uploadFileAndSend(file) {
       return alert("You are timed out.");
     }
 
-    const path = `uploads/${currentUser.uid}/${Date.now()}_${file.name}`;
+    const path = `uploads/${myUid()}/${Date.now()}_${file.name}`;
     const fileRef = storage.ref().child(path);
 
     fileRef.put(file).then(snap => snap.ref.getDownloadURL()).then(url => {
-      
       const fileType = file.type.startsWith("image/")
         ? "image"
         : file.type.startsWith("video/")
@@ -649,13 +680,13 @@ function uploadFileAndSend(file) {
         : "file";
 
       const baseMsg = {
-        uid: currentUser.uid,
+        uid: myUid(),
         username: currentUser.username,
         displayName: currentUser.displayName || currentUser.username,
         pfpUrl: currentUser.pfpUrl || "",
         text: msgInput.value.trim() ? sanitize(msgInput.value.trim()) : "",
         fileUrl: url,
-        fileType: fileType,
+        fileType,
         originalName: file.name,
         createdAt: now()
       };
@@ -663,42 +694,75 @@ function uploadFileAndSend(file) {
       msgInput.value = "";
 
       if (currentRoom.type === "dm") {
-        const me = currentUser.uid;
+        const me = myUid();
         const other = currentRoom.otherUid;
         const k = db.ref().push().key;
-
         db.ref("dms/" + me + "/" + other + "/" + k).set(baseMsg);
         db.ref("dms/" + other + "/" + me + "/" + k).set(baseMsg);
-      } 
-      
-      else if (currentRoom.type === "room") {
+      } else if (currentRoom.type === "room") {
         db.ref("chats/" + currentRoom.id).push(baseMsg);
-      } 
-      
-      else if (currentRoom.type === "group") {
+      } else if (currentRoom.type === "group") {
         db.ref("groups/" + currentRoom.id + "/messages").push(baseMsg);
       }
-
     });
   });
 }
 
+/* -----------------------------------------
+   User Popup (click PFP)
+----------------------------------------- */
+function openUserPopup(uid) {
+  if (!uid) return;
+  db.ref("users/" + uid).once("value").then(snap => {
+    const u = snap.val();
+    if (!u) return;
+
+    popupDisplayName.textContent = u.displayName || u.username;
+    popupRealName.textContent = "@" + u.username;
+    popupPfp.src =
+      u.pfpUrl ||
+      "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
+      encodeURIComponent(u.displayName || u.username);
+
+    popupDmBtn.onclick = () => {
+      sendDMRequest(uid);
+      hideModal(userPopup);
+      alert("DM request sent.");
+    };
+
+    popupInviteBtn.onclick = () => {
+      const groupId = prompt("Enter group ID to invite them to:");
+      if (!groupId) return;
+      db.ref("groups/" + groupId + "/meta/name").once("value").then(ns => {
+        const name = ns.val() || "Group";
+        sendGroupInvite(uid, groupId, name);
+        hideModal(userPopup);
+        alert("Invite sent.");
+      });
+    };
+
+    showModal(userPopup);
+  });
+}
+
+popupCloseBtn.addEventListener("click", () => hideModal(userPopup));
 
 /* -----------------------------------------
-   Settings (PFP + display name + admin key)
+   Settings (display name + PFP + admin key)
 ----------------------------------------- */
 $("#openSettings").addEventListener("click", () => {
   settingsDisplayNameInput.value =
     currentUser.displayName || currentUser.username;
-
+  settingsPfpFileInput.value = "";
   showModal(settingsModal);
 });
 
 settingsSaveBtn.addEventListener("click", () => {
-  const newName = settingsDisplayNameInput.value.trim() || currentUser.username;
+  const newName =
+    settingsDisplayNameInput.value.trim() || currentUser.username;
   currentUser.displayName = newName;
 
-  const file = settingsPfpFileInput.files[0];
+  const pfpFile = settingsPfpFileInput.files[0];
 
   function finishUpdate(pfpUrl) {
     if (pfpUrl) {
@@ -713,7 +777,7 @@ settingsSaveBtn.addEventListener("click", () => {
     displayNameEl.textContent = newName;
     saveUser(currentUser);
 
-    db.ref("users/" + currentUser.uid).update({
+    db.ref("users/" + myUid()).update({
       displayName: newName,
       pfpUrl: currentUser.pfpUrl || ""
     });
@@ -721,10 +785,10 @@ settingsSaveBtn.addEventListener("click", () => {
     hideModal(settingsModal);
   }
 
-  if (file) {
-    const path = `pfp/${currentUser.uid}/${Date.now()}_${file.name}`;
+  if (pfpFile) {
+    const path = `pfp/${myUid()}/${Date.now()}_${pfpFile.name}`;
     const pfpRef = storage.ref().child(path);
-    pfpRef.put(file).then(snap => snap.ref.getDownloadURL()).then(url => {
+    pfpRef.put(pfpFile).then(snap => snap.ref.getDownloadURL()).then(url => {
       finishUpdate(url);
     });
   } else {
@@ -742,25 +806,25 @@ settingsAdminBtn.addEventListener("click", () => {
   enableAdmin();
 });
 
+/* Backup login inside admin modal */
+$("#adminLoginBtn").addEventListener("click", () => {
+  const key = $("#adminKeyInput").value.trim();
+  if (key !== ADMIN_KEY) return alert("Wrong admin key.");
+  enableAdmin();
+});
+
 function enableAdmin() {
   if (isAdmin) {
     showModal(adminModal);
     return;
   }
   isAdmin = true;
-  db.ref("admins/" + currentUser.uid).set(true);
-  db.ref("users/" + currentUser.uid + "/role").set("admin");
-  $("#adminLoginView").style.display = "none";
-  $("#adminPanelView").style.display = "block";
+  db.ref("admins/" + myUid()).set(true);
+  db.ref("users/" + myUid() + "/role").set("admin");
+  adminLoginView.style.display = "none";
+  adminPanelView.style.display = "block";
   showModal(adminModal);
 }
-
-/* We still keep old login button as backup */
-$("#adminLoginBtn").addEventListener("click", () => {
-  const key = $("#adminKeyInput").value.trim();
-  if (key !== ADMIN_KEY) return alert("Wrong admin key.");
-  enableAdmin();
-});
 
 /* -----------------------------------------
    Admin actions
@@ -810,7 +874,7 @@ $("#deleteLastBtn").addEventListener("click", () => {
   let path;
   if (currentRoom.type === "room") path = "chats/" + currentRoom.id;
   if (currentRoom.type === "group") path = "groups/" + currentRoom.id + "/messages";
-  if (currentRoom.type === "dm") path = "dms/" + currentUser.uid + "/" + currentRoom.otherUid;
+  if (currentRoom.type === "dm") path = "dms/" + myUid() + "/" + currentRoom.otherUid;
 
   const ref = db.ref(path);
   ref.orderByChild("createdAt").limitToLast(n).once("value").then(snap => {
@@ -829,7 +893,7 @@ $("#deleteLongBtn").addEventListener("click", () => {
   let path;
   if (currentRoom.type === "room") path = "chats/" + currentRoom.id;
   if (currentRoom.type === "group") path = "groups/" + currentRoom.id + "/messages";
-  if (currentRoom.type === "dm") path = "dms/" + currentUser.uid + "/" + currentRoom.otherUid;
+  if (currentRoom.type === "dm") path = "dms/" + myUid() + "/" + currentRoom.otherUid;
 
   const ref = db.ref(path);
   ref.once("value").then(snap => {
@@ -852,7 +916,7 @@ $("#deleteRoomBtn").addEventListener("click", () => {
   let path;
   if (currentRoom.type === "room") path = "chats/" + currentRoom.id;
   if (currentRoom.type === "group") path = "groups/" + currentRoom.id + "/messages";
-  if (currentRoom.type === "dm") path = "dms/" + currentUser.uid + "/" + currentRoom.otherUid;
+  if (currentRoom.type === "dm") path = "dms/" + myUid() + "/" + currentRoom.otherUid;
 
   db.ref(path).remove();
   chatAreaEl.innerHTML = "";
@@ -877,38 +941,10 @@ window.addEventListener("click", e => {
   if (e.target === settingsModal) hideModal(settingsModal);
   if (e.target === notificationsModal) hideModal(notificationsModal);
   if (e.target === adminModal) hideModal(adminModal);
+  if (e.target === userPopup) hideModal(userPopup);
 });
 
 /* -----------------------------------------
    Start
 ----------------------------------------- */
-document.addEventListener("DOMContentLoaded", ensureAccount);
-
-function openUserPopup(uid) {
-  db.ref("users/" + uid).once("value").then(snap => {
-    const u = snap.val();
-    if (!u) return;
-
-    $("#popupDisplayName").textContent = u.displayName || u.username;
-    $("#popupRealName").textContent = "@" + u.username;
-
-    $("#popupPfp").src = u.pfpUrl ||
-      "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-      encodeURIComponent(u.displayName || u.username);
-
-    $("#popupDmBtn").onclick = () => {
-      sendDMRequest(uid);
-      hideModal(userPopup);
-    };
-
-    $("#popupInviteBtn").onclick = () => {
-      const group = prompt("Group ID to invite?");
-      if (!group) return;
-      sendGroupInvite(uid, group, "Group");
-      hideModal(userPopup);
-    };
-
-    showModal(userPopup);
-  });
-}
-
+document.addEventListener("DOMContentLoaded", ensureAccount)
