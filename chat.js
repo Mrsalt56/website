@@ -396,8 +396,6 @@ function loadDMs() {
       });
     });
   });
-}
-
 /* Groups */
 function loadGroups() {
   db.ref("groups").on("value", snap => {
