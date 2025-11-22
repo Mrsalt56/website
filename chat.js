@@ -641,6 +641,7 @@ function uploadFileAndSend(file) {
     const fileRef = storage.ref().child(path);
 
     fileRef.put(file).then(snap => snap.ref.getDownloadURL()).then(url => {
+      
       const fileType = file.type.startsWith("image/")
         ? "image"
         : file.type.startsWith("video/")
@@ -651,11 +652,12 @@ function uploadFileAndSend(file) {
         uid: currentUser.uid,
         username: currentUser.username,
         displayName: currentUser.displayName || currentUser.username,
+        pfpUrl: currentUser.pfpUrl || "",
         text: msgInput.value.trim() ? sanitize(msgInput.value.trim()) : "",
-        createdAt: now(),
         fileUrl: url,
-        fileType,
-        originalName: file.name
+        fileType: fileType,
+        originalName: file.name,
+        createdAt: now()
       };
 
       msgInput.value = "";
@@ -663,17 +665,24 @@ function uploadFileAndSend(file) {
       if (currentRoom.type === "dm") {
         const me = currentUser.uid;
         const other = currentRoom.otherUid;
-        const key = db.ref().push().key;
-        db.ref("dms/" + me + "/" + other + "/" + key).set(baseMsg);
-        db.ref("dms/" + other + "/" + me + "/" + key).set(baseMsg);
-      } else if (currentRoom.type === "room") {
+        const k = db.ref().push().key;
+
+        db.ref("dms/" + me + "/" + other + "/" + k).set(baseMsg);
+        db.ref("dms/" + other + "/" + me + "/" + k).set(baseMsg);
+      } 
+      
+      else if (currentRoom.type === "room") {
         db.ref("chats/" + currentRoom.id).push(baseMsg);
-      } else if (currentRoom.type === "group") {
+      } 
+      
+      else if (currentRoom.type === "group") {
         db.ref("groups/" + currentRoom.id + "/messages").push(baseMsg);
       }
+
     });
   });
 }
+
 
 /* -----------------------------------------
    Settings (PFP + display name + admin key)
