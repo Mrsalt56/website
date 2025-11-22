@@ -59,7 +59,7 @@
     <button id="logoutBtn" class="logout-btn">Logout</button>
   </aside>
 
-  <!-- MAIN CHAT AREA -->
+  <!-- MAIN CHAT -->
   <main class="main">
     <header class="room-header">
       <div>
@@ -98,7 +98,7 @@
 
     <div id="signupView">
       <input id="signupUsername" placeholder="Username">
-      <input id="signupPassword" placeholder="Password" type="password">
+      <input id="signupPassword" type="password" placeholder="Password">
       <button id="signupBtn">Create Account</button>
     </div>
   </div>
@@ -120,7 +120,7 @@
     <hr>
 
     <h3>Admin Access</h3>
-    <p class="hint">Enter admin key to unlock the admin panel.</p>
+    <p class="hint">Enter admin key (KEY = 616756) to unlock the admin panel.</p>
     <input id="settingsAdminKey" type="password" placeholder="Admin key">
     <button id="settingsAdminBtn">Unlock Admin Panel</button>
   </div>
@@ -141,7 +141,6 @@
     <h2>Admin Panel</h2>
 
     <div id="adminLoginView">
-      <!-- We still keep this but usually unlocked via Settings -->
       <input id="adminKeyInput" type="password" placeholder="Admin Key">
       <button id="adminLoginBtn">Login</button>
     </div>
@@ -188,14 +187,13 @@
   <div class="modal-content" style="width:300px;text-align:center;">
     <img id="popupPfp" class="pfp" style="width:70px;height:70px;margin:auto;">
     <h2 id="popupDisplayName"></h2>
-    <p id="popupRealName" style="color:#9ca3af;"></p>
+    <p id="popupRealName" class="hint"></p>
 
     <button id="popupDmBtn" class="small-btn">Message</button>
     <button id="popupInviteBtn" class="small-btn">Invite to Group</button>
-    <button onclick="hideModal(userPopup)" class="small-btn" style="margin-top:8px;">Close</button>
+    <button id="popupCloseBtn" class="small-btn" style="margin-top:8px;">Close</button>
   </div>
 </div>
-
 
 <script src="chat.js"></script>
 </body>
