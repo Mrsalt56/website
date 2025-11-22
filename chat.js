@@ -606,7 +606,8 @@ function addMessage(key, msg) {
   pfp.style.height = "34px";
   pfp.style.borderRadius = "50%";
   pfp.style.position = "absolute";
-  pfp.style.bottom = "0";
+  pfp.style.top = "50%";
+  pfp.style.transform = "translateY(-50%)";
   pfp.style.zIndex = "1";
   pfp.onclick = () => openUserPopup(msg.uid);
 
