@@ -337,7 +337,11 @@ function setupPresence() {
     snap.forEach(child => {
       const val = child.val();
       const li = document.createElement("li");
-      li.textContent = val.username + (val.online ? " ●" : " ○");
+      let name = val.username;
+      db.ref("users/" + child.key + "/verified").once("value").then(vs => {
+        if (vs.val()) name += " ✔";
+        li.textContent = name + (val.online ? " ●" : " ○");
+      });
       onlineListEl.appendChild(li);
 
       if (adminOnlineListEl) {
@@ -374,7 +378,10 @@ function loadDMs() {
     snap.forEach(child => {
       const otherUid = child.key;
       db.ref("users/" + otherUid + "/displayName").once("value").then(ns => {
-        const name = ns.val() || otherUid;
+      db.ref("users/" + otherUid).once("value").then(uSnap => {
+        const u = uSnap.val() || {};
+        let name = u.displayName || u.username || otherUid;
+        if (u.verified) name += " ✔";
         const li = document.createElement("li");
         li.textContent = name;
         li.addEventListener("click", () => {
@@ -614,7 +621,13 @@ function addMessage(key, msg) {
   // Text
   if (msg.text && msg.text.trim() !== "") {
     const t = document.createElement("div");
-    t.textContent = msg.deleted ? "Message removed" : msg.text;
+   let name = msg.displayName || msg.username;
+   if (msg.verified) name += " ✔";
+
+   const t = document.createElement("div");
+   t.textContent = msg.deleted ? "Message removed" : msg.text;
+   bubble.prepend(name + ": ");
+
     if (msg.deleted) {
       t.style.opacity = "0.6";
       t.style.fontStyle = "italic";
@@ -776,7 +789,9 @@ function openUserPopup(uid) {
     const u = snap.val();
     if (!u) return;
 
-    popupDisplayName.textContent = u.displayName || u.username;
+   let n = u.displayName || u.username;
+   if (u.verified) n += " ✔";
+   popupDisplayName.textContent = n;
     popupRealName.textContent = "@" + u.username;
     popupPfp.src =
       u.pfpUrl ||
@@ -914,13 +929,33 @@ function performAdminAction(action, username) {
       const HOUR = 60 * 60 * 1000;
       const updates = {};
 
-      if (action === "ban-5") updates.bannedUntil = now() + FIVE;
+      if (action === "delete-account") updates.bannedUntil = now() + FIVE;
       if (action === "ban-60") updates.bannedUntil = now() + HOUR;
       if (action === "unban") updates.bannedUntil = 0;
       if (action === "timeout-5") updates.timeoutUntil = now() + FIVE;
       if (action === "timeout-60") updates.timeoutUntil = now() + HOUR;
       if (action === "verify") updates.verified = true;
+      if (action === "delete-account") {
+ 
+  db.ref("users/" + uid).remove();
+  db.ref("presence/" + uid).remove();
+  db.ref("dms/" + uid).remove();
 
+  db.ref("dms").once("value").then(s => {
+    s.forEach(u => {
+      db.ref("dms/" + u.key + "/" + uid).remove();
+    });
+  });
+
+  db.ref("groups").once("value").then(s => {
+    s.forEach(g => {
+      db.ref("groups/" + g.key + "/members/" + uid).remove();
+    });
+  });
+
+  alert("Account deleted.");
+  return;
+}
       ref.update(updates);
       alert("Action applied.");
     });
