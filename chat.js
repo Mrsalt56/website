@@ -184,6 +184,18 @@ const SUBJECT_ROOMS = [
 /* -----------------------------------------
    Utility
 ----------------------------------------- */
+function sanitize(text) {
+  let clean = text;
+
+  PROFANITY.forEach(p => {
+    const safe = p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(safe, "gi");
+    clean = clean.replace(regex, "***");
+  });
+
+  return clean;
+}
+
 const now = () => Date.now();
 const myUid = () => currentUser?.uid || "";
 const uuid = () => "m_" + Math.random().toString(36).slice(2) + Date.now();
