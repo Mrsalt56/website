@@ -592,22 +592,33 @@ function addMessage(key, msg) {
   const row = document.createElement("div");
   row.className = "msg-row";
   row.style.display = "flex";
-  row.style.marginBottom = "10px";
+  row.style.marginBottom = "10px";    
+  row.style.position = "relative";
 
-  if (isMe) {
-    row.style.justifyContent = "flex-end";
-  } else {
-    row.style.justifyContent = "flex-start";
-  }
+
+// Position PFP behind bubble
+if (isMe) {
+    pfp.style.right = "-18px";    
+    bubble.style.marginRight = "20px";
+} else {
+    pfp.style.left = "-18px"; 
+    bubble.style.marginLeft = "20px";
+}
+wrapper.appendChild(name);
+wrapper.appendChild(bubble);
+wrapper.appendChild(meta);
+
+row.appendChild(wrapper);
+row.appendChild(pfp);
 
   // PFP
   const pfp = document.createElement("img");
-  pfp.className = "msg-pfp";
-  pfp.style.width = "34px";
-  pfp.style.height = "34px";
-  pfp.style.borderRadius = "50%";
-  pfp.style.marginLeft = isMe ? "10px" : "0px";
-  pfp.style.marginRight = isMe ? "0px" : "10px";
+   pfp.style.width = "34px";
+   pfp.style.height = "34px";
+   pfp.style.borderRadius = "50%";
+   pfp.style.position = "absolute";
+   pfp.style.bottom = "0";
+   pfp.style.zIndex = "1";
   pfp.src =
     msg.pfpUrl ||
     "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
