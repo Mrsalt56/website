@@ -112,12 +112,12 @@ const ADMIN_KEY = "616756";
 
 /* Profanity list */
 const PROFANITY = [
-"fuck","fuk","f*ck","f**k","fuxk","fusk","fock","phuck","phuk",
+"fuck","fuk","fck","fk","fuxk","fusk","fock","phuck","phuk",
 "f#ck","f@ck","f£ck","fück","fucc","fukk","fukc","f u c k",
 "f-u-c-k","f.u.c.k","f—ck","f🖕ck","fʊck","fck","fk","fquk",
 
 "shit","sh1t","sh!t","sh¡t","shiit","shyt","shyte","s#it","s@it",
-"shlt","sh*t","sh**","sh.it","s h i t","sнit","§hit",
+"shlt","sh.it","s h i t","sнit","§hit",
 "sh1†","sh!+","shït","shlt","sh!t.","s#1t",
 
 "bitch","b1tch","b!tch","b*tch","b!+ch","btch","bich",
@@ -128,11 +128,11 @@ const PROFANITY = [
 "whore","wh0re","wh0r3","w h o r e","whørë",
 "whor3","w#ore","w@ore","whoar","wh0ar","wh0rr","h0ar","h/oe","høe",
 
-"slut","slutt","sluut","slvt","sl*t","sl@t","slvtt","s/ut",
+"slut","slutt","sluut","slvt","sl@t","slvtt","s/ut",
 "5lut","§lut","slüt","slut.","s l u t","sl+","s!ut",
 "slvt","slvt.","slv+","sl℮t","sIut",
 
-"cunt","c*nt","c@nt","kunt","k@nt","cu nt","cuntt",
+"cunt","c@nt","kunt","k@nt","cu nt","cuntt",
 "cün†","c#nt","c/nt","c u n t","¢unt","cun+",
 "kun7","kʊnt","cunt.","c*nt.","c nt","c🅤nt",
 
@@ -144,7 +144,7 @@ const PROFANITY = [
 "d¡k","dix","dxck","d!ck.","d|ck","d1¢k","d1©k",
 "d!©k","d1ck.","d1ckk","d1c|<",
 
-"pussy","pussi","pusy","p*ssy","p@ssy","p0ssy","pussy.",
+"pussy","pussi","pusy","p@ssy","p0ssy","pussy.",
 "pus5y","pu55y","p u s s y","püssy","pússy","p$ssy",
 "pssy","p_ssy","puśsy","puss¥","pʊssy","púss¥","pøssy",
 
@@ -157,7 +157,7 @@ const PROFANITY = [
 "n1gga","ni99a","n¡gga","n¡9ga","n1gg4","nlgg4",
 "n1g9a","nigg@",
 
-"retard","r3tard","ret@rd","r*tard","reetard","retarded",
+"retard","r3tard","ret@rd","reetard","retarded",
 "r3tarded","r3t@rd","r3t@rd3d","retard.","r€tard",
 "retardd","retard3d","r e t a r d","ret@rded",
 "ret@rddd","re+tard","re-tard","r-tard","rtard"
