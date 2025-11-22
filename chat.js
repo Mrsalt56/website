@@ -937,7 +937,6 @@ function performAdminAction(action, username) {
       const HOUR = 60 * 60 * 1000;
       const updates = {};
 
-      if (action === "delete-account") updates.bannedUntil = now() + FIVE;
       if (action === "ban-60") updates.bannedUntil = now() + HOUR;
       if (action === "unban") updates.bannedUntil = 0;
       if (action === "timeout-5") updates.timeoutUntil = now() + FIVE;
