@@ -1008,3 +1008,5 @@ window.addEventListener("click", e => {
    Start
 ----------------------------------------- */
 document.addEventListener("DOMContentLoaded", ensureAccount);
+});   // <-- ADD THIS LINE
+
