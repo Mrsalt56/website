@@ -390,35 +390,114 @@ function loadRooms() {
   loadGroups();
 }
 
-/* DMs */
+/* -----------------------------------------
+   Load & Render DMs (sorted + search + delete)
+----------------------------------------- */
 function loadDMs() {
+  const searchInput = $("#dmSearch");
+
   db.ref("dms/" + myUid()).on("value", snap => {
-    dmListEl.innerHTML = "";
+    const dmItems = [];
+    const tasks = [];
+
     snap.forEach(child => {
       const otherUid = child.key;
 
-      db.ref("users/" + otherUid).once("value").then(uSnap => {
-        const u = uSnap.val() || {};
-        let name = u.displayName || u.username || otherUid;
-        if (u.verified) name += " ✔";
+      // 1) FETCH LAST MESSAGE
+      const lastMsgTask = db.ref("dms/" + myUid() + "/" + otherUid)
+        .orderByChild("createdAt")
+        .limitToLast(1)
+        .once("value")
+        .then(lastSnap => {
+          let lastTime = 0;
+          lastSnap.forEach(msg => {
+            lastTime = msg.val()?.createdAt || 0;
+          });
 
-        const li = document.createElement("li");
-        li.textContent = name;
+          // 2) FETCH USER INFO
+          return db.ref("users/" + otherUid).once("value").then(uSnap => {
+            const u = uSnap.val() || {};
 
-        li.addEventListener("click", () => {
-          openRoom({
-            type: "dm",
-            id: otherUid,
-            otherUid,
-            label: "DM: " + name
+            // CLEAN NAME
+            let name = u.displayName || u.username || ("User " + otherUid.slice(-4));
+            if (u.verified) name += " ✔";
+
+            dmItems.push({
+              uid: otherUid,
+              name,
+              lastTime
+            });
           });
         });
 
-        dmListEl.appendChild(li);
-      });
+      tasks.push(lastMsgTask);
     });
+
+    // After all async work:
+    Promise.all(tasks).then(() => {
+      // SORT newest → oldest
+      dmItems.sort((a, b) => b.lastTime - a.lastTime);
+
+      renderDMList(dmItems);
+    });
+
+    // SEARCH FILTER
+    if (searchInput) {
+      searchInput.oninput = () => {
+        const q = searchInput.value.toLowerCase();
+        const filtered = dmItems.filter(i => i.name.toLowerCase().includes(q));
+        renderDMList(filtered);
+      };
+    }
   });
 }
+
+/* RENDERING FUNCTION */
+function renderDMList(list) {
+  dmListEl.innerHTML = "";
+
+  list.forEach(dm => {
+    const li = document.createElement("li");
+    li.style.display = "flex";
+    li.style.justifyContent = "space-between";
+    li.style.alignItems = "center";
+
+    // DM name clickable
+    const nameBtn = document.createElement("span");
+    nameBtn.textContent = dm.name;
+    nameBtn.style.cursor = "pointer";
+    nameBtn.onclick = () => {
+      openRoom({
+        type: "dm",
+        id: dm.uid,
+        otherUid: dm.uid,
+        label: "DM: " + dm.name
+      });
+    };
+
+    // DELETE BUTTON
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "✖";
+    delBtn.style.background = "transparent";
+    delBtn.style.border = "none";
+    delBtn.style.color = "#f87171";
+    delBtn.style.cursor = "pointer";
+    delBtn.title = "Delete DM";
+
+    delBtn.onclick = () => {
+      if (!confirm("Delete this DM for YOU only?")) return;
+
+      // Remove your side
+      db.ref("dms/" + myUid() + "/" + dm.uid).remove();
+      renderDMList(list.filter(x => x.uid !== dm.uid));
+    };
+
+    li.appendChild(nameBtn);
+    li.appendChild(delBtn);
+    dmListEl.appendChild(li);
+  });
+}
+
 /* Groups */
 const quickGroupSelect = $("#quickGroupSelect");
 
