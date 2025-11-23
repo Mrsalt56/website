@@ -566,6 +566,27 @@ function sendDMRequest(targetUid) {
     ref.remove();
   });
 }
+
+/* Helpers for popup & quick actions */
+function sendGroupInvite(targetUid, groupId, groupName) {
+  db.ref("notifications/" + targetUid).push({
+    type: "group_invite",
+    from: currentUser.displayName || currentUser.username,
+    groupId,
+    groupName,
+    createdAt: now()
+  });
+}
+
+function sendDMRequest(targetUid) {
+  db.ref("notifications/" + targetUid).push({
+    type: "dm_request",
+    from: currentUser.displayName || currentUser.username,
+    dmUid: myUid(),
+    createdAt: now()
+  });
+}
+
 /* -----------------------------------------
    Room / Typing
 ----------------------------------------- */
