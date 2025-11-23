@@ -389,7 +389,6 @@ function loadRooms() {
   loadDMs();
   loadGroups();
 }
-
 /* -----------------------------------------
    Load & Render DMs (sorted + search + delete)
 ----------------------------------------- */
@@ -401,7 +400,7 @@ function loadDMs() {
     const tasks = [];
 
     snap.forEach(child => {
-      const otherId = child.key; // this is currently the UID (u_...)
+      const otherId = child.key; // this is the UID being stored in DMs for now
 
       // 1) Get last message time for sorting
       const lastMsgTask = db
@@ -415,7 +414,7 @@ function loadDMs() {
             lastTime = m.val()?.createdAt || 0;
           });
 
-          // 2) Try to get profile from users/{otherId}
+          // 2) Try users/{otherId}
           return db.ref("users/" + otherId).once("value").then(uSnap => {
             if (uSnap.exists()) {
               const u = uSnap.val() || {};
@@ -423,23 +422,39 @@ function loadDMs() {
               if (u.verified) name += " ✔";
 
               dmItems.push({ id: otherId, name, lastTime });
-            } else {
-              // 3) Fallback to presence/{otherId}.username
-              return db.ref("presence/" + otherId).once("value").then(pSnap => {
-                const p = pSnap.val() || {};
-                let name = p.username || otherId;
-
-                dmItems.push({ id: otherId, name, lastTime });
-              });
+              return;
             }
+
+            // 3) Fallback to presence/{otherId}
+            return db.ref("presence/" + otherId).once("value").then(pSnap => {
+              const p = pSnap.val() || {};
+
+              let foundName = p.username;
+              if (!foundName) {
+                // Make a readable temporary name
+                foundName = "User_" + otherId.slice(-4);
+
+                // Write it into presence for future lookups
+                db.ref("presence/" + otherId).update({
+                  username: foundName
+                });
+              }
+
+              dmItems.push({
+                id: otherId,
+                name: foundName,
+                lastTime
+              });
+            });
           });
         });
 
       tasks.push(lastMsgTask);
     });
 
+    // After async tasks finish
     Promise.all(tasks).then(() => {
-      // newest → oldest
+      // SORT: newest → oldest
       dmItems.sort((a, b) => b.lastTime - a.lastTime);
 
       const applyFilterAndRender = () => {
@@ -447,19 +462,19 @@ function loadDMs() {
         const filtered = q
           ? dmItems.filter(dm => dm.name.toLowerCase().includes(q))
           : dmItems;
+
         renderDMList(filtered);
       };
 
       applyFilterAndRender();
 
-      // wire search once
+      // Bind search ONCE
       if (searchInput && !searchInput._wiredForDMSearch) {
         searchInput.addEventListener("input", applyFilterAndRender);
         searchInput._wiredForDMSearch = true;
       }
     });
 
-    // if no DMs at all
     if (!snap.exists()) {
       dmListEl.innerHTML = "";
     }
@@ -1275,6 +1290,18 @@ $("#quickInviteBtn").addEventListener("click", () => {
     });
 });
 
+function repairPresenceUsername(uid, expectedName) {
+  db.ref("presence/" + uid).once("value").then(snap => {
+    if (!snap.exists()) return;
+
+    const val = snap.val();
+    if (!val.username || val.username.trim() === "") {
+      db.ref("presence/" + uid).update({
+        username: expectedName
+      });
+    }
+  });
+}
 /* -----------------------------------------
    Start
 ----------------------------------------- */
