@@ -641,9 +641,19 @@ function acceptNotification(id, type) {
   const other = data.dmUid;
 
   // Create DM on both sides
-  const base = { placeholder: true };
-  db.ref("dms/" + me + "/" + other).set(base);
-  db.ref("dms/" + other + "/" + me).set(base);
+const base = {
+  establishedAt: now(),
+  otherUid: other
+};
+
+const base2 = {
+  establishedAt: now(),
+  otherUid: me
+};
+
+   db.ref("dms/" + me + "/" + other).set(base);
+   db.ref("dms/" + other + "/" + me).set(base2);
+
 
   // 🔥 AUTO-OPEN DM for the accepting user
   openRoom({
