@@ -317,7 +317,9 @@ function afterLogin() {
 function setupPresence() {
   const uid = myUid();
   const presRef = db.ref("presence/" + uid);
+  const quickUserSelect = $("#quickUserSelect");
 
+  // Set current user presence
   presRef.set({
     username: currentUser.displayName || currentUser.username,
     online: true,
@@ -330,24 +332,41 @@ function setupPresence() {
     lastSeen: now()
   });
 
+  // ONE unified presence listener
   db.ref("presence").on("value", snap => {
     onlineListEl.innerHTML = "";
+    quickUserSelect.innerHTML = '<option value="">Select user…</option>';
     if (adminOnlineListEl) adminOnlineListEl.innerHTML = "";
 
     snap.forEach(child => {
       const val = child.val();
-      const li = document.createElement("li");
-      let name = val.username;
-      db.ref("users/" + child.key + "/verified").once("value").then(vs => {
-        if (vs.val()) name += " ✔";
-        li.textContent = name + (val.online ? " ●" : " ○");
-      });
-      onlineListEl.appendChild(li);
+      const childUid = child.key;
 
-      if (adminOnlineListEl) {
-        const li2 = li.cloneNode(true);
-        adminOnlineListEl.appendChild(li2);
-      }
+      // Build name with verified badge
+      db.ref("users/" + childUid + "/verified").once("value").then(vs => {
+        let name = val.username;
+        if (vs.val()) name += " ✔";
+        const status = val.online ? " ●" : " ○";
+
+        // --- Sidebar online list ---
+        const li = document.createElement("li");
+        li.textContent = name + " " + status;
+        onlineListEl.appendChild(li);
+
+        // --- Admin list ---
+        if (adminOnlineListEl) {
+          const li2 = li.cloneNode(true);
+          adminOnlineListEl.appendChild(li2);
+        }
+
+        // --- Quick-Select Dropdown (skip yourself) ---
+        if (childUid !== myUid()) {
+          const op = document.createElement("option");
+          op.value = childUid;
+          op.textContent = name;
+          quickUserSelect.appendChild(op);
+        }
+      });
     });
   });
 }
@@ -1084,6 +1103,30 @@ window.addEventListener("click", e => {
   if (e.target === notificationsModal) hideModal(notificationsModal);
   if (e.target === adminModal) hideModal(adminModal);
   if (e.target === userPopup) hideModal(userPopup);
+});
+/*------------------
+Quick button lowkey
+--------------------*/
+$("#quickDmBtn").addEventListener("click", () => {
+    const uid = quickUserSelect.value;
+    if (!uid) return alert("Select someone first.");
+
+    sendDMRequest(uid);
+    alert("DM request sent!");
+});
+
+$("#quickInviteBtn").addEventListener("click", () => {
+    const uid = quickUserSelect.value;
+    if (!uid) return alert("Select someone first.");
+
+    const groupId = prompt("Enter a group ID:");
+    if (!groupId) return;
+
+    db.ref("groups/" + groupId + "/meta/name").once("value").then(snap => {
+        const groupName = snap.val() || "Group";
+        sendGroupInvite(uid, groupId, groupName);
+        alert("Invite sent!");
+    });
 });
 
 /* -----------------------------------------
