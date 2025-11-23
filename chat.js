@@ -401,58 +401,73 @@ function loadDMs() {
     const tasks = [];
 
     snap.forEach(child => {
-      const otherUid = child.key;
+      const otherId = child.key; // this is currently the UID (u_...)
 
-      // 1) FETCH LAST MESSAGE
-      const lastMsgTask = db.ref("dms/" + myUid() + "/" + otherUid)
+      // 1) Get last message time for sorting
+      const lastMsgTask = db
+        .ref("dms/" + myUid() + "/" + otherId)
         .orderByChild("createdAt")
         .limitToLast(1)
         .once("value")
         .then(lastSnap => {
           let lastTime = 0;
-          lastSnap.forEach(msg => {
-            lastTime = msg.val()?.createdAt || 0;
+          lastSnap.forEach(m => {
+            lastTime = m.val()?.createdAt || 0;
           });
 
-          // 2) FETCH USER INFO
-          return db.ref("users/" + otherUid).once("value").then(uSnap => {
-            const u = uSnap.val() || {};
+          // 2) Try to get profile from users/{otherId}
+          return db.ref("users/" + otherId).once("value").then(uSnap => {
+            if (uSnap.exists()) {
+              const u = uSnap.val() || {};
+              let name = u.displayName || u.username || otherId;
+              if (u.verified) name += " ✔";
 
-            // CLEAN NAME
-            let name = u.displayName || u.username || ("User " + otherUid.slice(-4));
-            if (u.verified) name += " ✔";
+              dmItems.push({ id: otherId, name, lastTime });
+            } else {
+              // 3) Fallback to presence/{otherId}.username
+              return db.ref("presence/" + otherId).once("value").then(pSnap => {
+                const p = pSnap.val() || {};
+                let name = p.username || otherId;
 
-            dmItems.push({
-              uid: otherUid,
-              name,
-              lastTime
-            });
+                dmItems.push({ id: otherId, name, lastTime });
+              });
+            }
           });
         });
 
       tasks.push(lastMsgTask);
     });
 
-    // After all async work:
     Promise.all(tasks).then(() => {
-      // SORT newest → oldest
+      // newest → oldest
       dmItems.sort((a, b) => b.lastTime - a.lastTime);
 
-      renderDMList(dmItems);
-    });
-
-    // SEARCH FILTER
-    if (searchInput) {
-      searchInput.oninput = () => {
-        const q = searchInput.value.toLowerCase();
-        const filtered = dmItems.filter(i => i.name.toLowerCase().includes(q));
+      const applyFilterAndRender = () => {
+        const q = (searchInput?.value || "").toLowerCase();
+        const filtered = q
+          ? dmItems.filter(dm => dm.name.toLowerCase().includes(q))
+          : dmItems;
         renderDMList(filtered);
       };
+
+      applyFilterAndRender();
+
+      // wire search once
+      if (searchInput && !searchInput._wiredForDMSearch) {
+        searchInput.addEventListener("input", applyFilterAndRender);
+        searchInput._wiredForDMSearch = true;
+      }
+    });
+
+    // if no DMs at all
+    if (!snap.exists()) {
+      dmListEl.innerHTML = "";
     }
   });
 }
-
-/* RENDERING FUNCTION */
+/*----------
+DM FRFR RENDER
+-------*/
 function renderDMList(list) {
   dmListEl.innerHTML = "";
 
@@ -462,20 +477,20 @@ function renderDMList(list) {
     li.style.justifyContent = "space-between";
     li.style.alignItems = "center";
 
-    // DM name clickable
-    const nameBtn = document.createElement("span");
-    nameBtn.textContent = dm.name;
-    nameBtn.style.cursor = "pointer";
-    nameBtn.onclick = () => {
+    // DM name (click to open)
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = dm.name;
+    nameSpan.style.cursor = "pointer";
+    nameSpan.onclick = () => {
       openRoom({
         type: "dm",
-        id: dm.uid,
-        otherUid: dm.uid,
+        id: dm.id,
+        otherUid: dm.id,
         label: "DM: " + dm.name
       });
     };
 
-    // DELETE BUTTON
+    // Delete DM button
     const delBtn = document.createElement("button");
     delBtn.textContent = "✖";
     delBtn.style.background = "transparent";
@@ -487,12 +502,14 @@ function renderDMList(list) {
     delBtn.onclick = () => {
       if (!confirm("Delete this DM for YOU only?")) return;
 
-      // Remove your side
-      db.ref("dms/" + myUid() + "/" + dm.uid).remove();
-      renderDMList(list.filter(x => x.uid !== dm.uid));
+      // Remove your side of DM
+      db.ref("dms/" + myUid() + "/" + dm.id).remove();
+      // Remove from UI
+      const remaining = list.filter(x => x.id !== dm.id);
+      renderDMList(remaining);
     };
 
-    li.appendChild(nameBtn);
+    li.appendChild(nameSpan);
     li.appendChild(delBtn);
     dmListEl.appendChild(li);
   });
