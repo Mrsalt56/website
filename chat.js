@@ -481,7 +481,7 @@ function loadDMs() {
   });
 }
 /*----------
-DM FRFR RENDER
+DM FRFR RENDER 
 -------*/
 function renderDMList(list) {
   dmListEl.innerHTML = "";
@@ -492,17 +492,52 @@ function renderDMList(list) {
     li.style.justifyContent = "space-between";
     li.style.alignItems = "center";
 
-    // DM name (click to open)
+    // --- DM NAME TEXT ---
     const nameSpan = document.createElement("span");
     nameSpan.textContent = dm.name;
     nameSpan.style.cursor = "pointer";
+
+    // CLICK TO OPEN (correct otherUid fetching)
     nameSpan.onclick = () => {
-      openRoom({
-         type: "dm",
-         id: dm.id,
-         otherUid: dm.id,   // fallback
-         label: "DM: " + dm.name
-      });
+      const basePath = "dms/" + myUid() + "/" + dm.id;
+
+      db.ref(basePath + "/otherUid")
+        .once("value")
+        .then(s => {
+          const other = s.val() || dm.id; // fallback
+
+          openRoom({
+            type: "dm",
+            id: dm.id,
+            otherUid: other,
+            label: "DM: " + dm.name
+          });
+        });
+    };
+
+    // DELETE BUTTON
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "✖";
+    delBtn.style.background = "transparent";
+    delBtn.style.border = "none";
+    delBtn.style.color = "#f87171";
+    delBtn.style.cursor = "pointer";
+    delBtn.title = "Delete DM";
+
+    delBtn.onclick = () => {
+      if (!confirm("Delete this DM for YOU only?")) return;
+      db.ref("dms/" + myUid() + "/" + dm.id).remove();
+
+      const remaining = list.filter(x => x.id !== dm.id);
+      renderDMList(remaining);
+    };
+
+    li.appendChild(nameSpan);
+    li.appendChild(delBtn);
+    dmListEl.appendChild(li);
+  });
+}
+
 
 
     // Delete DM button
