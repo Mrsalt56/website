@@ -498,12 +498,12 @@ function renderDMList(list) {
     nameSpan.style.cursor = "pointer";
     nameSpan.onclick = () => {
       openRoom({
-        type: "dm",
-        id: dm.id,
-        otherUid: dm.id,
-        label: "DM: " + dm.name
+         type: "dm",
+         id: dm.id,
+         otherUid: dm.id,   // fallback
+         label: "DM: " + dm.name
       });
-    };
+
 
     // Delete DM button
     const delBtn = document.createElement("button");
