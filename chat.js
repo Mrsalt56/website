@@ -538,33 +538,6 @@ function renderDMList(list) {
   });
 }
 
-
-
-    // Delete DM button
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "✖";
-    delBtn.style.background = "transparent";
-    delBtn.style.border = "none";
-    delBtn.style.color = "#f87171";
-    delBtn.style.cursor = "pointer";
-    delBtn.title = "Delete DM";
-
-    delBtn.onclick = () => {
-      if (!confirm("Delete this DM for YOU only?")) return;
-
-      // Remove your side of DM
-      db.ref("dms/" + myUid() + "/" + dm.id).remove();
-      // Remove from UI
-      const remaining = list.filter(x => x.id !== dm.id);
-      renderDMList(remaining);
-    };
-
-    li.appendChild(nameSpan);
-    li.appendChild(delBtn);
-    dmListEl.appendChild(li);
-  });
-}
-
 /* Groups */
 const quickGroupSelect = $("#quickGroupSelect");
 
