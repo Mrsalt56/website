@@ -562,7 +562,10 @@ function sendDMRequest(targetUid) {
     createdAt: now()
   });
 }
-
+     
+    ref.remove();
+  });
+}
 /* -----------------------------------------
    Room / Typing
 ----------------------------------------- */
