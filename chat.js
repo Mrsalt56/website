@@ -420,25 +420,45 @@ function loadDMs() {
   });
 }
 /* Groups */
+const quickGroupSelect = $("#quickGroupSelect");
+
 function loadGroups() {
   db.ref("groups").on("value", snap => {
     groupListEl.innerHTML = "";
+
+    // Reset dropdown with default option
+    quickGroupSelect.innerHTML = '<option value="">Select group…</option>';
+
     snap.forEach(child => {
       const group = child.val();
+      const groupId = child.key;
+
+      // Only groups the user is in
       if (!group.members || !group.members[myUid()]) return;
+
+      const name = group.meta?.name || "Group";
+
+      // ---- SIDEBAR GROUP LIST ----
       const li = document.createElement("li");
-      li.textContent = group.meta?.name || "Group";
+      li.textContent = name;
       li.addEventListener("click", () => {
         openRoom({
           type: "group",
-          id: child.key,
-          label: group.meta?.name || "Group"
+          id: groupId,
+          label: name
         });
       });
       groupListEl.appendChild(li);
+
+      // ---- GROUP DROPDOWN FOR INVITES ----
+      const op = document.createElement("option");
+      op.value = groupId;     // 🔥 correct Firebase ID
+      op.textContent = name;  // readable name
+      quickGroupSelect.appendChild(op);
     });
   });
 }
+
 
 $("#createGroupBtn").addEventListener("click", () => {
   const name = prompt("Group name?");
@@ -505,15 +525,21 @@ function acceptNotification(id, type) {
       db.ref("groups/" + data.groupId + "/members/" + myUid()).set(true);
     }
 
-    if (type === "dm_request") {
-      const me = myUid();
-      const other = data.dmUid;
-      const base = { placeholder: true };
-      db.ref("dms/" + me + "/" + other).set(base);
-      db.ref("dms/" + other + "/" + me).set(base);
-    }
+   if (type === "dm_request") {
+  const me = myUid();
+  const other = data.dmUid;
 
-    ref.remove();
+  // Create DM on both sides
+  const base = { placeholder: true };
+  db.ref("dms/" + me + "/" + other).set(base);
+  db.ref("dms/" + other + "/" + me).set(base);
+
+  // 🔥 AUTO-OPEN DM for the accepting user
+  openRoom({
+    type: "dm",
+    id: other,
+    otherUid: other,
+    label: "DM: " + data.from
   });
 }
 
@@ -1117,14 +1143,14 @@ $("#quickDmBtn").addEventListener("click", () => {
 
 $("#quickInviteBtn").addEventListener("click", () => {
     const uid = quickUserSelect.value;
-    if (!uid) return alert("Select someone first.");
+    const groupId = quickGroupSelect.value;
 
-    const groupId = prompt("Enter a group ID:");
-    if (!groupId) return;
+    if (!uid) return alert("Select a user.");
+    if (!groupId) return alert("Select a group.");
 
     db.ref("groups/" + groupId + "/meta/name").once("value").then(snap => {
-        const groupName = snap.val() || "Group";
-        sendGroupInvite(uid, groupId, groupName);
+        const name = snap.val() || "Group";
+        sendGroupInvite(uid, groupId, name);
         alert("Invite sent!");
     });
 });
