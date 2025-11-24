@@ -496,8 +496,10 @@ function renderDMList(list) {
     const nameSpan = document.createElement("span");
     nameSpan.textContent = dm.name;
     nameSpan.style.cursor = "pointer";
+     
 //MESSAGE BUTTON
 nameSpan.onclick = () => {
+   console.log("CLICKED DM:", dm.id);
   const basePath = "dms/" + myUid() + "/" + dm.id;
 
   db.ref(basePath + "/otherUid")
