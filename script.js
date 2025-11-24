@@ -257,7 +257,7 @@ submitBtn.addEventListener("click", () => {
   userNameInput.value = "";
 
   // Send to Discord webhook
-  fetch("https://discord.com/api/webhooks/1442642944166465608/1GXhw1FApgV54s6fYD8tYnIezoS0DMT3Iz6smH9vaUVJmrj_PVwEAu22D95giwAV0fkQ", {
+  fetch("https://discord.com/api/webhooks/1442644059091898510/LVEBqv-Gz5qkkVYYM6Ud0qPHDKMT846A9K8AiuDqGLpKb6_0R66dMkyYYP2dZPOan5SE", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
