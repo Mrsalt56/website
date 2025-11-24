@@ -499,20 +499,6 @@ function renderDMList(list) {
 
     // CLICK TO OPEN (correct otherUid fetching)
     nameSpan.onclick = () => {
-      const basePath = "dms/" + myUid() + "/" + dm.id;
-
-      db.ref(basePath + "/otherUid")
-        .once("value")
-        .then(s => {
-          const other = s.val() || dm.id; // fallback
-
-          openRoom({
-            type: "dm",
-            id: dm.id,
-            otherUid: other,
-            label: "DM: " + dm.name
-          });
-        });
     };
 
     // DELETE BUTTON
