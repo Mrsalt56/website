@@ -496,10 +496,23 @@ function renderDMList(list) {
     const nameSpan = document.createElement("span");
     nameSpan.textContent = dm.name;
     nameSpan.style.cursor = "pointer";
+//MESSAGE BUTTON
+nameSpan.onclick = () => {
+  const basePath = "dms/" + myUid() + "/" + dm.id;
 
-    // CLICK TO OPEN (correct otherUid fetching)
-    nameSpan.onclick = () => {
-    };
+  db.ref(basePath + "/otherUid")
+    .once("value")
+    .then(s => {
+      const other = s.val() || dm.id; // fallback
+
+      openRoom({
+        type: "dm",
+        id: dm.id,
+        otherUid: other,
+        label: "DM: " + dm.name
+      });
+    });
+};
 
     // DELETE BUTTON
     const delBtn = document.createElement("button");
