@@ -14,7 +14,7 @@ const suggestButton =
   const sendBtn = document.getElementById('sendSuggestion');
 
   const webhookURL = "https://discord.com/api/webhooks/1415474812037628005/qPca1ARqtULY44_5dbar6dSSLiMvaKrVRchKjXPULxwJElh-M0U2zeogMrs34jv2OWuB";
-  const reportWebhookURL = "https://discord.com/api/webhooks/1415474903880171632/FlXBps-LswodW8fRTjkx4VWHAs19CuUR3iuFm63FMa5pLay5uI8jPvxSRVVPRrlQHDAr";
+  const reportWebhookURL = "https://discord.com/api/webhooks/1442642641576525854/VinflwdNekq4_nVAPn7R4XyQwHrUtqbobeu2HMSuzDEvOHInYxIjnqyi4hH8pKuE6lxU";
 
   let currentFilter = 'all';
   const popularityAliases = { hot: ['hot','trending'], trending: ['hot','trending'] };
@@ -257,7 +257,7 @@ submitBtn.addEventListener("click", () => {
   userNameInput.value = "";
 
   // Send to Discord webhook
-  fetch("https://discord.com/api/webhooks/1424618718499176601/6IfTXj3Tdl4FE2YUdrWIBDwOSabR61paQ3YhzCEMfVAK9SLVpXFAbyT7GpiFyCFsAInO", {
+  fetch("https://discord.com/api/webhooks/1442642944166465608/1GXhw1FApgV54s6fYD8tYnIezoS0DMT3Iz6smH9vaUVJmrj_PVwEAu22D95giwAV0fkQ", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ content: `📢 New shoutout request: **${name}**` })
