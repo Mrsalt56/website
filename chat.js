@@ -264,7 +264,6 @@ function ensureAccount() {
   currentUser = stored;
   afterLogin();
 }
-
 /* Signup */
 $("#signupBtn").addEventListener("click", () => {
   const username = $("#signupUsername").value.trim();
@@ -272,66 +271,51 @@ $("#signupBtn").addEventListener("click", () => {
 
   if (!username || !password) return alert("Enter username and password.");
 
-  if (PROFANITY.some(p => username.toLowerCase().includes(p.replace(/\*/g, "")))) {
-    return alert("Username has profanity.");
+  // Validate name (no profanity / no special chars / length constraints)
+  if (!isValidName(username)) {
+    return alert("Invalid username.\nNo profanity or special characters allowed.");
   }
 
-  const uid = uuid();
-  const user = {
-    uid,
-    username,
-    password,
-    displayName: username,
-    pfpUrl: "",
-    createdAt: now()
-  };
+  // Check for duplicate username
+  db.ref("users")
+    .orderByChild("username")
+    .equalTo(username)
+    .once("value")
+    .then(snap => {
+      if (snap.exists()) {
+        return alert("Username already taken.");
+      }
 
-  currentUser = user;
-  saveUser(user);
+      // Create user
+      const uid = uuid();
+      const user = {
+        uid,
+        username,
+        password,
+        displayName: username,
+        pfpUrl: "",
+        createdAt: now()
+      };
 
-  db.ref("users/" + uid).set({
-    username,
-    displayName: user.displayName,
-    createdAt: user.createdAt,
-    verified: false,
-    bannedUntil: 0,
-    timeoutUntil: 0,
-    role: "user",
-    pfpUrl: ""
-  });
+      currentUser = user;
+      saveUser(user);
 
-  hideModal(accountModal);
-  afterLogin();
+      db.ref("users/" + uid).set({
+        username,
+        displayName: user.displayName,
+        createdAt: user.createdAt,
+        verified: false,
+        bannedUntil: 0,
+        timeoutUntil: 0,
+        role: "user",
+        pfpUrl: ""
+      });
+
+      hideModal(accountModal);
+      afterLogin();
+    });
 });
 
-/* After login: sync + init systems */
-function afterLogin() {
-  const uid = myUid();
-  db.ref("users/" + uid).once("value").then(snap => {
-    const data = snap.val() || {};
-    currentUser.displayName = data.displayName || currentUser.username;
-    currentUser.pfpUrl = data.pfpUrl || "";
-
-    saveUser(currentUser);
-
-    displayNameEl.textContent = currentUser.displayName;
-    accUsernameEl.textContent = currentUser.username;
-    accUidEl.textContent = currentUser.uid;
-    accStatusEl.textContent = data.role === "admin" ? "Admin" : "User";
-
-    if (currentUser.pfpUrl) {
-      pfpPreviewEl.src = currentUser.pfpUrl;
-    } else {
-      pfpPreviewEl.src =
-        "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-        encodeURIComponent(currentUser.displayName);
-    }
-
-    setupPresence();
-    loadRooms();
-    listenForNotifications();
-  });
-}
 
 /* -----------------------------------------
    Presence
@@ -1096,41 +1080,60 @@ $("#openSettings").addEventListener("click", () => {
 });
 
 settingsSaveBtn.addEventListener("click", () => {
-  const newName =
-    settingsDisplayNameInput.value.trim() || currentUser.username;
-  currentUser.displayName = newName;
+  const newName = settingsDisplayNameInput.value.trim();
 
-  const pfpFile = settingsPfpFileInput.files[0];
-
-  function finishUpdate(pfpUrl) {
-    if (pfpUrl) {
-      currentUser.pfpUrl = pfpUrl;
-      pfpPreviewEl.src = pfpUrl;
-    } else if (!currentUser.pfpUrl) {
-      pfpPreviewEl.src =
-        "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-        encodeURIComponent(newName);
-    }
-
-    displayNameEl.textContent = newName;
-    saveUser(currentUser);
-
-    db.ref("users/" + myUid()).update({
-      displayName: newName,
-      pfpUrl: currentUser.pfpUrl || ""
-    });
-
-    hideModal(settingsModal);
+  if (!isValidName(newName)) {
+    return alert("Invalid display name. No profanity or special characters allowed.");
   }
 
-  if (pfpFile) {
-    const path = `pfp/${myUid()}/${Date.now()}_${pfpFile.name}`;
-    const pfpRef = storage.ref().child(path);
-    pfpRef.put(pfpFile).then(s => s.ref.getDownloadURL()).then(url => {
-      finishUpdate(url);
+  // Check duplicate display names
+  db.ref("users")
+    .orderByChild("displayName")
+    .equalTo(newName)
+    .once("value")
+    .then(snap => {
+      // Allow same person to keep their name
+      if (snap.exists() && !snap.val()[myUid()]) {
+        return alert("That display name is already taken.");
+      }
+
+      updateDisplayName(); // continue updating
     });
-  } else {
-    finishUpdate(null);
+
+  function updateDisplayName() {
+    currentUser.displayName = newName;
+    const pfpFile = settingsPfpFileInput.files[0];
+
+    function finishUpdate(pfpUrl) {
+      if (pfpUrl) {
+        currentUser.pfpUrl = pfpUrl;
+        pfpPreviewEl.src = pfpUrl;
+      } else if (!currentUser.pfpUrl) {
+        pfpPreviewEl.src =
+          "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
+          encodeURIComponent(newName);
+      }
+
+      displayNameEl.textContent = newName;
+      saveUser(currentUser);
+
+      db.ref("users/" + myUid()).update({
+        displayName: newName,
+        pfpUrl: currentUser.pfpUrl || ""
+      });
+
+      hideModal(settingsModal);
+    }
+
+    if (pfpFile) {
+      const path = `pfp/${myUid()}/${Date.now()}_${pfpFile.name}`;
+      const pfpRef = storage.ref().child(path);
+      pfpRef.put(pfpFile).then(s => s.ref.getDownloadURL()).then(url => {
+        finishUpdate(url);
+      });
+    } else {
+      finishUpdate(null);
+    }
   }
 });
 
