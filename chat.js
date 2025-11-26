@@ -211,6 +211,28 @@ function scrollBottom() {
   chatAreaEl.scrollTop = chatAreaEl.scrollHeight;
 }
 
+
+// Allowed characters: letters, numbers, spaces
+// NO @ # $ % ^ & * ( ) { } etc
+const BAD_CHARS = /[^a-zA-Z0-9 _-]/;
+
+// Check if username/displayName is valid
+function isValidName(name) {
+  if (!name) return false;
+
+  // No profanity
+  const lower = name.toLowerCase();
+  if (PROFANITY.some(p => lower.includes(p.replace(/\*/g, "")))) return false;
+
+  // No bad characters
+  if (BAD_CHARS.test(name)) return false;
+
+  // Length limit
+  if (name.length < 3 || name.length > 20) return false;
+
+  return true;
+}
+
 /* -----------------------------------------
    Account (localStorage)
 ----------------------------------------- */
