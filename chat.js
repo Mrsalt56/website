@@ -651,31 +651,32 @@ function acceptNotification(id, type) {
       db.ref("groups/" + data.groupId + "/members/" + myUid()).set(true);
     }
 
-   if (type === "dm_request") {
-  const me = myUid();
-  const other = data.dmUid;
+    if (type === "dm_request") {
+      const me = myUid();
+      const other = data.dmUid;
 
-  // Create DM on both sides
-const base = {
-  establishedAt: now(),
-  otherUid: other
-};
+      const base = {
+        establishedAt: now(),
+        otherUid: other
+      };
 
-const base2 = {
-  establishedAt: now(),
-  otherUid: me
-};
+      const base2 = {
+        establishedAt: now(),
+        otherUid: me
+      };
 
-   db.ref("dms/" + me + "/" + other).set(base);
-   db.ref("dms/" + other + "/" + me).set(base2);
+      db.ref("dms/" + me + "/" + other).set(base);
+      db.ref("dms/" + other + "/" + me).set(base2);
 
+      openRoom({
+        type: "dm",
+        id: other,
+        otherUid: other,
+        label: "DM: " + data.from
+      });
+    }
 
-  // 🔥 AUTO-OPEN DM for the accepting user
-  openRoom({
-    type: "dm",
-    id: other,
-    otherUid: other,
-    label: "DM: " + data.from
+    ref.remove();
   });
 }
 
@@ -698,30 +699,7 @@ function sendDMRequest(targetUid) {
     createdAt: now()
   });
 }
-     
-    ref.remove();
-  });
-}
 
-/* Helpers for popup & quick actions */
-function sendGroupInvite(targetUid, groupId, groupName) {
-  db.ref("notifications/" + targetUid).push({
-    type: "group_invite",
-    from: currentUser.displayName || currentUser.username,
-    groupId,
-    groupName,
-    createdAt: now()
-  });
-}
-
-function sendDMRequest(targetUid) {
-  db.ref("notifications/" + targetUid).push({
-    type: "dm_request",
-    from: currentUser.displayName || currentUser.username,
-    dmUid: myUid(),
-    createdAt: now()
-  });
-}
 
 /* -----------------------------------------
    Room / Typing
