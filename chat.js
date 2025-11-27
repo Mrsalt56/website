@@ -94,6 +94,9 @@ const popupCloseBtn = $("#popupCloseBtn");
 const adminLoginView = $("#adminLoginView");
 const adminPanelView = $("#adminPanelView");
 
+const quickUserSelect = $("#quickUserSelect");
+const quickGroupSelect = $("#quickGroupSelect");
+
 /* -----------------------------------------
    STATE
 ----------------------------------------- */
@@ -316,40 +319,63 @@ $("#signupBtn").addEventListener("click", () => {
     });
 });
 
-/* After login: sync + init systems */
+/* After login: sync + init systems (robust version) */
 function afterLogin() {
   const uid = myUid();
-  db.ref("users/" + uid).once("value").then(snap => {
-    const data = snap.val() || {};
+  if (!uid) {
+    console.error("afterLogin: no uid in currentUser");
+    return;
+  }
 
-    // Use stored displayName / pfp if they exist,
-    // otherwise fall back to username
-    currentUser.displayName = data.displayName || currentUser.displayName || currentUser.username;
-    currentUser.pfpUrl = data.pfpUrl || currentUser.pfpUrl || "";
+  // --- Use whatever we have in localStorage first ---
+  const name = currentUser.displayName || currentUser.username || "User";
+  displayNameEl.textContent = name;
 
-    saveUser(currentUser);
+  pfpPreviewEl.src =
+    currentUser.pfpUrl ||
+    "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
+      encodeURIComponent(name);
 
-    // Fill account UI
-    displayNameEl.textContent = currentUser.displayName;
-    accUsernameEl.textContent = currentUser.username;
-    accUidEl.textContent = currentUser.uid;
-    accStatusEl.textContent = data.role === "admin" ? "Admin" : "User";
+  accUsernameEl.textContent = currentUser.username || "";
+  accUidEl.textContent = currentUser.uid || "";
+  accStatusEl.textContent = "User";
 
-    if (currentUser.pfpUrl) {
-      pfpPreviewEl.src = currentUser.pfpUrl;
-    } else {
+  // --- IMPORTANT: start all live systems RIGHT AWAY ---
+  // (so rooms/DMs/online show even if DB read fails)
+  setupPresence();
+  loadRooms();
+  listenForNotifications();
+
+  // --- THEN try to sync extra profile info from Firebase ---
+  db.ref("users/" + uid)
+    .once("value")
+    .then(snap => {
+      const data = snap.val() || {};
+
+      // Merge better info if it exists
+      if (data.displayName) currentUser.displayName = data.displayName;
+      if (data.pfpUrl) currentUser.pfpUrl = data.pfpUrl;
+
+      saveUser(currentUser);
+
+      // Update UI with synced info
+      const finalName =
+        currentUser.displayName || currentUser.username || "User";
+
+      displayNameEl.textContent = finalName;
       pfpPreviewEl.src =
+        currentUser.pfpUrl ||
         "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-        encodeURIComponent(currentUser.displayName);
-    }
+          encodeURIComponent(finalName);
 
-    // Start all live systems
-    setupPresence();
-    loadRooms();
-    listenForNotifications();
-  });
+      accStatusEl.textContent =
+        data.role === "admin" ? "Admin" : "User";
+    })
+    .catch(err => {
+      console.error("Failed to load user profile from DB:", err);
+      // We already started presence/rooms, so do nothing else.
+    });
 }
-
 /* -----------------------------------------
    Presence
 ----------------------------------------- */
