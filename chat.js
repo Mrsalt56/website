@@ -1358,26 +1358,6 @@ function repairPresenceUsername(uid, expectedName) {
   });
 }
 
-/* AFTERLOGIN INFO*/
-function afterLogin() {
-  // Update UI info
-  displayNameEl.textContent = currentUser.displayName || currentUser.username;
-  pfpPreviewEl.src = currentUser.pfpUrl || (
-    "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-    encodeURIComponent(currentUser.displayName || currentUser.username)
-  );
-
-  // Apply to account modal
-  accUsernameEl.textContent = currentUser.username;
-  accUidEl.textContent = currentUser.uid;
-  accStatusEl.textContent = "Online";
-
-  // Load everything
-  setupPresence();
-  loadRooms();
-  listenForNotifications();
-}
-
 /* -----------------------------------------
    Start
 ----------------------------------------- */
