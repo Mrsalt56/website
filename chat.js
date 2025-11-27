@@ -95,7 +95,6 @@ const adminLoginView = $("#adminLoginView");
 const adminPanelView = $("#adminPanelView");
 
 const quickUserSelect = $("#quickUserSelect");
-const quickGroupSelect = $("#quickGroupSelect");
 
 /* -----------------------------------------
    STATE
