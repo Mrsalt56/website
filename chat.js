@@ -316,6 +316,39 @@ $("#signupBtn").addEventListener("click", () => {
     });
 });
 
+/* After login: sync + init systems */
+function afterLogin() {
+  const uid = myUid();
+  db.ref("users/" + uid).once("value").then(snap => {
+    const data = snap.val() || {};
+
+    // Use stored displayName / pfp if they exist,
+    // otherwise fall back to username
+    currentUser.displayName = data.displayName || currentUser.displayName || currentUser.username;
+    currentUser.pfpUrl = data.pfpUrl || currentUser.pfpUrl || "";
+
+    saveUser(currentUser);
+
+    // Fill account UI
+    displayNameEl.textContent = currentUser.displayName;
+    accUsernameEl.textContent = currentUser.username;
+    accUidEl.textContent = currentUser.uid;
+    accStatusEl.textContent = data.role === "admin" ? "Admin" : "User";
+
+    if (currentUser.pfpUrl) {
+      pfpPreviewEl.src = currentUser.pfpUrl;
+    } else {
+      pfpPreviewEl.src =
+        "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
+        encodeURIComponent(currentUser.displayName);
+    }
+
+    // Start all live systems
+    setupPresence();
+    loadRooms();
+    listenForNotifications();
+  });
+}
 
 /* -----------------------------------------
    Presence
