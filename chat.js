@@ -1394,6 +1394,30 @@ function repairPresenceUsername(uid, expectedName) {
   });
 }
 
+console.log("chat.js: about to call ensureAccount");
+
+function ensureAccount() {
+  console.log("ensureAccount() start");
+  const stored = loadUser();
+  console.log("ensureAccount() stored user =", stored);
+
+  if (!stored) {
+    console.log("ensureAccount(): no user, showing signup modal");
+    signupView.style.display = "block";
+    accountView.style.display = "none";
+    showModal(accountModal);
+    return;
+  }
+  currentUser = stored;
+  console.log("ensureAccount(): found user, calling afterLogin");
+  afterLogin();
+}
+
+function afterLogin() {
+  console.log("afterLogin(): running");
+  ...
+}
+
 /* -----------------------------------------
    Start
 ----------------------------------------- */
