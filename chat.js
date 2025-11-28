@@ -337,8 +337,12 @@ function afterLogin() {
     return;
   }
 
-  // --- Use whatever we have in localStorage first ---
+  console.log("afterLogin(): running");
+
+  // *** FIXED: use 'name' instead of finalName ***
   const name = currentUser.displayName || currentUser.username || "User";
+
+  // Set UI
   displayNameEl.textContent = name;
 
   pfpPreviewEl.src =
@@ -350,42 +354,41 @@ function afterLogin() {
   accUidEl.textContent = currentUser.uid || "";
   accStatusEl.textContent = "User";
 
-  // --- IMPORTANT: start all live systems RIGHT AWAY ---
-  // (so rooms/DMs/online show even if DB read fails)
+  // Start live systems
   setupPresence();
   loadRooms();
   listenForNotifications();
 
-  // --- THEN try to sync extra profile info from Firebase ---
+  // Sync additional profile info from Firebase
   db.ref("users/" + uid)
     .once("value")
     .then(snap => {
       const data = snap.val() || {};
 
-      // Merge better info if it exists
       if (data.displayName) currentUser.displayName = data.displayName;
       if (data.pfpUrl) currentUser.pfpUrl = data.pfpUrl;
 
       saveUser(currentUser);
 
-      // Update UI with synced info
-      const finalName =
+      // *** FIXED: no finalName here ***
+      const syncedName =
         currentUser.displayName || currentUser.username || "User";
 
-      displayNameEl.textContent = finalName;
+      displayNameEl.textContent = syncedName;
+
       pfpPreviewEl.src =
         currentUser.pfpUrl ||
         "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-          encodeURIComponent(finalName);
+          encodeURIComponent(syncedName);
 
       accStatusEl.textContent =
         data.role === "admin" ? "Admin" : "User";
     })
     .catch(err => {
-      console.error("Failed to load user profile from DB:", err);
-      // We already started presence/rooms, so do nothing else.
+      console.error("Failed to load user profile:", err);
     });
 }
+
 /* -----------------------------------------
    Presence
 ----------------------------------------- */
