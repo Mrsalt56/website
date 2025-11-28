@@ -80,6 +80,9 @@ const adminModal = $("#adminModal");
 const userPopup = $("#userPopup");
 const signupView = $("#signupView");
 const accountView = $("#accountView");
+const loginView = $("#loginView");
+const loginUsernameInput = $("#loginUsername");
+const loginPasswordInput = $("#loginPassword");
 
 /* Account info */
 const accUsernameEl = $("#accUsername");
@@ -1453,7 +1456,43 @@ function ensureAccount() {
   afterLogin();
 }
 
+/*------------------
+LOGIN PART2
+-------------------*/
 
+// Switch from signup → login view
+$("#switchToLogin").addEventListener("click", () => {
+  signupView.style.display = "none";
+  loginView.style.display = "block";
+});
+
+// LOGIN using localStorage account
+$("#loginBtn").addEventListener("click", () => {
+  const username = loginUsernameInput.value.trim();
+  const password = loginPasswordInput.value.trim();
+
+  if (!username || !password) {
+    return alert("Enter username and password.");
+  }
+
+  // Load the saved account from this device
+  const stored = loadUser();   // uses localStorage 'saltyUser'
+
+  if (!stored) {
+    return alert("No saved account on this device. Create one first.");
+  }
+
+  if (stored.username !== username || stored.password !== password) {
+    return alert("Wrong username or password.");
+  }
+
+  // Success: restore currentUser and continue
+  currentUser = stored;
+  hideModal(accountModal);
+  afterLogin();
+});
+
+\
 /* -----------------------------------------
    Start
 ----------------------------------------- */
