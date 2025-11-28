@@ -1415,7 +1415,6 @@ function ensureAccount() {
 
 function afterLogin() {
   console.log("afterLogin(): running");
-  ...
 }
 
 /* -----------------------------------------
