@@ -331,64 +331,56 @@ $("#signupBtn").addEventListener("click", () => {
 
 /* After login: sync + init systems (robust version) */
 function afterLogin() {
+  console.log("afterLogin START");
+
   const uid = myUid();
-  if (!uid) {
-    console.error("afterLogin: no uid in currentUser");
-    return;
-  }
+  if (!uid) return;
 
-  console.log("afterLogin(): running");
-
-  // *** FIXED: use 'name' instead of finalName ***
+  // Build name safely
   const name = currentUser.displayName || currentUser.username || "User";
 
-  // Set UI
   displayNameEl.textContent = name;
-
   pfpPreviewEl.src =
     currentUser.pfpUrl ||
     "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
       encodeURIComponent(name);
 
-  accUsernameEl.textContent = currentUser.username || "";
-  accUidEl.textContent = currentUser.uid || "";
+  accUsernameEl.textContent = currentUser.username;
+  accUidEl.textContent = currentUser.uid;
   accStatusEl.textContent = "User";
 
-  // Start live systems
+  console.log("afterLogin calling setupPresence");
   setupPresence();
+
+  console.log("afterLogin calling loadRooms");
   loadRooms();
+
+  console.log("afterLogin calling notifications");
   listenForNotifications();
 
-  // Sync additional profile info from Firebase
-  db.ref("users/" + uid)
-    .once("value")
-    .then(snap => {
-      const data = snap.val() || {};
+  // Sync updated profile from Firebase
+  db.ref("users/" + uid).once("value").then(snap => {
+    const data = snap.val() || {};
 
-      if (data.displayName) currentUser.displayName = data.displayName;
-      if (data.pfpUrl) currentUser.pfpUrl = data.pfpUrl;
+    if (data.displayName) currentUser.displayName = data.displayName;
+    if (data.pfpUrl) currentUser.pfpUrl = data.pfpUrl;
 
-      saveUser(currentUser);
+    saveUser(currentUser);
 
-      // *** FIXED: no finalName here ***
-      const syncedName =
-        currentUser.displayName || currentUser.username || "User";
+    const updatedName =
+      currentUser.displayName || currentUser.username || "User";
 
-      displayNameEl.textContent = syncedName;
+    displayNameEl.textContent = updatedName;
 
-      pfpPreviewEl.src =
-        currentUser.pfpUrl ||
-        "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
-          encodeURIComponent(syncedName);
+    pfpPreviewEl.src =
+      currentUser.pfpUrl ||
+      "https://ui-avatars.com/api/?background=1f2937&color=fff&name=" +
+        encodeURIComponent(updatedName);
 
-      accStatusEl.textContent =
-        data.role === "admin" ? "Admin" : "User";
-    })
-    .catch(err => {
-      console.error("Failed to load user profile:", err);
-    });
+    accStatusEl.textContent =
+      data.role === "admin" ? "Admin" : "User";
+  });
 }
-
 /* -----------------------------------------
    Presence
 ----------------------------------------- */
