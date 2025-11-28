@@ -453,8 +453,9 @@ function setupPresence() {
    Rooms / DMs / Groups
 ----------------------------------------- */
 function loadRooms() {
-  roomListEl.innerHTML = "";
-  SUBJECT_ROOMS.forEach(r => {
+    console.log("loadRooms(): START");
+    roomListEl.innerHTML = "";
+    SUBJECT_ROOMS.forEach(r => {
     const li = document.createElement("li");
     li.textContent = r.name;
     li.dataset.id = r.id;
