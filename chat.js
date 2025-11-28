@@ -1417,6 +1417,11 @@ function afterLogin() {
   console.log("afterLogin(): running");
 }
 
+
+accountModal.style.display = "flex";
+signupView.style.display = "block";
+accountView.style.display = "none";
+
 /* -----------------------------------------
    Start
 ----------------------------------------- */
