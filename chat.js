@@ -1,3 +1,14 @@
+console.log("chat.js: file loaded");
+
+if (typeof window.firebase === "undefined") {
+  console.error("chat.js: Firebase SDK is NOT loaded.");
+  alert("Firebase SDK failed to load. Check the three <script> tags in <head>.");
+  // Stop the rest of the script so we don't crash on firebase.initializeApp
+  throw new Error("Firebase missing");
+} else {
+  console.log("chat.js: Firebase SDK detected.");
+}
+
 /*  
 ============================================
 =             SALTY CHAT SYSTEM            =
