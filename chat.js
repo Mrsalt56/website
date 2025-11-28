@@ -1386,4 +1386,4 @@ function repairPresenceUsername(uid, expectedName) {
 /* -----------------------------------------
    Start
 ----------------------------------------- */
-document.addEventListener("DOMContentLoaded", ensureAccount);
+ensureAccount();
