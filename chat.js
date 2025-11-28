@@ -329,6 +329,50 @@ $("#signupBtn").addEventListener("click", () => {
     });
 });
 
+
+/*-----------------------
+LOGIN SECTION BRO 
+----------------------*/
+$("#switchToLogin").addEventListener("click", () => {
+  signupView.style.display = "none";
+  loginView.style.display = "block";
+});
+
+// LOGIN SYSTEM
+$("#loginBtn").addEventListener("click", () => {
+  const username = $("#loginUsername").value.trim();
+  const password = $("#loginPassword").value.trim();
+
+  if (!username || !password) return alert("Enter username & password.");
+
+  // Find matching account in Firebase
+  db.ref("users")
+    .orderByChild("username")
+    .equalTo(username)
+    .once("value")
+    .then(snap => {
+      if (!snap.exists()) return alert("Account not found.");
+
+      const uid = Object.keys(snap.val())[0];
+      const userData = snap.val()[uid];
+
+      // Compare password with stored one
+      const stored = loadUser();
+
+      // They saved user in localStorage, check that
+      if (!stored || stored.username !== username || stored.password !== password) {
+        return alert("Wrong password.");
+      }
+
+      // Restore local account
+      currentUser = stored;
+      saveUser(currentUser);
+
+      hideModal(accountModal);
+      afterLogin();
+    });
+});
+
 /* After login: sync + init systems (robust version) */
 function afterLogin() {
   console.log("afterLogin START");
