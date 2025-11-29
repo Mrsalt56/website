@@ -1492,6 +1492,17 @@ $("#loginBtn").addEventListener("click", () => {
   afterLogin();
 });
 
+
+$("#switchToLogin").addEventListener("click", () => {
+  signupView.style.display = "none";
+  loginView.style.display = "block";
+});
+
+$("#switchToSignup").addEventListener("click", () => {
+  loginView.style.display = "none";
+  signupView.style.display = "block";
+});
+
 /* -----------------------------------------
    Start
 ----------------------------------------- */
