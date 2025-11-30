@@ -294,6 +294,7 @@ $("#signupBtn").addEventListener("click", async () => {
   await db.ref("users/" + username).set(userData);
 
   currentUser = userData;
+  localStorage.setItem("saltySessionUser", userData.username);
 
   hideModal(accountModal);
   afterLogin();
@@ -332,6 +333,7 @@ $("#loginBtn").addEventListener("click", async () => {
 
   // Success
   currentUser = userData;
+  localStorage.setItem("saltySessionUser", username);
 
   hideModal(accountModal);
   afterLogin();
@@ -1426,12 +1428,36 @@ function repairPresenceUsername(uid, expectedName) {
 
 console.log("chat.js: about to call ensureAccount");
 
-function ensureAccount() {
-  console.log("ensureAccount() → always show login/signup");
+async function ensureAccount() {
+  // check if username saved from last session
+  const savedUsername = localStorage.getItem("saltySessionUser");
 
-  signupView.style.display = "block";
-  loginView.style.display = "none";
-  showModal(accountModal);
+  if (!savedUsername) {
+    // no session → show login
+    signupView.style.display = "block";
+    loginView.style.display = "none";
+    showModal(accountModal);
+    return;
+  }
+
+  // try loading the user from firebase
+  const snap = await db.ref("users/" + savedUsername).once("value");
+
+  if (!snap.exists()) {
+    // session corrupted → force re-login
+    localStorage.removeItem("saltySessionUser");
+    signupView.style.display = "block";
+    loginView.style.display = "none";
+    showModal(accountModal);
+    return;
+  }
+
+  // use stored user
+  currentUser = snap.val();
+  currentUser.uid = snap.val().uid;
+
+  hideModal(accountModal);
+  afterLogin();
 }
 
 /*------------------
