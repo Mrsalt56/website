@@ -79,7 +79,6 @@ const notificationsModal = $("#notificationsModal");
 const adminModal = $("#adminModal");
 const userPopup = $("#userPopup");
 const signupView = $("#signupView");
-const accountView = $("#accountView");
 const loginView = $("#loginView");
 const loginUsernameInput = $("#loginUsername");
 const loginPasswordInput = $("#loginPassword");
