@@ -1446,7 +1446,6 @@ function ensureAccount() {
   if (!stored) {
     console.log("ensureAccount(): no user, showing signup modal");
     signupView.style.display = "block";
-    accountView.style.display = "none";
     showModal(accountModal);
     return;
   }
