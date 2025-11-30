@@ -1337,6 +1337,34 @@ $("#deleteRoomBtn").addEventListener("click", () => {
   chatAreaEl.innerHTML = "";
 });
 
+
+
+
+/*----------------
+LOGOUT BUTTOM RIGHT HERE BTW
+----------------------------*/
+function logout() {
+  localStorage.removeItem("saltyAccount");
+
+  // Reset UI
+  if (signupView) signupView.style.display = "block";
+  if (accountView) accountView.style.display = "none";
+
+  // Clear user data
+  currentUser = null;
+
+  // Stop presence
+  if (myUid()) {
+    db.ref("presence/" + myUid()).update({
+      online: false,
+      lastSeen: Date.now()
+    });
+  }
+
+  alert("Logged out.");
+  location.reload();
+}
+
 /* -----------------------------------------
    Misc UI
 ----------------------------------------- */
