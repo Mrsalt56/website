@@ -256,37 +256,6 @@ function isValidName(name) {
   return true;
 }
 
-/* -----------------------------------------
-   Account (localStorage)
------------------------------------------ */
-function loadUser() {
-  try {
-    return JSON.parse(localStorage.getItem("saltyUser"));
-  } catch {
-    return null;
-  }
-}
-
-function saveUser(user) {
-  localStorage.setItem("saltyUser", JSON.stringify(user));
-}
-
-function logout() {
-  localStorage.removeItem("saltyUser");
-  location.reload();
-}
-
-function ensureAccount() {
-  const stored = loadUser();
-  if (!stored) {
-    signupView.style.display = "block";
-    accountView.style.display = "none";
-    showModal(accountModal);
-    return;
-  }
-  currentUser = stored;
-  afterLogin();
-}
 /* Signup */
 $("#signupBtn").addEventListener("click", async () => {
   const username = $("#signupUsername").value.trim().toLowerCase();
@@ -403,8 +372,6 @@ function afterLogin() {
 
     if (data.displayName) currentUser.displayName = data.displayName;
     if (data.pfpUrl) currentUser.pfpUrl = data.pfpUrl;
-
-    saveUser(currentUser);
 
     const updatedName =
       currentUser.displayName || currentUser.username || "User";
@@ -1432,19 +1399,11 @@ function repairPresenceUsername(uid, expectedName) {
 console.log("chat.js: about to call ensureAccount");
 
 function ensureAccount() {
-  console.log("ensureAccount() start");
-  const stored = loadUser();
-  console.log("ensureAccount() stored user =", stored);
+  console.log("ensureAccount() → always show login/signup");
 
-  if (!stored) {
-    console.log("ensureAccount(): no user, showing signup modal");
-    signupView.style.display = "block";
-    showModal(accountModal);
-    return;
-  }
-  currentUser = stored;
-  console.log("ensureAccount(): found user, calling afterLogin");
-  afterLogin();
+  signupView.style.display = "block";
+  loginView.style.display = "none";
+  showModal(accountModal);
 }
 
 /*------------------
@@ -1456,39 +1415,7 @@ $("#switchToLogin").addEventListener("click", () => {
   signupView.style.display = "none";
   loginView.style.display = "block";
 });
-
-// LOGIN using localStorage account
-$("#loginBtn").addEventListener("click", () => {
-  const username = loginUsernameInput.value.trim();
-  const password = loginPasswordInput.value.trim();
-
-  if (!username || !password) {
-    return alert("Enter username and password.");
-  }
-
-  // Load the saved account from this device
-  const stored = loadUser();   // uses localStorage 'saltyUser'
-
-  if (!stored) {
-    return alert("No saved account on this device. Create one first.");
-  }
-
-  if (stored.username !== username || stored.password !== password) {
-    return alert("Wrong username or password.");
-  }
-
-  // Success: restore currentUser and continue
-  currentUser = stored;
-  hideModal(accountModal);
-  afterLogin();
-});
-
-
-$("#switchToLogin").addEventListener("click", () => {
-  signupView.style.display = "none";
-  loginView.style.display = "block";
-});
-
+c
 $("#switchToSignup").addEventListener("click", () => {
   loginView.style.display = "none";
   signupView.style.display = "block";
