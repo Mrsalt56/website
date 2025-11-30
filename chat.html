@@ -103,12 +103,17 @@
     </footer>
   </main>
 
-</div>
-
 <div id="accountModal" class="modal">
   <div class="modal-content">
 
     <h2>Account</h2>
+
+    <!-- ACCOUNT INFO (hidden until logged in) -->
+    <div id="accountView" style="display:none;">
+      <p><strong>Username:</strong> <span id="accUsername"></span></p>
+      <p><strong>UID:</strong> <span id="accUid"></span></p>
+      <p><strong>Status:</strong> <span id="accStatus"></span></p>
+    </div>
 
     <!-- SIGNUP VIEW -->
     <div id="signupView" style="display:block;">
