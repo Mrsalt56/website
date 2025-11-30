@@ -27,6 +27,14 @@ Dark UI +:
 ============================================
 */
 
+async function hashPassword(password) {
+  const enc = new TextEncoder().encode(password);
+  const digest = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 /* -----------------------------------------
    Firebase Init
 ----------------------------------------- */
@@ -280,57 +288,47 @@ function ensureAccount() {
   afterLogin();
 }
 /* Signup */
-$("#signupBtn").addEventListener("click", () => {
-  const username = $("#signupUsername").value.trim();
+$("#signupBtn").addEventListener("click", async () => {
+  const username = $("#signupUsername").value.trim().toLowerCase();
   const password = $("#signupPassword").value.trim();
 
-  if (!username || !password) return alert("Enter username and password.");
-
-  // Validate name (no profanity / no special chars / length constraints)
-  if (!isValidName(username)) {
-    return alert("Invalid username.\nNo profanity or special characters allowed.");
+  if (!username || !password) {
+    return alert("Enter a username and password.");
   }
 
-  // Check for duplicate username
-  db.ref("users")
-    .orderByChild("username")
-    .equalTo(username)
-    .once("value")
-    .then(snap => {
-      if (snap.exists()) {
-        return alert("Username already taken.");
-      }
+  // Check if username exists
+  const snap = await db.ref("users/" + username).once("value");
+  if (snap.exists()) {
+    return alert("Username already taken.");
+  }
 
-      // Create user
-      const uid = uuid();
-      const user = {
-        uid,
-        username,
-        password,
-        displayName: username,
-        pfpUrl: "",
-        createdAt: now()
-      };
+  // Hash password
+  const hashed = await hashPassword(password);
 
-      currentUser = user;
-      saveUser(user);
+  // Create user object
+  const uid = "u_" + Math.random().toString(36).slice(2);
 
-      db.ref("users/" + uid).set({
-        username,
-        displayName: user.displayName,
-        createdAt: user.createdAt,
-        verified: false,
-        bannedUntil: 0,
-        timeoutUntil: 0,
-        role: "user",
-        pfpUrl: ""
-      });
+  const userData = {
+    uid: uid,
+    username: username,
+    displayName: username,
+    pfpUrl: "",
+    passwordHash: hashed,
+    createdAt: Date.now(),
+    verified: false,
+    bannedUntil: 0,
+    timeoutUntil: 0,
+    role: "user"
+  };
 
-      hideModal(accountModal);
-      afterLogin();
-    });
+  // Save to Firebase
+  await db.ref("users/" + username).set(userData);
+
+  currentUser = userData;
+
+  hideModal(accountModal);
+  afterLogin();
 });
-
 
 /*-----------------------
 LOGIN SECTION BRO 
@@ -339,40 +337,35 @@ $("#switchToLogin").addEventListener("click", () => {
   signupView.style.display = "none";
   loginView.style.display = "block";
 });
-
-// LOGIN SYSTEM
-$("#loginBtn").addEventListener("click", () => {
-  const username = $("#loginUsername").value.trim();
+$("#loginBtn").addEventListener("click", async () => {
+  const username = $("#loginUsername").value.trim().toLowerCase();
   const password = $("#loginPassword").value.trim();
 
-  if (!username || !password) return alert("Enter username & password.");
+  if (!username || !password) {
+    return alert("Enter a username and password.");
+  }
 
-  // Find matching account in Firebase
-  db.ref("users")
-    .orderByChild("username")
-    .equalTo(username)
-    .once("value")
-    .then(snap => {
-      if (!snap.exists()) return alert("Account not found.");
+  // Load user from Firebase
+  const snap = await db.ref("users/" + username).once("value");
+  if (!snap.exists()) {
+    return alert("Invalid username or password.");
+  }
 
-      const uid = Object.keys(snap.val())[0];
-      const userData = snap.val()[uid];
+  const userData = snap.val();
 
-      // Compare password with stored one
-      const stored = loadUser();
+  // Hash the typed password
+  const typedHash = await hashPassword(password);
 
-      // They saved user in localStorage, check that
-      if (!stored || stored.username !== username || stored.password !== password) {
-        return alert("Wrong password.");
-      }
+  // Compare
+  if (typedHash !== userData.passwordHash) {
+    return alert("Invalid username or password.");
+  }
 
-      // Restore local account
-      currentUser = stored;
-      saveUser(currentUser);
+  // Success
+  currentUser = userData;
 
-      hideModal(accountModal);
-      afterLogin();
-    });
+  hideModal(accountModal);
+  afterLogin();
 });
 
 /* After login: sync + init systems (robust version) */
