@@ -178,7 +178,7 @@ const PROFANITY = [
 "nigger","n1gger","n¡gger","n!gger","nigg3r","ni99er",
 "nlgg3r","n¡gg3r","n¡gger","n!gg3r","nlgger","nigga",
 "n1gga","ni99a","n¡gga","n¡9ga","n1gg4","nlgg4",
-"n1g9a","nigg@",
+"n1g9a","nigg@", "nga", "ngas",
 
 "retard","r3tard","ret@rd","r*tard","reetard","retarded",
 "r3tarded","r3t@rd","r3t@rd3d","retard.","r€tard",
