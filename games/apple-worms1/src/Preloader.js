@@ -132,38 +132,3 @@ function init(){canvas=document.getElementById("canvas");canvas2=document.getEle
 window.prel=new Preloader(stage,stage2);(function(a,b,e,c){function f(){var d=window.innerWidth,f=window.innerHeight;console.log(d,f);var l=window.devicePixelRatio||1,n=d/800,p=f/600,k=1;if(a)if("width"==b&&g==d||"height"==b&&h==f)k=m;else if(e)1==c?k=Math.min(n,p):2==c&&(k=Math.max(n,p));else if(800>d||600>f)k=Math.min(n,p);canvas.width=800*l*k;canvas.height=600*l*k;canvas.style.width=anim_container.style.width=dom_overlay_container.style.width=800*k+"px";canvas.style.height=anim_container.style.height=
 dom_overlay_container.style.height=600*k+"px";stage.scaleX=l*k;stage.scaleY=l*k;g=d;h=f;m=k;stage.update()}function d(){var a=window.innerWidth,b=window.innerHeight,c=window.devicePixelRatio||1;var d=Math.max(a/640,b/480);canvas2.width=a;canvas2.height=b;canvas2.style.width=a+"px";canvas2.style.height=b+"px";canvas3.width=a;canvas3.height=b;canvas3.style.width=a+"px";canvas3.style.height=b+"px";stage3.scaleX=c*d;stage3.scaleY=c*d;resizeFon();stage2.update()}var g,h,m=1;window.addEventListener("resize",
 f);window.addEventListener("resize",d);setTimeout(f,5E3);setTimeout(d,5E3);f();d()})(!0,"both",!0,1)};
-// ======== Load levels.xml ========
-(function() {
-
-    // Hook handleComplete so we can override Preferences.xmlText
-    var _originalComplete = handleComplete;
-
-    handleComplete = function(evt) {
-        try {
-            var levels = evt.target.getResult("levels");
-            if(levels) {
-                Preferences = Preferences || {};
-                Preferences.xmlText = levels;
-                console.log("Loaded external levels.xml");
-            }
-        } catch(e){
-            console.warn("Failed to load levels.xml", e);
-        }
-
-        _originalComplete(evt);
-    };
-
-    // Hook init so we can inject loadFile
-    var _originalInit = init;
-    init = function() {
-        _originalInit();
-
-        try {
-            loader.loadFile({src:"src/levels.xml", id:"levels", type:"text"});
-        } catch(e){
-            console.warn("Could not inject XML load", e);
-        }
-    };
-
-})();
-exportRoot = new lib.CoolmathGames800x600Optimized();
