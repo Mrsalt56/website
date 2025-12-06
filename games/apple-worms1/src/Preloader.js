@@ -1,23 +1,24 @@
 // ================================
-// Preloader.js (Simple & Correct)
+// Preloader.js (final working version)
 // ================================
 
 var canvas, stage, exportRoot;
 var loader;
 
-// Make sure Preferences exists
+// create global objects for assets
+var images = {};
+var ss = {};
+
+// make sure Preferences exists
 var Preferences = Preferences || {};
 
 // MAIN ENTRY
 function init() {
     canvas = document.getElementById("canvas");
 
-    // step 1: load XML first
     loadLevelsXML().then(function() {
-        // step 2: preload assets
         loadGameAssets();
     }).catch(function() {
-        // fallback if xml fails
         loadGameAssets();
     });
 }
@@ -27,8 +28,8 @@ function init() {
 // -----------------------------
 function loadLevelsXML() {
     return fetch("src/levels.xml")
-        .then(function(res) { return res.text(); })
-        .then(function(text) {
+        .then(res => res.text())
+        .then(text => {
             Preferences.xmlText = text;
             console.log("XML loaded, length:", text.length);
         });
@@ -38,18 +39,15 @@ function loadLevelsXML() {
 // Load CreateJS assets
 // -----------------------------
 function loadGameAssets() {
-    images = images || {};
-    ss = ss || {};
-
     loader = new createjs.LoadQueue(false);
 
-    loader.on("fileload", function(evt) {
+    loader.on("fileload", evt => {
         if (evt.item.type === "image") {
             images[evt.item.id] = evt.result;
         }
     });
 
-    loader.on("complete", function(evt) {
+    loader.on("complete", evt => {
         startGame(evt);
     });
 
@@ -66,7 +64,6 @@ function startGame(evt) {
         ss[ssName] = loader.getResult(ssName);
     }
 
-    // IMPORTANT: correct main class
     exportRoot = new lib.CoolmathGames800x600Optimized();
 
     stage = new createjs.Stage(canvas);
