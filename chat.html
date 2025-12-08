@@ -14,19 +14,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-storage-compat.js"></script>
 </head>
 
-<!-- DELETE CONFIRM MODAL -->
-<div id="deleteConfirmModal" class="modal">
-  <div class="modal-content" style="width:260px;text-align:center;">
-    <h3 style="margin-bottom:8px;">Delete message?</h3>
-    <p class="hint">This cannot be undone.</p>
-
-    <div style="margin-top:10px;display:flex;gap:8px;">
-      <button id="confirmDeleteBtn" class="admin-btn danger">Delete</button>
-      <button id="cancelDeleteBtn" class="small-btn">Cancel</button>
-    </div>
-  </div>
-</div>
-
 <body>
 <div class="chat-app">
 
@@ -244,6 +231,19 @@
   </div>
 </div>
 
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteConfirmModal" class="modal">
+  <div class="modal-content" style="width:260px;text-align:center;">
+    <h3 style="margin-bottom:8px;">Delete message?</h3>
+    <p class="hint">This cannot be undone.</p>
+
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button id="confirmDeleteBtn" class="admin-btn danger">Delete</button>
+      <button id="cancelDeleteBtn" class="small-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+  
 <script src="chat.js" defer></script>
 </body>
 </html>
