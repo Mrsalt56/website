@@ -914,24 +914,6 @@ function addMessage(key, msg) {
     bubble.appendChild(delBtn);
   }
     
-  if (msg.uid === myUid() && !msg.deleted) {
-  const del = document.createElement("button");
-    del.textContent = "✖";
-    del.style.position = "absolute";
-    del.style.top = "-6px";
-    del.style.right = "-6px";
-    del.style.background = "transparent";
-    del.style.border = "none";
-    del.style.fontSize = "14px";
-    del.style.color = "#f87171";
-    del.style.cursor = "pointer";
-    del.title = "Delete message";
-
-    del.onclick = (e) => {
-      e.stopPropagation();
-      deleteMyMessage(key);
-    };
-
     bubble.style.position = "relative";
     bubble.appendChild(del);
   }
