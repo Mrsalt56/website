@@ -913,12 +913,8 @@ function addMessage(key, msg) {
     bubble.style.position = "relative";
     bubble.appendChild(delBtn);
   }
-    
-    bubble.style.position = "relative";
-    bubble.appendChild(del);
-  }
 
-  
+
   // IMAGE / VIDEO
   if (msg.fileUrl) {
     if (msg.fileType === "image") {
