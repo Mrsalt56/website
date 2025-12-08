@@ -183,7 +183,7 @@ const PROFANITY = [
 "retard","r3tard","ret@rd","r*tard","reetard","retarded",
 "r3tarded","r3t@rd","r3t@rd3d","retard.","r€tard",
 "retardd","retard3d","r e t a r d","ret@rded",
-"ret@rddd","re+tard","re-tard","r-tard","rtard"
+"ret@rddd","re+tard","re-tard","r-tard","rtard","gay"
 ];
 
 /* Subject rooms */
@@ -898,6 +898,22 @@ function addMessage(key, msg) {
   }
 
   // --- DELETE MY OWN MESSAGE BUTTON ---
+  if (msg.uid === myUid() && !msg.deleted) {
+    const delBtn = document.createElement("button");
+    delBtn.innerHTML = `<i class="fa-solid fa-trash"></i>`;
+    delBtn.className = "msg-delete-btn";
+    delBtn.title = "Delete message";
+
+    // open confirm modal
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+    openDeleteConfirm(key);
+    };
+
+    bubble.style.position = "relative";
+    bubble.appendChild(delBtn);
+  }
+    
   if (msg.uid === myUid() && !msg.deleted) {
   const del = document.createElement("button");
     del.textContent = "✖";
