@@ -1431,6 +1431,29 @@ function logout() {
   if (signupView) signupView.style.display = "block";
   if (accountView) accountView.style.display = "none";
 
+/* -----------------------------------------
+   DELETE CONFIRM MODAL LOGIC
+----------------------------------------- */
+
+  let deleteMsgKey = null; // temporary store
+
+  function openDeleteConfirm(key) {
+    deleteMsgKey = key;
+    showModal($("#deleteConfirmModal"));
+  }
+
+  $("#cancelDeleteBtn").addEventListener("click", () => {
+    deleteMsgKey = null;
+    hideModal($("#deleteConfirmModal"));
+  });
+
+  $("#confirmDeleteBtn").addEventListener("click", () => {
+    if (!deleteMsgKey) return;
+    deleteMyMessage(deleteMsgKey);
+    deleteMsgKey = null;
+    hideModal($("#deleteConfirmModal"));
+   });
+    
   // Clear user data
   currentUser = null;
 
