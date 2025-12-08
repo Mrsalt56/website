@@ -486,3 +486,56 @@ body {
 .msg-delete-btn:hover {
   transform: scale(1.15);
 }
+
+/* ===== DELETE CONFIRM MODAL ===== */
+#deleteConfirmModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.delete-modal {
+  background: #0a1a2f;
+  border: 1px solid #1e3a8a;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  width: 260px;
+  text-align: center;
+  animation: pop .15s ease-out;
+}
+
+@keyframes pop {
+  from { transform: scale(.8); opacity: .3; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+
+.btn-cancel,
+.btn-confirm {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-cancel {
+  background: #334155;
+  color: white;
+}
+
+.btn-confirm {
+  background: #ef4444;
+  color: white;
+}
