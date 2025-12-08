@@ -897,6 +897,30 @@ function addMessage(key, msg) {
     bubble.style.alignSelf = "flex-end";
   }
 
+  // --- DELETE MY OWN MESSAGE BUTTON ---
+  if (msg.uid === myUid() && !msg.deleted) {
+  const del = document.createElement("button");
+    del.textContent = "✖";
+    del.style.position = "absolute";
+    del.style.top = "-6px";
+    del.style.right = "-6px";
+    del.style.background = "transparent";
+    del.style.border = "none";
+    del.style.fontSize = "14px";
+    del.style.color = "#f87171";
+    del.style.cursor = "pointer";
+    del.title = "Delete message";
+
+    del.onclick = (e) => {
+      e.stopPropagation();
+      deleteMyMessage(key);
+    };
+
+    bubble.style.position = "relative";
+    bubble.appendChild(del);
+  }
+
+  
   // IMAGE / VIDEO
   if (msg.fileUrl) {
     if (msg.fileType === "image") {
@@ -1014,6 +1038,45 @@ function sendMessage() {
     msgInput.value = "";
   });
 }
+
+/*---------------------
+DELETE YOUR MESSAGE GNG
+-----------*/
+function deleteMyMessage(key) {
+  if (!currentRoom) return;
+
+  // ROOM CHAT
+  if (currentRoom.type === "room") {
+    db.ref(`chats/${currentRoom.id}/${key}`).update({
+      deleted: true,
+      text: ""
+    });
+  }
+
+  // GROUP CHAT
+  if (currentRoom.type === "group") {
+    db.ref(`groups/${currentRoom.id}/messages/${key}`).update({
+      deleted: true,
+      text: ""
+    });
+  }
+
+  // PRIVATE DM (soft delete BOTH copies)
+  if (currentRoom.type === "dm") {
+    const me = myUid();
+    const other = currentRoom.otherUid;
+  
+    db.ref(`dms/${me}/${other}/${key}`).update({
+      deleted: true,
+      text: ""
+    });
+    db.ref(`dms/${other}/${me}/${key}`).update({
+      deleted: true,
+      text: ""
+    });
+  }
+}
+
 
 /* -----------------------------------------
    File Upload (image + video)
