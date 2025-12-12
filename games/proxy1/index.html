@@ -3,8 +3,6 @@
 <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6084312783725533"
          crossorigin="anonymous"></script>
-    <!-- Adsterra Social Bar -->
-    <script type='text/javascript' src='//pl26693553.profitablecpmrate.com/0b/69/10/0b6910685c1f81e1ad0dde5d1c62a02d.js'></script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YBBBHJ15H"></script>
     <script>
@@ -2628,9 +2626,6 @@
     </style>
 </head>
 <body data-theme="rose">
-    <!-- Adsterra Social Bar (Floating, Non-Obstructive) -->
-    <script type='text/javascript' src='//pl26693553.profitablecpmrate.com/0b/69/10/0b6910685c1f81e1ad0dde5d1c62a02d.js'></script>
-
     <!-- Welcome Modal -->
     <div class="welcome-overlay" id="welcome-overlay">
         <div class="welcome-modal">
@@ -2654,14 +2649,52 @@
                         <div class="welcome-dot"></div>
                         <div class="welcome-dot"></div>
                         <div class="welcome-dot"></div>
+                        <div class="welcome-dot"></div>
                     </div>
                     <div class="welcome-actions">
+                        <button class="welcome-btn welcome-btn-secondary" onclick="skipWelcome()">Skip All</button>
                         <button class="welcome-btn welcome-btn-primary" onclick="nextWelcomeSlide()">Let's Go <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></button>
                     </div>
                 </div>
 
-                <!-- Slide 2: Theme Selection -->
-                <div class="welcome-slide" data-slide="2">
+                <!-- Slide 2: MANDATORY Bookmark Links Page -->
+                <div class="welcome-slide" data-slide="2" data-mandatory="true">
+                    <div class="welcome-header">
+                        <i class="fas fa-bookmark" style="font-size: 48px; color: var(--accent); margin-bottom: 16px;"></i>
+                        <h1 class="welcome-title">Important: Save Your Access</h1>
+                        <p class="welcome-subtitle">Bookmark our links page to always find Endis</p>
+                    </div>
+                    <div class="welcome-content">
+                        <p style="margin-bottom: 1rem;">Click the button below to open our official links page. <strong>Bookmark that page</strong> so you'll always have working links to access Endis, even if URLs change.</p>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem;"><i class="fas fa-info-circle" style="margin-right: 6px;"></i>A new tab will open - don't close it! Add it to your bookmarks for safekeeping.</p>
+                        <button class="welcome-btn welcome-btn-primary" id="open-links-btn" onclick="openLinksPage()" style="padding: 1rem 2rem; font-size: 1rem;">
+                            <i class="fas fa-external-link-alt" style="margin-right: 10px;"></i>
+                            Open Links Page
+                        </button>
+                        <p id="links-opened-msg" style="display: none; margin-top: 1rem; color: #4ade80; font-weight: 500;">
+                            <i class="fas fa-check-circle" style="margin-right: 6px;"></i>Links page opened! Remember to bookmark it.
+                        </p>
+                    </div>
+                    <div class="welcome-progress">
+                        <div class="welcome-dot completed"></div>
+                        <div class="welcome-dot active"></div>
+                        <div class="welcome-dot"></div>
+                        <div class="welcome-dot"></div>
+                        <div class="welcome-dot"></div>
+                        <div class="welcome-dot"></div>
+                        <div class="welcome-dot"></div>
+                        <div class="welcome-dot"></div>
+                    </div>
+                    <div class="welcome-actions">
+                        <button class="welcome-btn welcome-btn-secondary" onclick="prevWelcomeSlide()"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back</button>
+                        <button class="welcome-btn welcome-btn-primary" id="links-continue-btn" onclick="nextWelcomeSlide()" disabled style="opacity: 0.5; cursor: not-allowed;">
+                            Continue <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Theme Selection -->
+                <div class="welcome-slide" data-slide="3">
                     <div class="welcome-header">
                         <h1 class="welcome-title">Pick Your Style</h1>
                         <p class="welcome-subtitle">Choose a theme that feels like you</p>
@@ -2686,6 +2719,7 @@
                     </div>
                     <div class="welcome-progress">
                         <div class="welcome-dot completed"></div>
+                        <div class="welcome-dot completed"></div>
                         <div class="welcome-dot active"></div>
                         <div class="welcome-dot"></div>
                         <div class="welcome-dot"></div>
@@ -2694,13 +2728,13 @@
                         <div class="welcome-dot"></div>
                     </div>
                     <div class="welcome-actions">
-                        <button class="welcome-btn welcome-btn-secondary" onclick="prevWelcomeSlide()"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back</button>
+                        <button class="welcome-btn welcome-btn-secondary" onclick="skipWelcome()">Skip</button>
                         <button class="welcome-btn welcome-btn-primary" onclick="nextWelcomeSlide()">I've Found My Style <i class="fas fa-check" style="margin-left: 8px;"></i></button>
                     </div>
                 </div>
 
-                <!-- Slide 3: Tab Cloaking -->
-                <div class="welcome-slide" data-slide="3">
+                <!-- Slide 4: Tab Cloaking -->
+                <div class="welcome-slide" data-slide="4">
                     <div class="welcome-header">
                         <h1 class="welcome-title">Stay Discreet</h1>
                         <p class="welcome-subtitle">Disguise your tab to look like something else</p>
@@ -2737,6 +2771,7 @@
                     <div class="welcome-progress">
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
+                        <div class="welcome-dot completed"></div>
                         <div class="welcome-dot active"></div>
                         <div class="welcome-dot"></div>
                         <div class="welcome-dot"></div>
@@ -2744,13 +2779,13 @@
                         <div class="welcome-dot"></div>
                     </div>
                     <div class="welcome-actions">
-                        <button class="welcome-btn welcome-btn-secondary" onclick="prevWelcomeSlide()"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back</button>
+                        <button class="welcome-btn welcome-btn-secondary" onclick="skipWelcome()">Skip</button>
                         <button class="welcome-btn welcome-btn-primary" onclick="nextWelcomeSlide()">Continue <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></button>
                     </div>
                 </div>
 
-                <!-- Slide 4: Bookmark Highlight -->
-                <div class="welcome-slide" data-slide="4">
+                <!-- Slide 5: Bookmark Highlight -->
+                <div class="welcome-slide" data-slide="5">
                     <div class="welcome-header">
                         <h1 class="welcome-title">Save Your Favorites</h1>
                         <p class="welcome-subtitle">Bookmark pages for quick access</p>
@@ -2764,19 +2799,20 @@
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
+                        <div class="welcome-dot completed"></div>
                         <div class="welcome-dot active"></div>
                         <div class="welcome-dot"></div>
                         <div class="welcome-dot"></div>
                         <div class="welcome-dot"></div>
                     </div>
                     <div class="welcome-actions">
-                        <button class="welcome-btn welcome-btn-secondary" onclick="prevWelcomeSlide()"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back</button>
+                        <button class="welcome-btn welcome-btn-secondary" onclick="skipWelcome()">Skip</button>
                         <button class="welcome-btn welcome-btn-primary" onclick="highlightBookmarkBtn()">Show Me <i class="fas fa-eye" style="margin-left: 8px;"></i></button>
                     </div>
                 </div>
 
-                <!-- Slide 5: Menu Highlight -->
-                <div class="welcome-slide" data-slide="5">
+                <!-- Slide 6: Menu Highlight -->
+                <div class="welcome-slide" data-slide="6">
                     <div class="welcome-header">
                         <h1 class="welcome-title">Everything Else</h1>
                         <p class="welcome-subtitle">Find all features in one place</p>
@@ -2791,25 +2827,26 @@
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
+                        <div class="welcome-dot completed"></div>
                         <div class="welcome-dot active"></div>
                         <div class="welcome-dot"></div>
                         <div class="welcome-dot"></div>
                     </div>
                     <div class="welcome-actions">
-                        <button class="welcome-btn welcome-btn-secondary" onclick="prevWelcomeSlide()"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back</button>
+                        <button class="welcome-btn welcome-btn-secondary" onclick="skipWelcome()">Skip</button>
                         <button class="welcome-btn welcome-btn-primary" onclick="highlightMenuBtn()">Show Me <i class="fas fa-eye" style="margin-left: 8px;"></i></button>
                     </div>
                 </div>
 
-                <!-- Slide 6: Data Backup -->
-                <div class="welcome-slide" data-slide="6">
+                <!-- Slide 7: Data Backup -->
+                <div class="welcome-slide" data-slide="7">
                     <div class="welcome-header">
                         <h1 class="welcome-title">Keep Your Data Safe</h1>
                         <p class="welcome-subtitle">Back up your data and clear when needed</p>
                     </div>
                     <div class="welcome-content">
                         <p>The site might not work correctly sometimes. If that happens, back up your data and clear your cookies/site data.</p>
-                        
+
                         <div class="welcome-backup-section">
                             <div class="welcome-backup-btns">
                                 <button class="welcome-backup-btn" onclick="exportAllData()">
@@ -2822,9 +2859,9 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <span class="welcome-tutorial-toggle" onclick="toggleWelcomeTutorial()">Confused? Click here for help</span>
-                        
+
                         <div class="welcome-tutorial" id="welcome-tutorial">
                             <p style="color: var(--text-primary); margin-bottom: 0.5rem;"><strong>How to clear site data:</strong></p>
                             <ol>
@@ -2843,17 +2880,18 @@
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
+                        <div class="welcome-dot completed"></div>
                         <div class="welcome-dot active"></div>
                         <div class="welcome-dot"></div>
                     </div>
                     <div class="welcome-actions">
-                        <button class="welcome-btn welcome-btn-secondary" onclick="prevWelcomeSlide()"><i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back</button>
+                        <button class="welcome-btn welcome-btn-secondary" onclick="skipWelcome()">Skip</button>
                         <button class="welcome-btn welcome-btn-primary" onclick="nextWelcomeSlide()">Got It <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></button>
                     </div>
                 </div>
 
-                <!-- Slide 7: Ready -->
-                <div class="welcome-slide" data-slide="7">
+                <!-- Slide 8: Ready -->
+                <div class="welcome-slide" data-slide="8">
                     <div class="welcome-header">
                         <h1 class="welcome-title">You're All Set!</h1>
                         <p class="welcome-subtitle">Ready to explore?</p>
@@ -2862,7 +2900,7 @@
                         <div class="welcome-final">
                             <div class="welcome-final-icon">🚀</div>
                             <p style="font-size: 1.125rem;">Have fun exploring!</p>
-                            
+
                             <div class="about-blank-option">
                                 <i class="fas fa-eye-slash" style="font-size: 1.5rem; color: var(--accent);"></i>
                                 <p>Want extra privacy? Open in about:blank to hide from browser history.</p>
@@ -2873,6 +2911,7 @@
                         </div>
                     </div>
                     <div class="welcome-progress">
+                        <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
                         <div class="welcome-dot completed"></div>
@@ -2911,7 +2950,7 @@
         
         <div class="url-bar">
             <i class="fas fa-search" style="color: var(--text-secondary); margin-right: 0.625rem;"></i>
-            <input type="text" id="url-input" placeholder="Search or enter URL (note: if pages don't load, spam the refresh button)" onkeydown="if(event.key==='Enter')navigateTo(this.value)">
+            <input type="text" id="url-input" placeholder="Search or enter URL (blank screen? click the refresh button)" onkeydown="if(event.key==='Enter')navigateTo(this.value)">
         </div>
 
         <div class="toolbar-actions">
@@ -3618,7 +3657,7 @@
                         </div>
                         <div class="search-box">
                             <i class="fas fa-search" style="color: var(--text-secondary); margin-right: 0.75rem;"></i>
-                            <input type="text" placeholder="Searching now fixed." onkeydown="if(event.key==='Enter'){navigateTo(this.value);this.value=''}">
+                            <input type="text" placeholder="Everything now fixed." onkeydown="if(event.key==='Enter'){navigateTo(this.value);this.value=''}">
                         </div>
                         <div class="quick-links">
                             <div class="quick-link" onclick="navigateTo('/g.html')">
@@ -3648,8 +3687,11 @@
                         </div>
                         <div class="new-tab-footer">
                             <p>Press <span class="kbd">Ctrl</span> + <span class="kbd">${'`'}</span> for panic mode &nbsp;•&nbsp;
-                            <a href="#" onclick="event.preventDefault();openAboutModal()">About</a> &nbsp;•&nbsp;
-                            <a href="https://dsc.gg/endis" target="_blank">D&#1110;sc&#1086;rd</a></p>
+                            <a href="/about">About</a> &nbsp;•&nbsp;
+                            <a href="/privacy">Privacy</a> &nbsp;•&nbsp;
+                            <a href="/terms">Terms</a> &nbsp;•&nbsp;
+                            <a href="/contact">Contact</a> &nbsp;•&nbsp;
+                            <a href="https://dsc.gg/endis" target="_blank" rel="noopener noreferrer">D&#1110;sc&#1086;rd</a></p>
                         </div>
                     </div>
                 `;
@@ -4764,15 +4806,62 @@
             }
         }
 
+        // Track if links page has been opened (for mandatory slide)
+        let linksPageOpened = false;
+
+        function openLinksPage() {
+            window.open('https://sites.google.com/view/endiseducation/home', '_blank');
+            linksPageOpened = true;
+
+            // Enable the continue button
+            const continueBtn = document.getElementById('links-continue-btn');
+            if (continueBtn) {
+                continueBtn.disabled = false;
+                continueBtn.style.opacity = '1';
+                continueBtn.style.cursor = 'pointer';
+            }
+
+            // Show the success message
+            const msg = document.getElementById('links-opened-msg');
+            if (msg) {
+                msg.style.display = 'block';
+            }
+
+            // Update button text
+            const openBtn = document.getElementById('open-links-btn');
+            if (openBtn) {
+                openBtn.innerHTML = '<i class="fas fa-check" style="margin-right: 10px;"></i>Opened!';
+                openBtn.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
+            }
+        }
+
+        function skipWelcome() {
+            // Check if we're on the mandatory links slide (slide 2)
+            if (currentWelcomeSlide === 2 && !linksPageOpened) {
+                // Cannot skip this slide - show message
+                alert('Please open the links page first by clicking the button. This helps you always find Endis!');
+                return;
+            }
+
+            // Skip to finish
+            finishWelcome();
+        }
+
         function nextWelcomeSlide() {
-            if (currentWelcomeSlide >= 7) return;
-            
+            if (currentWelcomeSlide >= 8) return;
+
+            // Check if we're on the mandatory links slide and haven't opened the page
+            if (currentWelcomeSlide === 2 && !linksPageOpened) {
+                alert('Please open the links page first by clicking the button. This helps you always find Endis!');
+                return;
+            }
+
             const currentSlide = document.querySelector(`.welcome-slide[data-slide="${currentWelcomeSlide}"]`);
             currentSlide.classList.add('exit');
             currentSlide.classList.remove('active');
-            
+
             currentWelcomeSlide++;
-            
+
             setTimeout(() => {
                 currentSlide.classList.remove('exit');
                 const nextSlide = document.querySelector(`.welcome-slide[data-slide="${currentWelcomeSlide}"]`);
