@@ -20,7 +20,7 @@
             // Keep UV (/uv/service/) and Scramjet (/scram/) service workers
             // Only unregister service workers at root scope (/) that break navigation
             const scope = reg.scope || '';
-            const isProxySW = scope.includes('/uv/service') || scope.includes('/scram');
+            const isProxySW = scope.includes('games/proxy1/uv/service') || scope.includes('games/proxy1/scram');
             const isRootSW = scope.endsWith(location.origin + '/');
             if (isRootSW && !isProxySW) {
               console.log('Unregistering root-scope service worker:', scope);
@@ -2634,7 +2634,7 @@
                 <!-- Slide 1: Welcome -->
                 <div class="welcome-slide active" data-slide="1">
                     <div class="welcome-header">
-                        <img src="/img/icons/web-app-manifest-192x192.png" alt="Endis" class="welcome-logo themed-logo">
+                        <img src="games/proxy1/img/icons/web-app-manifest-192x192.png" alt="Endis" class="welcome-logo themed-logo">
                         <h1 class="welcome-title">Welcome to Endis</h1>
                         <p class="welcome-subtitle">or welcome back!</p>
                     </div>
@@ -2745,24 +2745,24 @@
                                 <i class="fas fa-ban" style="font-size: 32px; color: var(--text-secondary);"></i>
                                 <span>No Cloak</span>
                             </div>
-                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Home', '/img/cloaks/classroom.png', 'Classroom')" data-cloak="classroom">
-                                <img src="/img/cloaks/classroom.png" alt="Classroom" style="width: 32px; height: 32px;">
+                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Home', 'games/proxy1/img/cloaks/classroom.png', 'Classroom')" data-cloak="classroom">
+                                <img src="games/proxy1/img/cloaks/classroom.png" alt="Classroom" style="width: 32px; height: 32px;">
                                 <span>Classroom</span>
                             </div>
-                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Google Drive', '/img/cloaks/drive.png', 'Drive')" data-cloak="drive">
-                                <img src="/img/cloaks/drive.png" alt="Drive" style="width: 32px; height: 32px;">
+                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Google Drive', 'games/proxy1/img/cloaks/drive.png', 'Drive')" data-cloak="drive">
+                                <img src="games/proxy1/img/cloaks/drive.png" alt="Drive" style="width: 32px; height: 32px;">
                                 <span>Drive</span>
                             </div>
-                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Dashboard', '/img/cloaks/canvas.png', 'Canvas')" data-cloak="canvas">
-                                <img src="/img/cloaks/canvas.png" alt="Canvas" style="width: 32px; height: 32px;">
+                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Dashboard', 'games/proxy1/img/cloaks/canvas.png', 'Canvas')" data-cloak="canvas">
+                                <img src="games/proxy1/img/cloaks/canvas.png" alt="Canvas" style="width: 32px; height: 32px;">
                                 <span>Canvas</span>
                             </div>
-                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Schoology', '/img/cloaks/schoology.png', 'Schoology')" data-cloak="schoology">
-                                <img src="/img/cloaks/schoology.png" alt="Schoology" style="width: 32px; height: 32px;">
+                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Schoology', 'games/proxy1/img/cloaks/schoology.png', 'Schoology')" data-cloak="schoology">
+                                <img src="games/proxy1/img/cloaks/schoology.png" alt="Schoology" style="width: 32px; height: 32px;">
                                 <span>Schoology</span>
                             </div>
-                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Google', '/img/cloaks/google.png', 'Google')" data-cloak="google">
-                                <img src="/img/cloaks/google.png" alt="Google" style="width: 32px; height: 32px;">
+                            <div class="welcome-cloak-btn" onclick="selectWelcomeCloak('Google', 'games/proxy1/img/cloaks/google.png', 'Google')" data-cloak="google">
+                                <img src="games/proxy1/img/cloaks/google.png" alt="Google" style="width: 32px; height: 32px;">
                                 <span>Google</span>
                             </div>
                         </div>
@@ -3121,28 +3121,28 @@
             <div class="modal-section">
                 <h4>Presets</h4>
                 <div class="mask-presets">
-                    <div class="mask-preset" onclick="applyMaskPreset('Home', '/img/cloaks/classroom.png')">📚 Google Classroom</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Google Docs', '/img/cloaks/docs.ico')">📄 Google Docs</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Google Drive', '/img/cloaks/drive.png')">📁 Google Drive</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Dashboard', '/img/cloaks/canvas.png')">🎨 Canvas</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Schoology', '/img/cloaks/schoology.png')">📓 Schoology</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Khan Academy', '/img/cloaks/khanacademy.ico')">🎓 Khan Academy</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Quizlet', '/img/cloaks/quizlet.png')">🗂️ Quizlet</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Desmos', '/img/cloaks/desmos.ico')">📈 Desmos</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Wikipedia', '/img/cloaks/wikipedia.png')">📖 Wikipedia</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Edpuzzle', '/img/cloaks/edpuzzle.png')">🧩 Edpuzzle</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('PowerSchool', '/img/cloaks/powerschool.png')">📊 PowerSchool</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Clever', '/img/cloaks/clever.png')">🔑 Clever</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Duolingo', '/img/cloaks/duolingo.png')">🦉 Duolingo</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Gmail', '/img/cloaks/gmail.png')">✉️ Gmail</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Google', '/img/cloaks/google.png')">🔍 Google</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('YouTube', '/img/cloaks/youtube.ico')">▶️ YouTube</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Reddit', '/img/cloaks/reddit.ico')">🤖 Reddit</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Discord', '/img/cloaks/discord.png')">💬 Discord</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('TikTok', '/img/cloaks/tiktok.ico')">🎵 TikTok</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('GitHub', '/img/cloaks/github.ico')">🐙 GitHub</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Spotify', '/img/cloaks/spotify.ico')">🎧 Spotify</div>
-                    <div class="mask-preset" onclick="applyMaskPreset('Netflix', '/img/cloaks/netflix.ico')">🎬 Netflix</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Home', 'games/proxy1/img/cloaks/classroom.png')">📚 Google Classroom</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Google Docs', 'games/proxy1/img/cloaks/docs.ico')">📄 Google Docs</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Google Drive', 'games/proxy1/img/cloaks/drive.png')">📁 Google Drive</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Dashboard', 'games/proxy1/img/cloaks/canvas.png')">🎨 Canvas</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Schoology', 'games/proxy1/img/cloaks/schoology.png')">📓 Schoology</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Khan Academy', 'games/proxy1/img/cloaks/khanacademy.ico')">🎓 Khan Academy</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Quizlet', 'games/proxy1/img/cloaks/quizlet.png')">🗂️ Quizlet</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Desmos', 'games/proxy1/img/cloaks/desmos.ico')">📈 Desmos</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Wikipedia', 'games/proxy1/img/cloaks/wikipedia.png')">📖 Wikipedia</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Edpuzzle', 'games/proxy1/img/cloaks/edpuzzle.png')">🧩 Edpuzzle</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('PowerSchool', 'games/proxy1/img/cloaks/powerschool.png')">📊 PowerSchool</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Clever', 'games/proxy1/img/cloaks/clever.png')">🔑 Clever</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Duolingo', 'games/proxy1/img/cloaks/duolingo.png')">🦉 Duolingo</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Gmail', 'games/proxy1/img/cloaks/gmail.png')">✉️ Gmail</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Google', 'games/proxy1/img/cloaks/google.png')">🔍 Google</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('YouTube', 'games/proxy1/img/cloaks/youtube.ico')">▶️ YouTube</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Reddit', 'games/proxy1/img/cloaks/reddit.ico')">🤖 Reddit</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Discord', 'games/proxy1/img/cloaks/discord.png')">💬 Discord</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('TikTok', 'games/proxy1/img/cloaks/tiktok.ico')">🎵 TikTok</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('GitHub', 'games/proxy1/img/cloaks/github.ico')">🐙 GitHub</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Spotify', 'games/proxy1/img/cloaks/spotify.ico')">🎧 Spotify</div>
+                    <div class="mask-preset" onclick="applyMaskPreset('Netflix', 'games/proxy1/img/cloaks/netflix.ico')">🎬 Netflix</div>
                 </div>
             </div>
             <div class="modal-section">
@@ -3720,7 +3720,7 @@
             if (!tab) return;
 
             // Handle endis:// URLs
-            if (input.startsWith('endis://')) {
+            if (input.startsWith('salt://')) {
                 const actualUrl = fromEndisUrl(input);
                 if (actualUrl.startsWith('/')) {
                     await loadInternalPage(activeTabId, actualUrl);
