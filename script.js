@@ -118,6 +118,16 @@ const sendReportBtn = document.getElementById('sendReport');
     });
   });
 
+  document.querySelectorAll('.movie-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const link = card.getAttribute('data-link');
+      if (link) {
+        window.open(link, '_blank'); // opens Google Doc
+      }
+    });
+  });
+
+  
   // ------------------------
   // Nav filters
   // ------------------------
@@ -353,3 +363,42 @@ db.ref("shoutouts").orderByChild("timestamp").on("value", snapshot => {
     }
   });
 })();
+
+
+
+const navLinks = document.querySelectorAll('.site-nav a');
+const moviesPage = document.getElementById('moviesPage');
+const gameSections = document.querySelectorAll('.games-section');
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    navLinks.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+
+    const page = link.dataset.page;
+
+    if (page === "movies") {
+      moviesPage.style.display = "block";
+      gameSections.forEach(sec => sec.style.display = "none");
+    } else {
+      moviesPage.style.display = "none";
+      gameSections.forEach(sec => sec.style.display = "block");
+    }
+  });
+});
+
+const movieSearch = document.getElementById("movieSearch");
+const movieCards = document.querySelectorAll(".movie-card");
+
+if (movieSearch) {
+  movieSearch.addEventListener("input", () => {
+    const q = movieSearch.value.toLowerCase();
+
+    movieCards.forEach(card => {
+      const title = card.dataset.title;
+      card.style.display = title.includes(q) ? "" : "none";
+    });
+  });
+}
