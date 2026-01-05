@@ -535,3 +535,76 @@ async function get(path) {
   tick();
   setInterval(tick, 1000);
 })();
+
+/* ===============================
+   BIG BLUE SIDEBAR BOXES
+================================ */
+
+.sb-drop {
+  background: linear-gradient(180deg, #0a6cff, #0450b4);
+  border-radius: 14px;
+  padding: 14px;
+  margin: 14px 0;
+  box-shadow: 0 6px 18px rgba(0, 120, 255, 0.35);
+  border: none;
+}
+
+/* Header inside each box */
+.sb-drop-head {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Title text */
+.sb-drop-title {
+  color: #ffffff;
+}
+
+/* Dropdown arrow */
+.sb-drop-arrow {
+  color: #dbe9ff;
+  transition: transform 0.25s ease;
+}
+
+/* Rotate arrow when open */
+.sb-drop[data-open="true"] .sb-drop-arrow {
+  transform: rotate(180deg);
+}
+
+/* Dropdown content area */
+.sb-drop-body {
+  margin-top: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Buttons & links inside boxes */
+.sb-drop-body button,
+.sb-drop-body a {
+  width: 100%;
+  display: block;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sb-drop-body button:hover,
+.sb-drop-body a:hover {
+  background: rgba(255,255,255,0.25);
+}
