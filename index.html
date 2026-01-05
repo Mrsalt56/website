@@ -7,54 +7,124 @@
   <link rel="icon" type="image/png" href="images/logo.png">
   <link rel="stylesheet" href="main.css">
   <meta name="google-adsense-account" content="ca-pub-3748865129790331">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
- <button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
-  <i class="fa-solid fa-bars"></i>
+<button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
+  <i class="fa-solid fa-gear"></i>
 </button>
 
 <!-- Sidebar -->
 <aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
   <button id="sidebarClose" class="sidebar-close" aria-label="Close sidebar">&times;</button>
 
-  <div class="sidebar-section">
-    <h3>Quick Actions</h3>
-    <button id="sbSuggest" class="suggest-btn">
-      <i class="fa-solid fa-lightbulb"></i> Suggest a game
+  <!-- Quick Actions -->
+  <div class="sidebar-box" data-collapsible data-open="true">
+    <button class="sb-head" type="button" aria-expanded="true">
+      <span>Quick Actions</span>
+      <i class="fa-solid fa-chevron-down"></i>
     </button>
-    <button id="sbReport" class="report-btn">
-      <i class="fa-solid fa-flag"></i> Report a problem
-    </button>
-  </div>
-
-  <div class="sidebar-section">
-    <h3>Community</h3>
-    <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
-      <i class="fa-brands fa-discord"></i> Join Discord
-    </a>
-  </div>
-
-  <div class="sidebar-section">
-    <h3>Proxy</h3>
-    <ul class="proxy-list">
-      <li><a href="https://mrsalt56.com/games/proxy" target="_blank" rel="noopener">Proxy</a></li>
-    </ul>
-    <p class="proxy-note">
-      ⚠️ WAIT 30-60 SECONDS FOR LINK TO LOAD ⚠️ Use full link, e.g., <code>discord.com</code>
-    </p>
-  </div>
-
-  <div class="sidebar-section">
-    <h3>Shoutout Queue</h3>
-
-    <div id="shoutoutForm">
-      <input type="text" id="userName" placeholder="Enter your name">
-      <button id="submitBtn">Submit</button>
-      <p id="cooldownMsg" style="color:red; font-size:0.8rem;"></p>
+    <div class="sb-body">
+      <button id="sbSuggest" class="suggest-btn">
+        <i class="fa-solid fa-lightbulb"></i> Suggest a game
+      </button>
+      <button id="sbReport" class="report-btn">
+        <i class="fa-solid fa-flag"></i> Report a problem
+      </button>
     </div>
+  </div>
 
-    <ul id="queueList" style="list-style:none; padding-left:0; max-height:200px; overflow-y:auto;"></ul>
+  <!-- Community -->
+  <div class="sidebar-box" data-collapsible data-open="true">
+    <button class="sb-head" type="button" aria-expanded="true">
+      <span>Community</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+    <div class="sb-body">
+      <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
+        <i class="fa-brands fa-discord"></i> Join Discord
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats (NEW) -->
+  <div class="sidebar-box" data-collapsible data-open="true">
+    <button class="sb-head" type="button" aria-expanded="true">
+      <span>Stats</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+    <div class="sb-body">
+      <div class="stat-row">
+        <span>Visits (last 7 days)</span>
+        <strong id="visits7d">—</strong>
+      </div>
+      <div class="stat-row">
+        <span>Your time on site</span>
+        <strong id="sessionTimer">00:00:00</strong>
+      </div>
+      <div class="tiny-note">
+        Counts 1 visit per device per day (Firebase).
+      </div>
+    </div>
+  </div>
+
+  <!-- Questions (NEW) -->
+  <div class="sidebar-box" data-collapsible>
+    <button class="sb-head" type="button" aria-expanded="false">
+      <span>Questions</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+    <div class="sb-body" hidden>
+      <div class="q-card">
+        <div class="q-title">Would you rather…</div>
+        <button class="q-btn" data-q="wyr1" data-a="a">Be able to fly</button>
+        <button class="q-btn" data-q="wyr1" data-a="b">Be invisible</button>
+        <div class="q-result" id="q-wyr1">Vote to see results.</div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-title">Yes or No:</div>
+        <div class="q-sub">Should we add more multiplayer games?</div>
+        <div class="q-yn">
+          <button class="q-btn yn" data-q="yn1" data-a="yes">Yes</button>
+          <button class="q-btn yn" data-q="yn1" data-a="no">No</button>
+        </div>
+        <div class="q-result" id="q-yn1">Vote to see results.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proxy -->
+  <div class="sidebar-box" data-collapsible>
+    <button class="sb-head" type="button" aria-expanded="false">
+      <span>Proxy</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+    <div class="sb-body" hidden>
+      <ul class="proxy-list">
+        <li><a href="https://mrsalt56.com/games/proxy" target="_blank" rel="noopener">Proxy</a></li>
+      </ul>
+      <p class="proxy-note">
+        ⚠️ WAIT 30-60 SECONDS FOR LINK TO LOAD ⚠️ Use full link, e.g., <code>discord.com</code>
+      </p>
+    </div>
+  </div>
+
+  <!-- Shoutout Queue -->
+  <div class="sidebar-box" data-collapsible>
+    <button class="sb-head" type="button" aria-expanded="false">
+      <span>Shoutout Queue</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+    <div class="sb-body" hidden>
+      <div id="shoutoutForm">
+        <input type="text" id="userName" placeholder="Enter your name">
+        <button id="submitBtn">Submit</button>
+        <p id="cooldownMsg" style="color:red; font-size:0.8rem;"></p>
+      </div>
+      <ul id="queueList" style="list-style:none; padding-left:0; max-height:200px; overflow-y:auto;"></ul>
+    </div>
   </div>
 </aside>
   <main>
