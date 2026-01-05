@@ -1365,7 +1365,7 @@
 
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  window.db = firebase.database();
 
   const submitBtn = document.getElementById("submitBtn");
   const userNameInput = document.getElementById("userName");
