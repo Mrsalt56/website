@@ -730,3 +730,37 @@ body {
 .sb-drop-body a:hover {
   background: rgba(255,255,255,0.25);
 }
+
+.question-text {
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.question-buttons button {
+  width: 100%;
+  margin-bottom: 8px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.question-buttons button:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.next-question-btn {
+  width: 100%;
+  margin-top: 8px;
+  background: #ffffff;
+  color: #005bb5;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
