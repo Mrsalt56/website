@@ -96,29 +96,36 @@
   </div>
 
 <div class="sb-drop" data-open="false">
-  <button class="sb-drop-head" type="button" aria-expanded="false">
-    <span class="sb-drop-title">Questions</span>
+  <button class="sb-drop-head" type="button">
+    <span class="sb-drop-title">Daily Question</span>
     <i class="fa-solid fa-chevron-down sb-drop-arrow"></i>
   </button>
 
   <div class="sb-drop-body" hidden>
     <div class="question-box">
-      <div id="questionText" class="question-text">
-        Would you rather…
-      </div>
+      <div id="questionText" class="question-text"></div>
 
-      <div class="question-buttons">
-        <button id="qOptionA">Option A</button>
-        <button id="qOptionB">Option B</button>
-      </div>
+      <button id="qOptionA"></button>
+      <button id="qOptionB"></button>
 
-      <button id="nextQuestion" class="next-question-btn">
-        Next Question
-      </button>
+      <div id="qResults" hidden>
+        <div>
+          <span id="qLabelA"></span>
+          <span id="qPctA"></span>
+          <div class="q-bar-track"><div id="qFillA" class="q-bar-fill"></div></div>
+        </div>
+
+        <div>
+          <span id="qLabelB"></span>
+          <span id="qPctB"></span>
+          <div class="q-bar-track"><div id="qFillB" class="q-bar-fill"></div></div>
+        </div>
+
+        <div id="qVotedNote" class="q-small-note"></div>
+      </div>
     </div>
   </div>
 </div>
-
   <main>
 
     <header class="site-header">
