@@ -96,35 +96,79 @@
   </div>
 
 <div class="sb-drop" data-open="false">
-  <button class="sb-drop-head" type="button">
-    <span class="sb-drop-title">Daily Question</span>
-    <i class="fa-solid fa-chevron-down sb-drop-arrow"></i>
+  <button class="sb-drop-head" type="button" aria-expanded="false">
+    <span class="sb-drop-title">Questions</span>
+    <i class="fa-solid fa-chevron-down sb-drop-arrow" aria-hidden="true"></i>
   </button>
 
   <div class="sb-drop-body" hidden>
-    <div class="question-box">
-      <div id="questionText" class="question-text"></div>
 
-      <button id="qOptionA"></button>
-      <button id="qOptionB"></button>
+    <!-- YES / NO -->
+    <div class="q-panel">
+      <div class="q-panel-title">Yes / No</div>
 
-      <div id="qResults" hidden>
-        <div>
-          <span id="qLabelA"></span>
-          <span id="qPctA"></span>
-          <div class="q-bar-track"><div id="qFillA" class="q-bar-fill"></div></div>
+      <div id="ynText" class="question-text"></div>
+
+      <div class="question-buttons">
+        <button id="ynA"></button>
+        <button id="ynB"></button>
+      </div>
+
+      <div id="ynResults" class="q-results" hidden>
+        <div class="q-bar">
+          <div class="q-bar-label">
+            <span id="ynLabelA"></span>
+            <span id="ynPctA">0%</span>
+          </div>
+          <div class="q-bar-track"><div id="ynFillA" class="q-bar-fill"></div></div>
         </div>
 
-        <div>
-          <span id="qLabelB"></span>
-          <span id="qPctB"></span>
-          <div class="q-bar-track"><div id="qFillB" class="q-bar-fill"></div></div>
+        <div class="q-bar">
+          <div class="q-bar-label">
+            <span id="ynLabelB"></span>
+            <span id="ynPctB">0%</span>
+          </div>
+          <div class="q-bar-track"><div id="ynFillB" class="q-bar-fill"></div></div>
         </div>
 
-        <div id="qVotedNote" class="q-small-note"></div>
+        <div id="ynNote" class="q-small-note"></div>
       </div>
     </div>
+
+    <!-- WOULD YOU RATHER -->
+    <div class="q-panel">
+      <div class="q-panel-title">Would you rather…</div>
+
+      <div id="wyrText" class="question-text"></div>
+
+      <div class="question-buttons">
+        <button id="wyrA"></button>
+        <button id="wyrB"></button>
+      </div>
+
+      <div id="wyrResults" class="q-results" hidden>
+        <div class="q-bar">
+          <div class="q-bar-label">
+            <span id="wyrLabelA"></span>
+            <span id="wyrPctA">0%</span>
+          </div>
+          <div class="q-bar-track"><div id="wyrFillA" class="q-bar-fill"></div></div>
+        </div>
+
+        <div class="q-bar">
+          <div class="q-bar-label">
+            <span id="wyrLabelB"></span>
+            <span id="wyrPctB">0%</span>
+          </div>
+          <div class="q-bar-track"><div id="wyrFillB" class="q-bar-fill"></div></div>
+        </div>
+
+        <div id="wyrNote" class="q-small-note"></div>
+      </div>
+    </div>
+
   </div>
+</div>
 </div>
 </aside>
   <main>
