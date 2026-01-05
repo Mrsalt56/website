@@ -539,3 +539,19 @@ body {
   background: #ef4444;
   color: white;
 }
+
+.site-sidebar {
+  max-height: calc(100vh - 80px); /* full screen minus header */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Optional: nicer scrollbar */
+.site-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.site-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.25);
+  border-radius: 4px;
+}
