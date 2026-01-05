@@ -580,7 +580,6 @@ function initDailyPolls() {
     fillB: document.getElementById("wyrFillB"),
     note: document.getElementById("wyrNote"),
   }, 2);
-}
 
 function initDailyPolls() {
   setupDailyPoll("YESNO", YESNO_POOL, { ... }, 1);
