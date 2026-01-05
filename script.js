@@ -581,3 +581,14 @@ function initDailyPolls() {
     note: document.getElementById("wyrNote"),
   }, 2);
 }
+
+function initDailyPolls() {
+  setupDailyPoll("YESNO", YESNO_POOL, { ... }, 1);
+  setupDailyPoll("WYR", WYR_POOL, { ... }, 7);
+}
+
+if (window.db) {
+  initDailyPolls();
+} else {
+  window.addEventListener("load", initDailyPolls);
+}
