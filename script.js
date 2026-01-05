@@ -561,87 +561,122 @@ document.querySelectorAll(".sb-drop").forEach((drop) => {
 });
 
 // ------------------------
-// GLOBAL Daily Question (Firebase)
+// GLOBAL Daily Polls (Yes/No + Would You Rather) with Firebase
 // ------------------------
-const DAILY_QUESTIONS = [
-  { id: "wyr_invisible_fly", text: "Would you rather be invisible or fly?", a: "Be invisible", b: "Fly" },
-  { id: "wyr_no_tiktok_no_games", text: "Would you rather never use TikTok again or never play games again?", a: "No TikTok", b: "No games" },
+const YESNO_POOL = [
   { id: "yn_aliens", text: "Do you believe aliens exist?", a: "Yes", b: "No" },
-  { id: "yn_skip_1000", text: "Would you skip school for $1,000?", a: "Yes", b: "No" }
+  { id: "yn_skip_1000", text: "Would you skip school for $1,000?", a: "Yes", b: "No" },
+  { id: "yn_pineapple", text: "Pineapple on pizza?", a: "Yes", b: "No" },
+  { id: "yn_homework", text: "Homework should be banned?", a: "Yes", b: "No" },
 ];
 
-// Elements
-const qText = document.getElementById("questionText");
-const qA = document.getElementById("qOptionA");
-const qB = document.getElementById("qOptionB");
-const qResults = document.getElementById("qResults");
-const qLabelA = document.getElementById("qLabelA");
-const qLabelB = document.getElementById("qLabelB");
-const qPctA = document.getElementById("qPctA");
-const qPctB = document.getElementById("qPctB");
-const qFillA = document.getElementById("qFillA");
-const qFillB = document.getElementById("qFillB");
-const qVotedNote = document.getElementById("qVotedNote");
+const WYR_POOL = [
+  { id: "wyr_invisible_fly", text: "Would you rather be invisible or fly?", a: "Be invisible", b: "Fly" },
+  { id: "wyr_million_now", text: "Would you rather get $1M now or $10M in 10 years?", a: "$1M now", b: "$10M later" },
+  { id: "wyr_music_games", text: "Would you rather never listen to music or never play games?", a: "No music", b: "No games" },
+  { id: "wyr_fast_slow", text: "Would you rather be super fast or super strong?", a: "Super fast", b: "Super strong" },
+];
 
-function todayKey() {
+function dayKey() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
-// Pick same question for everyone each day
-function getDailyQuestion() {
+// same pick for everyone each day (deterministic)
+function pickDaily(pool, salt) {
   const day = Math.floor(Date.now() / 86400000);
-  return DAILY_QUESTIONS[day % DAILY_QUESTIONS.length];
+  const idx = (day + salt) % pool.length;
+  return pool[idx];
 }
 
-const dailyQ = getDailyQuestion();
-const dayKey = todayKey();
-const baseRef = db.ref(`dailyQuestions/${dayKey}`);
-
-qText.textContent = dailyQ.text;
-qA.textContent = dailyQ.a;
-qB.textContent = dailyQ.b;
-qLabelA.textContent = dailyQ.a;
-qLabelB.textContent = dailyQ.b;
-
-// Init question in DB if missing
-baseRef.child("questionId").set(dailyQ.id);
-baseRef.child("votes").once("value", snap => {
-  if (!snap.exists()) {
-    baseRef.child("votes").set({ A: 0, B: 0 });
+function setupDailyPoll(kind, pool, els, salt) {
+  if (!window.db) {
+    console.warn("Firebase db not found yet. Polls not initialized.");
+    return;
   }
-});
 
-// Listen for live vote updates
-baseRef.child("votes").on("value", snap => {
-  const v = snap.val() || { A: 0, B: 0 };
-  const total = v.A + v.B || 1;
+  const today = dayKey();
+  const q = pickDaily(pool, salt);
 
-  const pctA = Math.round((v.A / total) * 100);
-  const pctB = 100 - pctA;
+  // Firebase path (global)
+  const baseRef = db.ref(`pollsDaily/${kind}/${today}`);
+  baseRef.child("question").set({ id: q.id, text: q.text, a: q.a, b: q.b });
 
-  qPctA.textContent = pctA + "%";
-  qPctB.textContent = pctB + "%";
-  qFillA.style.width = pctA + "%";
-  qFillB.style.width = pctB + "%";
-});
+  // init votes if missing
+  baseRef.child("votes").once("value").then(snap => {
+    if (!snap.exists()) baseRef.child("votes").set({ A: 0, B: 0 });
+  });
 
-// Voting (1 vote per day per device)
-function vote(option) {
-  const votedKey = `voted_${dayKey}`;
-  if (localStorage.getItem(votedKey)) return;
+  // render question
+  els.text.textContent = q.text;
+  els.btnA.textContent = q.a;
+  els.btnB.textContent = q.b;
+  els.labelA.textContent = q.a;
+  els.labelB.textContent = q.b;
 
-  baseRef.child(`votes/${option}`).transaction(v => (v || 0) + 1);
-  localStorage.setItem(votedKey, option);
+  // live results
+  baseRef.child("votes").on("value", snap => {
+    const v = snap.val() || { A: 0, B: 0 };
+    const total = (v.A + v.B) || 1;
+    const pctA = Math.round((v.A / total) * 100);
+    const pctB = 100 - pctA;
 
-  qResults.hidden = false;
-  qVotedNote.textContent = "You voted today ✔";
+    els.pctA.textContent = pctA + "%";
+    els.pctB.textContent = pctB + "%";
+    els.fillA.style.width = pctA + "%";
+    els.fillB.style.width = pctB + "%";
+  });
+
+  // one vote per day per device per poll type
+  const votedKey = `voted_${kind}_${today}`;
+  const already = localStorage.getItem(votedKey);
+  if (already) {
+    els.results.hidden = false;
+    els.note.textContent = "You already voted today ✔";
+  } else {
+    els.results.hidden = true;
+    els.note.textContent = "";
+  }
+
+  function vote(option) {
+    if (localStorage.getItem(votedKey)) return;
+
+    baseRef.child(`votes/${option}`).transaction(n => (n || 0) + 1);
+    localStorage.setItem(votedKey, option);
+
+    els.results.hidden = false;
+    els.note.textContent = "You voted today ✔";
+  }
+
+  els.btnA.onclick = () => vote("A");
+  els.btnB.onclick = () => vote("B");
 }
 
-qA.onclick = () => vote("A");
-qB.onclick = () => vote("B");
+// YES/NO elements
+setupDailyPoll("YESNO", YESNO_POOL, {
+  text: document.getElementById("ynText"),
+  btnA: document.getElementById("ynA"),
+  btnB: document.getElementById("ynB"),
+  results: document.getElementById("ynResults"),
+  labelA: document.getElementById("ynLabelA"),
+  labelB: document.getElementById("ynLabelB"),
+  pctA: document.getElementById("ynPctA"),
+  pctB: document.getElementById("ynPctB"),
+  fillA: document.getElementById("ynFillA"),
+  fillB: document.getElementById("ynFillB"),
+  note: document.getElementById("ynNote"),
+}, 1);
 
-// If already voted today, show results
-if (localStorage.getItem(`voted_${dayKey}`)) {
-  qResults.hidden = false;
-  qVotedNote.textContent = "You already voted today ✔";
-}
+// WYR elements
+setupDailyPoll("WYR", WYR_POOL, {
+  text: document.getElementById("wyrText"),
+  btnA: document.getElementById("wyrA"),
+  btnB: document.getElementById("wyrB"),
+  results: document.getElementById("wyrResults"),
+  labelA: document.getElementById("wyrLabelA"),
+  labelB: document.getElementById("wyrLabelB"),
+  pctA: document.getElementById("wyrPctA"),
+  pctB: document.getElementById("wyrPctB"),
+  fillA: document.getElementById("wyrFillA"),
+  fillB: document.getElementById("wyrFillB"),
+  note: document.getElementById("wyrNote"),
+}, 7);
