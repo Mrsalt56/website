@@ -402,156 +402,136 @@ if (movieSearch) {
     });
   });
 }
-
-
-
 // ------------------------
-// Sidebar dropdowns + Stats + Questions
+// Sidebar dropdowns
 // ------------------------
-(() => {
-  // Dropdown open/close
-  document.querySelectorAll('.sb-drop').forEach(drop => {
-    const head = drop.querySelector('.sb-drop-head');
-    const body = drop.querySelector('.sb-drop-body');
-    if (!head || !body) return;
+document.querySelectorAll(".sidebar-box[data-collapsible]").forEach((box) => {
+  const head = box.querySelector(".sb-head");
+  const body = box.querySelector(".sb-body");
+  if (!head || !body) return;
 
-    head.addEventListener('click', () => {
-      const isOpen = drop.getAttribute('data-open') === 'true';
-      drop.setAttribute('data-open', String(!isOpen));
-      head.setAttribute('aria-expanded', String(!isOpen));
-      body.hidden = isOpen;
-    });
+  const startOpen = box.getAttribute("data-open") === "true";
+  setOpen(startOpen);
+
+  function setOpen(open) {
+    box.setAttribute("data-open", open ? "true" : "false");
+    head.setAttribute("aria-expanded", open ? "true" : "false");
+    body.hidden = !open;
+  }
+
+  head.addEventListener("click", () => {
+    const isOpen = box.getAttribute("data-open") === "true";
+    setOpen(!isOpen);
   });
+});
 
-  // Session timer (per-tab)
-  const timerEl = document.getElementById('sessionTimer');
-  if (timerEl) {
-    const key = 'salty_session_start';
-    let start = Number(sessionStorage.getItem(key));
-    if (!start || Number.isNaN(start)) {
-      start = Date.now();
-      sessionStorage.setItem(key, String(start));
-    }
+// ------------------------
+// Stats: 7-day visits + session timer
+// ------------------------
+const visits7dEl = document.getElementById("visits7d");
+const sessionTimerEl = document.getElementById("sessionTimer");
 
-    const pad2 = (n) => String(n).padStart(2, '0');
-    const tick = () => {
-      const secs = Math.max(0, Math.floor((Date.now() - start) / 1000));
-      const mm = Math.floor(secs / 60);
-      const ss = secs % 60;
-      timerEl.textContent = `${pad2(mm)}:${pad2(ss)}`;
-    };
-    tick();
-    setInterval(tick, 1000);
+function localDateKey(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function addDays(date, delta) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + delta);
+  return d;
+}
+
+// ------------------------
+// Questions (votes)
+// ------------------------
+async function vote(questionId, answer) {
+  const voteKey = `voted_${questionId}`;
+  if (localStorage.getItem(voteKey)) return; // already voted on this device
+
+  localStorage.setItem(voteKey, "1");
+
+  const path = `analytics/questions/${questionId}/${answer}`;
+  await inc(path);
+
+  renderResults(questionId);
+}
+
+async function renderResults(questionId) {
+  const a = await get(`analytics/questions/${questionId}/a`);
+  const b = await get(`analytics/questions/${questionId}/b`);
+  const yes = await get(`analytics/questions/${questionId}/yes`);
+  const no = await get(`analytics/questions/${questionId}/no`);
+
+  const el = document.getElementById(`q-${questionId}`);
+  if (!el) return;
+
+  // handle either type (wyr uses a/b, yn uses yes/no)
+  if (questionId.startsWith("wyr")) {
+    const total = (a || 0) + (b || 0);
+    el.textContent = total ? `Fly: ${a || 0} • Invisible: ${b || 0}` : "No votes yet.";
+  } else {
+    const total = (yes || 0) + (no || 0);
+    el.textContent = total ? `Yes: ${yes || 0} • No: ${no || 0}` : "No votes yet.";
+  }
+}
+
+document.querySelectorAll(".q-btn[data-q][data-a]").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const q = btn.getAttribute("data-q");
+    const a = btn.getAttribute("data-a");
+    if (!q || !a) return;
+    await vote(q, a);
+  });
+});
+
+// load current results on open
+renderResults("wyr1");
+renderResults("yn1");
+
+async function inc(path) {
+  if (!window.db && !(typeof firebase !== "undefined" && firebase.apps && firebase.apps.length)) return;
+  const _db = window.db || firebase.database();
+  return _db.ref(path).transaction((n) => (n || 0) + 1);
+}
+
+async function get(path) {
+  if (!window.db && !(typeof firebase !== "undefined" && firebase.apps && firebase.apps.length)) return 0;
+  const _db = window.db || firebase.database();
+  const snap = await _db.ref(path).once("value");
+  return snap.val() || 0;
+}
+
+// count a "visit" once per device per day
+(async () => {
+  const today = localDateKey();
+  const last = localStorage.getItem("visitStamp");
+
+  if (last !== today) {
+    localStorage.setItem("visitStamp", today);
+    await inc(`analytics/visits/${today}`);
   }
 
-  // Visitors this week (served by a Cloudflare Worker endpoint)
-  const visitorsEl = document.getElementById('weeklyVisitors');
-  if (visitorsEl) {
-    const API = "/api/visitors-week"; // <-- your Worker route
-    const load = async () => {
-      try {
-        const r = await fetch(API, { cache: "no-store" });
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        const data = await r.json();
-        const v = Number(data?.visitors);
-        visitorsEl.textContent = Number.isFinite(v) ? v.toLocaleString() : "—";
-      } catch (e) {
-        console.warn("Visitors API failed:", e);
-        visitorsEl.textContent = "—";
-      }
-    };
-    load();
-    // refresh every 10 min
-    setInterval(load, 10 * 60 * 1000);
-  }
+  // sum last 7 days (today + previous 6)
+  const days = Array.from({ length: 7 }, (_, i) => localDateKey(addDays(new Date(), -i)));
+  const counts = await Promise.all(days.map((k) => get(`analytics/visits/${k}`)));
+  const total = counts.reduce((a, b) => a + (Number(b) || 0), 0);
 
-  // Questions (local-only votes)
-  const wurQuestionEl = document.getElementById("wurQuestion");
-  const wurA = document.getElementById("wurA");
-  const wurB = document.getElementById("wurB");
-  const wurResult = document.getElementById("wurResult");
+  if (visits7dEl) visits7dEl.textContent = String(total);
+})();
 
-  const ynQuestionEl = document.getElementById("ynQuestion");
-  const ynYes = document.getElementById("ynYes");
-  const ynNo = document.getElementById("ynNo");
-  const ynResult = document.getElementById("ynResult");
-
-  const WUR_POOL = [
-    { q: "Would you rather be able to fly or be invisible?", a: "Fly", b: "Invisible" },
-    { q: "Would you rather have unlimited snacks or unlimited games?", a: "Snacks", b: "Games" },
-    { q: "Would you rather only play shooters or only play racing games?", a: "Shooters", b: "Racing" },
-    { q: "Would you rather be super fast or super strong?", a: "Super fast", b: "Super strong" },
-  ];
-  const YN_POOL = [
-    { q: "Do you want a new games drop this week?" },
-    { q: "Should we add more multiplayer games?" },
-    { q: "Do you like the new sidebar?" },
-    { q: "Is homework evil?" },
-  ];
-
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  const wur = pick(WUR_POOL);
-  const yn = pick(YN_POOL);
-
-  // Render text
-  if (wurQuestionEl && wurA && wurB) {
-    wurQuestionEl.textContent = wur.q;
-    wurA.textContent = wur.a;
-    wurB.textContent = wur.b;
+// session timer
+(() => {
+  const start = Date.now();
+  function tick() {
+    const s = Math.floor((Date.now() - start) / 1000);
+    const hh = String(Math.floor(s / 3600)).padStart(2, "0");
+    const mm = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+    const ss = String(s % 60).padStart(2, "0");
+    if (sessionTimerEl) sessionTimerEl.textContent = `${hh}:${mm}:${ss}`;
   }
-  if (ynQuestionEl) ynQuestionEl.textContent = yn.q;
-
-  // Vote storage (not “real visitors”, just fun local votes)
-  function keyFor(prefix, question) {
-    return `salty_poll_${prefix}_${question.toLowerCase().replace(/[^a-z0-9]+/g,'_').slice(0,80)}`;
-  }
-  function readCounts(k) {
-    try { return JSON.parse(localStorage.getItem(k) || '{"a":0,"b":0}'); }
-    catch { return {a:0,b:0}; }
-  }
-  function writeCounts(k, counts) {
-    localStorage.setItem(k, JSON.stringify(counts));
-  }
-  function pct(n, total) {
-    if (!total) return 0;
-    return Math.round((n / total) * 100);
-  }
-
-  // Would you rather
-  if (wurA && wurB && wurResult) {
-    const k = keyFor("wur", wur.q);
-    const render = () => {
-      const c = readCounts(k);
-      const total = (c.a || 0) + (c.b || 0);
-      wurResult.textContent = total
-        ? `${wur.a}: ${pct(c.a,total)}%  •  ${wur.b}: ${pct(c.b,total)}%`
-        : "Be the first to vote 👀";
-    };
-    render();
-    wurA.addEventListener("click", () => {
-      const c = readCounts(k); c.a = (c.a||0) + 1; writeCounts(k,c); render();
-    });
-    wurB.addEventListener("click", () => {
-      const c = readCounts(k); c.b = (c.b||0) + 1; writeCounts(k,c); render();
-    });
-  }
-
-  // Yes/No
-  if (ynYes && ynNo && ynResult) {
-    const k = keyFor("yn", yn.q);
-    const render = () => {
-      const c = readCounts(k);
-      const total = (c.a || 0) + (c.b || 0); // a=yes, b=no
-      ynResult.textContent = total
-        ? `Yes: ${pct(c.a,total)}%  •  No: ${pct(c.b,total)}%`
-        : "Vote yes or no";
-    };
-    render();
-    ynYes.addEventListener("click", () => {
-      const c = readCounts(k); c.a = (c.a||0) + 1; writeCounts(k,c); render();
-    });
-    ynNo.addEventListener("click", () => {
-      const c = readCounts(k); c.b = (c.b||0) + 1; writeCounts(k,c); render();
-    });
-  }
+  tick();
+  setInterval(tick, 1000);
 })();
