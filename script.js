@@ -239,6 +239,7 @@ const firebaseConfig = {
 // Initialize Firebase (compat)
 firebase.initializeApp(firebaseConfig);
 window.db = firebase.database();
+initDailyPolls();
 
 const submitBtn = document.getElementById("submitBtn");
 const userNameInput = document.getElementById("userName");
@@ -551,32 +552,32 @@ function setupDailyPoll(kind, pool, els, salt) {
   els.btnB.onclick = () => vote("B");
 }
 
-// YES/NO elements
-setupDailyPoll("YESNO", YESNO_POOL, {
-  text: document.getElementById("ynText"),
-  btnA: document.getElementById("ynA"),
-  btnB: document.getElementById("ynB"),
-  results: document.getElementById("ynResults"),
-  labelA: document.getElementById("ynLabelA"),
-  labelB: document.getElementById("ynLabelB"),
-  pctA: document.getElementById("ynPctA"),
-  pctB: document.getElementById("ynPctB"),
-  fillA: document.getElementById("ynFillA"),
-  fillB: document.getElementById("ynFillB"),
-  note: document.getElementById("ynNote"),
-}, 1);
+function initDailyPolls() {
+  setupDailyPoll("YESNO", YESNO_POOL, {
+    text: document.getElementById("ynText"),
+    btnA: document.getElementById("ynA"),
+    btnB: document.getElementById("ynB"),
+    results: document.getElementById("ynResults"),
+    labelA: document.getElementById("ynLabelA"),
+    labelB: document.getElementById("ynLabelB"),
+    pctA: document.getElementById("ynPctA"),
+    pctB: document.getElementById("ynPctB"),
+    fillA: document.getElementById("ynFillA"),
+    fillB: document.getElementById("ynFillB"),
+    note: document.getElementById("ynNote"),
+  }, 1);
 
-// WYR elements
-setupDailyPoll("WYR", WYR_POOL, {
-  text: document.getElementById("wyrText"),
-  btnA: document.getElementById("wyrA"),
-  btnB: document.getElementById("wyrB"),
-  results: document.getElementById("wyrResults"),
-  labelA: document.getElementById("wyrLabelA"),
-  labelB: document.getElementById("wyrLabelB"),
-  pctA: document.getElementById("wyrPctA"),
-  pctB: document.getElementById("wyrPctB"),
-  fillA: document.getElementById("wyrFillA"),
-  fillB: document.getElementById("wyrFillB"),
-  note: document.getElementById("wyrNote"),
-}, 7);
+  setupDailyPoll("WYR", WYR_POOL, {
+    text: document.getElementById("wyrText"),
+    btnA: document.getElementById("wyrA"),
+    btnB: document.getElementById("wyrB"),
+    results: document.getElementById("wyrResults"),
+    labelA: document.getElementById("wyrLabelA"),
+    labelB: document.getElementById("wyrLabelB"),
+    pctA: document.getElementById("wyrPctA"),
+    pctB: document.getElementById("wyrPctB"),
+    fillA: document.getElementById("wyrFillA"),
+    fillB: document.getElementById("wyrFillB"),
+    note: document.getElementById("wyrNote"),
+  }, 2);
+}
