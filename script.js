@@ -238,7 +238,7 @@ const firebaseConfig = {
 
 // Initialize Firebase (compat)
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+window.db = firebase.database();
 
 const submitBtn = document.getElementById("submitBtn");
 const userNameInput = document.getElementById("userName");
@@ -402,28 +402,6 @@ if (movieSearch) {
     });
   });
 }
-// ------------------------
-// Sidebar dropdowns
-// ------------------------
-document.querySelectorAll(".sidebar-box[data-collapsible]").forEach((box) => {
-  const head = box.querySelector(".sb-head");
-  const body = box.querySelector(".sb-body");
-  if (!head || !body) return;
-
-  const startOpen = box.getAttribute("data-open") === "true";
-  setOpen(startOpen);
-
-  function setOpen(open) {
-    box.setAttribute("data-open", open ? "true" : "false");
-    head.setAttribute("aria-expanded", open ? "true" : "false");
-    body.hidden = !open;
-  }
-
-  head.addEventListener("click", () => {
-    const isOpen = box.getAttribute("data-open") === "true";
-    setOpen(!isOpen);
-  });
-});
 
 // ------------------------
 // Stats: 7-day visits + session timer
@@ -443,84 +421,6 @@ function addDays(date, delta) {
   d.setDate(d.getDate() + delta);
   return d;
 }
-
-// ------------------------
-// Questions (votes)
-// ------------------------
-async function vote(questionId, answer) {
-  const voteKey = `voted_${questionId}`;
-  if (localStorage.getItem(voteKey)) return; // already voted on this device
-
-  localStorage.setItem(voteKey, "1");
-
-  const path = `analytics/questions/${questionId}/${answer}`;
-  await inc(path);
-
-  renderResults(questionId);
-}
-
-async function renderResults(questionId) {
-  const a = await get(`analytics/questions/${questionId}/a`);
-  const b = await get(`analytics/questions/${questionId}/b`);
-  const yes = await get(`analytics/questions/${questionId}/yes`);
-  const no = await get(`analytics/questions/${questionId}/no`);
-
-  const el = document.getElementById(`q-${questionId}`);
-  if (!el) return;
-
-  // handle either type (wyr uses a/b, yn uses yes/no)
-  if (questionId.startsWith("wyr")) {
-    const total = (a || 0) + (b || 0);
-    el.textContent = total ? `Fly: ${a || 0} • Invisible: ${b || 0}` : "No votes yet.";
-  } else {
-    const total = (yes || 0) + (no || 0);
-    el.textContent = total ? `Yes: ${yes || 0} • No: ${no || 0}` : "No votes yet.";
-  }
-}
-
-document.querySelectorAll(".q-btn[data-q][data-a]").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const q = btn.getAttribute("data-q");
-    const a = btn.getAttribute("data-a");
-    if (!q || !a) return;
-    await vote(q, a);
-  });
-});
-
-// load current results on open
-renderResults("wyr1");
-renderResults("yn1");
-
-async function inc(path) {
-  if (!window.db && !(typeof firebase !== "undefined" && firebase.apps && firebase.apps.length)) return;
-  const _db = window.db || firebase.database();
-  return _db.ref(path).transaction((n) => (n || 0) + 1);
-}
-
-async function get(path) {
-  if (!window.db && !(typeof firebase !== "undefined" && firebase.apps && firebase.apps.length)) return 0;
-  const _db = window.db || firebase.database();
-  const snap = await _db.ref(path).once("value");
-  return snap.val() || 0;
-}
-
-// count a "visit" once per device per day
-(async () => {
-  const today = localDateKey();
-  const last = localStorage.getItem("visitStamp");
-
-  if (last !== today) {
-    localStorage.setItem("visitStamp", today);
-    await inc(`analytics/visits/${today}`);
-  }
-
-  // sum last 7 days (today + previous 6)
-  const days = Array.from({ length: 7 }, (_, i) => localDateKey(addDays(new Date(), -i)));
-  const counts = await Promise.all(days.map((k) => get(`analytics/visits/${k}`)));
-  const total = counts.reduce((a, b) => a + (Number(b) || 0), 0);
-
-  if (visits7dEl) visits7dEl.textContent = String(total);
-})();
 
 // session timer
 (() => {
