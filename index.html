@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salty Games</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/png" href="images/logo.png">
   <link rel="stylesheet" href="main.css">
   <meta name="google-adsense-account" content="ca-pub-3748865129790331">
@@ -11,51 +12,114 @@
 <body>
 
  <button id="sidebarToggle" class="sidebar-toggle" aria-label="Open sidebar">
-  <i class="fa-solid fa-bars"></i>
+  <i class="fa-solid fa-gear"></i>
 </button>
 
 <!-- Sidebar -->
 <aside id="siteSidebar" class="site-sidebar" aria-hidden="true">
   <button id="sidebarClose" class="sidebar-close" aria-label="Close sidebar">&times;</button>
 
-  <div class="sidebar-section">
-    <h3>Quick Actions</h3>
-    <button id="sbSuggest" class="suggest-btn">
+    <div class="sb-drop" data-open="false">
+      <button class="sb-drop-head" type="button" aria-expanded="false">
+        <span class="sb-drop-title">Quick Actions</span>
+        <i class="fa-solid fa-chevron-down sb-drop-arrow" aria-hidden="true"></i>
+      </button>
+      <div class="sb-drop-body" hidden>
+        <button id="sbSuggest" class="suggest-btn">
       <i class="fa-solid fa-lightbulb"></i> Suggest a game
     </button>
     <button id="sbReport" class="report-btn">
       <i class="fa-solid fa-flag"></i> Report a problem
     </button>
-  </div>
+      </div>
+    </div>
+    
 
-  <div class="sidebar-section">
-    <h3>Community</h3>
-    <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
+    <div class="sb-drop" data-open="false">
+      <button class="sb-drop-head" type="button" aria-expanded="false">
+        <span class="sb-drop-title">Community</span>
+        <i class="fa-solid fa-chevron-down sb-drop-arrow" aria-hidden="true"></i>
+      </button>
+      <div class="sb-drop-body" hidden>
+        <a class="sb-link" href="https://discord.gg/qJn2PgFbdH" target="_blank" rel="noopener">
       <i class="fa-brands fa-discord"></i> Join Discord
     </a>
-  </div>
+      </div>
+    </div>
+    
 
-  <div class="sidebar-section">
-    <h3>Proxy</h3>
-    <ul class="proxy-list">
+    <div class="sb-drop" data-open="false">
+      <button class="sb-drop-head" type="button" aria-expanded="false">
+        <span class="sb-drop-title">Proxy</span>
+        <i class="fa-solid fa-chevron-down sb-drop-arrow" aria-hidden="true"></i>
+      </button>
+      <div class="sb-drop-body" hidden>
+        <ul class="proxy-list">
       <li><a href="https://mrsalt56.com/games/proxy" target="_blank" rel="noopener">Proxy</a></li>
     </ul>
     <p class="proxy-note">
       ⚠️ WAIT 30-60 SECONDS FOR LINK TO LOAD ⚠️ Use full link, e.g., <code>discord.com</code>
     </p>
-  </div>
+      </div>
+    </div>
+    
 
-  <div class="sidebar-section">
-    <h3>Shoutout Queue</h3>
-
-    <div id="shoutoutForm">
+    <div class="sb-drop" data-open="false">
+      <button class="sb-drop-head" type="button" aria-expanded="false">
+        <span class="sb-drop-title">Shoutout Queue</span>
+        <i class="fa-solid fa-chevron-down sb-drop-arrow" aria-hidden="true"></i>
+      </button>
+      <div class="sb-drop-body" hidden>
+        <div id="shoutoutForm">
       <input type="text" id="userName" placeholder="Enter your name">
       <button id="submitBtn">Submit</button>
       <p id="cooldownMsg" style="color:red; font-size:0.8rem;"></p>
+      </div>
+    </div>
+    
+    <div class="sb-drop" data-open="false" id="sbStatsDrop">
+      <button class="sb-drop-head" type="button" aria-expanded="false">
+        <span class="sb-drop-title">Stats</span>
+        <i class="fa-solid fa-chevron-down sb-drop-arrow" aria-hidden="true"></i>
+      </button>
+      <div class="sb-drop-body" hidden>
+        <div class="sb-stat">
+          <div class="sb-stat-label">Visitors this week</div>
+          <div class="sb-stat-value" id="weeklyVisitors">—</div>
+        </div>
+
+        <div class="sb-stat" style="margin-top:10px;">
+          <div class="sb-stat-label">Your time on site</div>
+          <div class="sb-stat-value" id="sessionTimer">00:00</div>
+        </div>
+      </div>
     </div>
 
-    <ul id="queueList" style="list-style:none; padding-left:0; max-height:200px; overflow-y:auto;"></ul>
-  </div>
+    <div class="sb-drop" data-open="false" id="sbQuestionsDrop">
+      <button class="sb-drop-head" type="button" aria-expanded="false">
+        <span class="sb-drop-title">Questions</span>
+        <i class="fa-solid fa-chevron-down sb-drop-arrow" aria-hidden="true"></i>
+      </button>
+      <div class="sb-drop-body" hidden>
+        <div class="sb-q">
+          <div class="sb-q-title" id="wurQuestion">Would you rather…</div>
+          <div class="sb-q-actions">
+            <button class="sb-q-btn" id="wurA">Option A</button>
+            <button class="sb-q-btn" id="wurB">Option B</button>
+          </div>
+          <div class="sb-q-result" id="wurResult" aria-live="polite"></div>
+        </div>
+
+        <div class="sb-q" style="margin-top:14px;">
+          <div class="sb-q-title" id="ynQuestion">Yes or No?</div>
+          <div class="sb-q-actions">
+            <button class="sb-q-btn" id="ynYes">Yes</button>
+            <button class="sb-q-btn" id="ynNo">No</button>
+          </div>
+          <div class="sb-q-result" id="ynResult" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
 </aside>
   <main>
 
