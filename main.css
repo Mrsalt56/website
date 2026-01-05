@@ -569,3 +569,81 @@ body {
 .movie-card:hover::after {
   opacity: 1;
 }
+
+
+/* ---------------- Sidebar dropdowns ---------------- */
+.sb-drop{
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+.sb-drop:first-of-type{ border-top:none; padding-top:0; margin-top:0; }
+
+.sb-drop-head{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background: transparent;
+  border: none;
+  color:#fff;
+  font-weight:700;
+  font-size: 0.98rem;
+  padding: 6px 0;
+  cursor:pointer;
+}
+.sb-drop-arrow{ transition: transform 160ms ease; opacity:0.9; }
+.sb-drop[data-open="true"] .sb-drop-arrow{ transform: rotate(180deg); }
+
+.sb-drop-body{
+  margin-top: 10px;
+}
+
+/* Stats box */
+.sb-stat{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.sb-stat-label{
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+}
+.sb-stat-value{
+  margin-top: 6px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+/* Questions */
+.sb-q{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.sb-q-title{ font-weight: 700; }
+.sb-q-actions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.sb-q-btn{
+  flex: 1;
+  background: rgba(0,120,255,0.22);
+  border: 1px solid rgba(0,120,255,0.35);
+  color:#fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-weight: 700;
+  cursor:pointer;
+}
+.sb-q-btn:hover{ filter: brightness(1.08); }
+.sb-q-result{
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.78);
+}
