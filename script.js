@@ -559,3 +559,89 @@ document.querySelectorAll(".sb-drop").forEach((drop) => {
     setOpen(!isOpen);
   });
 });
+
+// ------------------------
+// GLOBAL Daily Question (Firebase)
+// ------------------------
+const DAILY_QUESTIONS = [
+  { id: "wyr_invisible_fly", text: "Would you rather be invisible or fly?", a: "Be invisible", b: "Fly" },
+  { id: "wyr_no_tiktok_no_games", text: "Would you rather never use TikTok again or never play games again?", a: "No TikTok", b: "No games" },
+  { id: "yn_aliens", text: "Do you believe aliens exist?", a: "Yes", b: "No" },
+  { id: "yn_skip_1000", text: "Would you skip school for $1,000?", a: "Yes", b: "No" }
+];
+
+// Elements
+const qText = document.getElementById("questionText");
+const qA = document.getElementById("qOptionA");
+const qB = document.getElementById("qOptionB");
+const qResults = document.getElementById("qResults");
+const qLabelA = document.getElementById("qLabelA");
+const qLabelB = document.getElementById("qLabelB");
+const qPctA = document.getElementById("qPctA");
+const qPctB = document.getElementById("qPctB");
+const qFillA = document.getElementById("qFillA");
+const qFillB = document.getElementById("qFillB");
+const qVotedNote = document.getElementById("qVotedNote");
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+// Pick same question for everyone each day
+function getDailyQuestion() {
+  const day = Math.floor(Date.now() / 86400000);
+  return DAILY_QUESTIONS[day % DAILY_QUESTIONS.length];
+}
+
+const dailyQ = getDailyQuestion();
+const dayKey = todayKey();
+const baseRef = db.ref(`dailyQuestions/${dayKey}`);
+
+qText.textContent = dailyQ.text;
+qA.textContent = dailyQ.a;
+qB.textContent = dailyQ.b;
+qLabelA.textContent = dailyQ.a;
+qLabelB.textContent = dailyQ.b;
+
+// Init question in DB if missing
+baseRef.child("questionId").set(dailyQ.id);
+baseRef.child("votes").once("value", snap => {
+  if (!snap.exists()) {
+    baseRef.child("votes").set({ A: 0, B: 0 });
+  }
+});
+
+// Listen for live vote updates
+baseRef.child("votes").on("value", snap => {
+  const v = snap.val() || { A: 0, B: 0 };
+  const total = v.A + v.B || 1;
+
+  const pctA = Math.round((v.A / total) * 100);
+  const pctB = 100 - pctA;
+
+  qPctA.textContent = pctA + "%";
+  qPctB.textContent = pctB + "%";
+  qFillA.style.width = pctA + "%";
+  qFillB.style.width = pctB + "%";
+});
+
+// Voting (1 vote per day per device)
+function vote(option) {
+  const votedKey = `voted_${dayKey}`;
+  if (localStorage.getItem(votedKey)) return;
+
+  baseRef.child(`votes/${option}`).transaction(v => (v || 0) + 1);
+  localStorage.setItem(votedKey, option);
+
+  qResults.hidden = false;
+  qVotedNote.textContent = "You voted today ✔";
+}
+
+qA.onclick = () => vote("A");
+qB.onclick = () => vote("B");
+
+// If already voted today, show results
+if (localStorage.getItem(`voted_${dayKey}`)) {
+  qResults.hidden = false;
+  qVotedNote.textContent = "You already voted today ✔";
+}
