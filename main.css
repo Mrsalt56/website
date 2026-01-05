@@ -569,3 +569,107 @@ body {
 .movie-card:hover::after {
   opacity: 1;
 }
+
+/* ---------- Sidebar dropdown boxes ---------- */
+.sidebar-box{
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.sb-head{
+  width: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sb-head i{
+  transition: transform 180ms ease;
+  opacity: 0.9;
+}
+
+.sidebar-box[data-open="true"] .sb-head i{
+  transform: rotate(180deg);
+}
+
+.sb-body{
+  padding: 10px 12px 12px;
+}
+
+.sb-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:#ddd;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.sb-link:hover{ color:#4da6ff; }
+
+/* Stats */
+.stat-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.stat-row:last-child{ border-bottom:none; }
+.tiny-note{
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* Questions */
+.q-card{
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.q-title{ font-weight: 700; margin-bottom: 6px; }
+.q-sub{ color: rgba(255,255,255,0.8); margin-bottom: 8px; font-size: 0.9rem; }
+
+.q-btn{
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 10px;
+  margin-top: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  background: rgba(0,120,255,0.25);
+  color: #fff;
+}
+.q-btn:hover{ background: rgba(0,120,255,0.35); }
+
+.q-yn{ display:flex; gap:8px; }
+.q-yn .q-btn{ width: 50%; }
+
+.q-result{
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.85);
+}
+
+/* Cog hover */
+.sidebar-toggle i{
+  transition: transform 200ms ease;
+}
+.sidebar-toggle:hover i{
+  transform: rotate(45deg);
+}
