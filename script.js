@@ -587,3 +587,24 @@ if (window.db) {
 } else {
   window.addEventListener("load", initDailyPolls);
 }
+
+const videoModal = document.getElementById("videoModal");
+const moviePlayer = document.getElementById("moviePlayer");
+const closeVideo = document.getElementById("closeVideo");
+
+document.querySelectorAll(".movie-card").forEach(card => {
+  card.addEventListener("click", () => {
+    const video = card.dataset.video;
+    if (!video) return;
+
+    moviePlayer.src = video;
+    videoModal.style.display = "flex";
+    moviePlayer.play();
+  });
+});
+
+closeVideo.onclick = () => {
+  moviePlayer.pause();
+  moviePlayer.src = "";
+  videoModal.style.display = "none";
+};
