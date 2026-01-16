@@ -271,11 +271,14 @@ body {
 
 .site-sidebar {
   position: fixed;
-  top: 60px;      
-  right: 0;      
+  top: 60px;
+  right: 0;
   width: 280px;
+
+  height: calc(100vh - 60px); /* 🔴 key line */
+  overflow-y: auto;          /* 🔴 enables scrolling */
+
   background: rgba(10,12,20,0.96);
-  color: #fff;
   border-radius: 8px 0 0 8px;
   padding: 16px;
   box-shadow: -4px 0 20px rgba(0,0,0,0.5);
@@ -283,7 +286,6 @@ body {
   transition: transform 220ms ease;
   z-index: 999;
 }
-
 .site-sidebar[aria-hidden="false"] {
   transform: translateX(0);
 }
@@ -841,4 +843,45 @@ body {
   font-size:0.8rem;
   opacity:0.9;
   text-align:center;
+}
+
+/* Questions dropdown scroll area */
+.sb-drop[data-open="true"] .sb-drop-body {
+  max-height: 55vh;     /* adjust if you want more/less */
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Nice thin scrollbar */
+.sb-drop-body::-webkit-scrollbar {
+  width: 6px;
+}
+.sb-drop-body::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.25);
+  border-radius: 4px;
+}
+
+.video-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.video-modal video {
+  width: 80%;
+  max-width: 900px;
+  border-radius: 12px;
+}
+
+#closeVideo {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
 }
